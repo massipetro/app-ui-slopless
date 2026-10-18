@@ -1,0 +1,23 @@
+{
+  "skill_name": "app-ui-slopless",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm building a habit tracker app with Compose Multiplatform (shared UI for Android + iOS). Build me the home screen: today's habits with check-off, a streak counter, and a weekly progress view. Go with the playful / toy-like style, I want it to feel like Duolingo-level fun, not another grey minimal list. Put the code in HabitHomeScreen.kt.",
+      "expected_output": "A design brief (preset + dials, palette, type, shape, motion) then a working Compose Multiplatform screen with chunky pressable check-offs, bouncy feedback, a celebratory streak element, accessibility notes, and no generic AI tells.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "here's my profile screen in SwiftUI (evals/files/ProfileView.swift), it's so boring it hurts. redesign it neo-brutalist, thick borders hard shadows the works. keep it native iOS where it matters. write the new version to ProfileView.swift",
+      "expected_output": "A rewritten SwiftUI ProfileView in a committed neo-brutalist style (hard offset shadows, thick strokes, flat clashing colour, raw type), keeping NavigationStack/system toggles behaviour, Dynamic Type, 44pt targets, with a short note of what changed and why.",
+      "files": ["evals/files/ProfileView.swift"]
+    },
+    {
+      "id": 3,
+      "prompt": "Can you do a UX audit of our Android checkout screen (evals/files/CheckoutScreen.kt)? Tell me what's wrong based on real UX principles, then give me a warm premium redesign, Airbnb-ish. Save the audit as audit.md and the new screen as CheckoutScreen.kt.",
+      "expected_output": "An audit.md citing named principles (Nielsen heuristics, Fitts, Hoober thumb zones, WCAG contrast, form design per Wroblewski, error prevention) against specific lines, with severity; plus a redesigned Compose checkout in a warm premium style fixing the issues (labels not placeholders, contrast, target sizes, summary visible, single primary action in thumb zone).",
+      "files": ["evals/files/CheckoutScreen.kt"]
+    }
+  ]
+}
