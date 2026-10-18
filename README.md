@@ -44,7 +44,7 @@ The visual references are **real shipped apps** (Apple Design Award winners, des
 
 Claude Code (personal):
 ```bash
-git clone <this repo> ~/.claude/skills/app-ui-slopless
+git clone https://github.com/massipetro/app-ui-slopless ~/.claude/skills/app-ui-slopless
 ```
 
 Or any agent that supports the Agent Skills format: copy the folder into its skills directory.
@@ -74,3 +74,7 @@ Three prompts (playful CMP home screen, neo-brutalist SwiftUI redesign, Compose 
 | 3 | Sonnet 5.5 (medium) | 100% | 76% |
 | 2 | Sonnet 5.5 (medium) | 100% | 75% |
 | 1 | Opus 5.5 | 100% | 92% |
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
