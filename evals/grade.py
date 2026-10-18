@@ -87,7 +87,56 @@ def eval3(d):
     ]
 
 
-GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3}
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+import lint  # noqa: E402  (the skill's own gate, so "no FAIL" means the same thing here)
+
+
+def lint_fails(d):
+    fails = [f"{r}:{n}" for f in sorted(d.rglob("*")) if f.suffix in (".swift", ".kt")
+             for r, n, _ in lint.lint_file(f) if lint.RULES[r][0] == "FAIL"]
+    return (not fails), ("no FAIL" if not fails else ", ".join(fails[:6]))
+
+
+def process_checks(resp):
+    # The no-preset evals test the workflow itself: inventory, deal, idea, critique.
+    return [
+        ("Inventory of product-only items listed", *check(resp, r"inventory")),
+        ("Direction dealt: id and seed stated", *check(resp, r"\b(wp|nb|pl|ed)-[a-z-]+\b[\s\S]{0,200}seed\D{0,5}\d+|seed\D{0,5}\d+[\s\S]{0,200}\b(wp|nb|pl|ed)-[a-z-]+\b")),
+        ("Owned-idea sentence written", *check(resp, r"In this app,[^\n]{0,200}becomes")),
+        ("Competitor test applied", *check(resp, r"competitor")),
+        ("Critique scored (Idea / Hierarchy / overall)", *check(resp, r"Idea\s*\d+[\s\S]{0,80}Hierarchy\s*\d+|overall\s*\d")),
+        ("Lint gate run", *check(resp, r"lint\.py|\d+ FAIL")),
+    ]
+
+
+def eval4(d):
+    sw = read(d, "*.swift")
+    resp = read(d, "response.md")
+    return process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
+        ("Live countdown driven by time (TimelineView / Timer / Date math)", *check(sw, r"TimelineView|Timer\.publish|\.timeIntervalSince|Date\.now|countdown")),
+        ("Real place names, no placeholder data", *check(sw, r"Procida|Ischia|Napoli|Naples|Molo|Beverello|Pozzuoli")),
+        ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)")),
+        ("VoiceOver labels on custom elements", *check(sw, r"accessibility(Label|Value|Element|AddTraits)")),
+        ("Reduce Motion respected", *check(sw, r"accessibilityReduceMotion")),
+    ]
+
+
+def eval5(d):
+    kt = read(d, "*.kt")
+    resp = read(d, "response.md")
+    return process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Kotlin", *lint_fails(d)),
+        ("Weekly reset modelled (Monday / week start)", *check(kt, r"MONDAY|Monday|weekStart|startOfWeek|resetsOn")),
+        ("Over-budget or empty-week state designed", *check(kt, r"over ?budget|overBudget|isEmpty|EmptyWeek|empty state", re.I)),
+        ("Text sized in sp", *check(kt, r"\d+(\.\d+)?\.sp")),
+        ("Semantics on custom elements", *check(kt, r"semantics|contentDescription|stateDescription")),
+        ("Reduce-motion handled", *check(kt, r"reduceMotion|ReduceMotion|ANIMATOR_DURATION_SCALE|animationsEnabled|MotionDurationScale")),
+    ]
+
+
+GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
+           "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

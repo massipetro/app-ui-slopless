@@ -32,7 +32,7 @@ Every run:
 1. Lists what only this product has, then **deals three researched directions** (`scripts/deal.py`, 20 directions anchored in shipped apps) instead of reaching for the category default, and picks one against that list.
 2. Writes a short **design brief** around an owned idea that must pass a competitor test: owned idea, live interaction, persona, type, colour, icons, motion, signature moves.
 3. Builds tokens first, then components, then the screen, following a **code baseline** (stable identity, state that survives, transforms not layout).
-4. **Renders the result and looks at it** twice over: a craft pass (clipped, stretched, off-centre) and a scored taste pass (one-second glance, squint, cover the logo, fullness), at most two fix rounds.
+4. **Lints the code** (`scripts/lint.py`), then **renders the result and looks at it** twice over: a craft pass (clipped, stretched, off-centre) and a scored taste pass (one-second glance, squint, cover the logo, fullness), at most two fix rounds.
 5. Reports accessibility trade-offs as warnings (it doesn't silently block bold choices).
 
 ## Grounded in
@@ -43,7 +43,13 @@ The visual references are **real shipped apps** (Apple Design Award winners, des
 
 ## Install
 
-Claude Code (personal):
+Claude Code plugin (updates with `/plugin update`). Run these inside Claude Code:
+```
+/plugin marketplace add massipetro/app-ui-slopless
+/plugin install app-ui-slopless@app-ui-slopless
+```
+
+Claude Code (personal, as a plain skill):
 ```bash
 git clone https://github.com/massipetro/app-ui-slopless ~/.claude/skills/app-ui-slopless
 ```
@@ -65,13 +71,16 @@ references/
   critique.md               the scored taste pass on screenshots
 library/directions.json     20 dealt directions (5 per preset), with palettes checked for contrast
 scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
+scripts/lint.py             FAIL/WARN gate for slop tells and craft defects in .swift / .kt
 research/                   the source material behind the rules
 evals/                      test prompts, input files, grade.py
 ```
 
 ## Evals
 
-Three prompts (playful CMP home screen, neo-brutalist SwiftUI redesign, Compose checkout audit + warm-premium redesign), each run with and without the skill. `evals/grade.py` runs objective checks for craft and slop tells; humans judge the visuals.
+Five prompts, each run with and without the skill: a playful CMP home screen, a neo-brutalist SwiftUI redesign, a Compose checkout audit + warm-premium redesign, and two no-preset builds (a SwiftUI ferry app, a CMP flat-share budget) that test the dealt-direction workflow. `evals/grade.py` runs objective checks for craft and slop tells; screenshots are judged blind with `references/critique.md`. See [`evals/README.md`](evals/README.md).
+
+The rounds below predate evals 4–5, the deal script, the linter and the critique; they haven't been re-run since.
 
 | Round | Model | With skill | Without |
 |---|---|---|---|

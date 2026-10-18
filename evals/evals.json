@@ -11,13 +11,30 @@
       "id": 2,
       "prompt": "here's my profile screen in SwiftUI (evals/files/ProfileView.swift), it's so boring it hurts. redesign it neo-brutalist, thick borders hard shadows the works. keep it native iOS where it matters. write the new version to ProfileView.swift",
       "expected_output": "A rewritten SwiftUI ProfileView in a committed neo-brutalist style (hard offset shadows, thick strokes, flat clashing colour, raw type), keeping NavigationStack/system toggles behaviour, Dynamic Type, 44pt targets, with a short note of what changed and why.",
-      "files": ["evals/files/ProfileView.swift"]
+      "files": [
+        "evals/files/ProfileView.swift"
+      ]
     },
     {
       "id": 3,
       "prompt": "Can you do a UX audit of our Android checkout screen (evals/files/CheckoutScreen.kt)? Tell me what's wrong based on real UX principles, then give me a warm premium redesign, Airbnb-ish. Save the audit as audit.md and the new screen as CheckoutScreen.kt.",
       "expected_output": "An audit.md citing named principles (Nielsen heuristics, Fitts, Hoober thumb zones, WCAG contrast, form design per Wroblewski, error prevention) against specific lines, with severity; plus a redesigned Compose checkout in a warm premium style fixing the issues (labels not placeholders, contrast, target sizes, summary visible, single primary action in thumb zone).",
-      "files": ["evals/files/CheckoutScreen.kt"]
+      "files": [
+        "evals/files/CheckoutScreen.kt"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I'm building a SwiftUI app for a small ferry line between Naples and the islands (Procida, Ischia). There are only a few boats a day and the last one back is the one everyone worries about. Build the home screen: the next departures from the user's saved pier, a live countdown to their boat, and a way to buy a ticket. It must not look like every other transit app. Put it in FerryHomeView.swift.",
+      "expected_output": "No preset named, so the run inventories the product, deals directions with scripts/deal.py and states the chosen id and seed with a reason, writes an owned-idea sentence that passes a competitor test (e.g. built from the last-ferry constraint), and builds a live countdown tied to real departure times. Real pier and boat names, no placeholder data or invented reviews. lint.py run with no FAIL, a scored critique reported, Dynamic Type, 44pt targets, VoiceOver labels and Reduce Motion handled.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Compose Multiplatform app for students sharing a flat: one shared grocery budget per week that resets every Monday. Build the main screen: what's left this week, recent spends by flatmate, and adding an expense. Don't make it look like a bank app. shared/ui/FlatBudgetScreen.kt",
+      "expected_output": "No preset named, so the run inventories the product, deals directions (finance-unsafe ones are fine to exclude only if justified; students sharing groceries is not banking) and states id and seed with a reason, writes an owned-idea sentence that passes a competitor test (e.g. built from the Monday reset or the shared kitty), and builds one live thing tied to the remaining budget. Realistic flatmate names and grocery amounts, every state designed (empty week, over budget). lint.py run with no FAIL, a scored critique reported, sp text, 48dp targets, semantics and reduce-motion handled.",
+      "files": []
     }
-  ]
+  ],
+  "how_to_run": "See evals/README.md. Each eval is a full build session: run it with the skill and without it (baseline), grade both with grade.py, then judge screenshots blind with references/critique.md. Ask the user before running: 5 evals x 2 configs = 10 sessions per iteration."
 }

@@ -149,9 +149,26 @@ Apply the core rules below while building. `references/principles.md` has the fu
 - **No invented proof.** No made-up ratings, reviews, testimonials, user counts, press logos or "Trusted by 10,000+". Placeholder business facts (prices, plan names) are fine; list them in the report so the user can replace them.
 - **Words named for what they do.** Buttons say the action ("Book for €84", "Mark as done"), not "Submit" or "Continue"; errors say what happened and how to fix it.
 
+**Pictures: where they come from.** Photo-led directions (warm premium, story cards, type-as-image with photography) depend on imagery, and models skip finding it because it's work. Use this order and never stop at a grey box:
+1. **The product's own:** user content, product photos, real maps or screenshots the project already has. In an app most images are runtime content, so design the slot: a fixed aspect ratio (no layout jump on load), a loading state that is a tone step in the palette, and a designed fallback (initials, a glyph from the icon family), never a grey rectangle or a broken-image icon.
+2. **Generated,** if you have an image tool and the user is fine with it. Never present a generated picture as a real person, product, place or customer.
+3. **Openly licensed pictures of the product's world,** for onboarding, empty states, category art and sample content: Wikimedia Commons, Openverse, and museum open-access collections (the Met, the Art Institute of Chicago, the Rijksmuseum), NASA. Search the inventory, not the category: the product's object up close, its city in an old postcard, a botanical plate, a timetable, an engraving of its trade. Use only licences that allow commercial use, download the file into the project's assets, and list title, creator, licence and source in the report. A found picture shows the world around the product, never the product's own team, customers or goods.
+4. **Drawn in code from the inventory** (`Canvas` / `Path` / `ImageVector`): the product's objects in one consistent flat graphic language, in the palette's real colours. Better than a placeholder, an enlarged SF Symbol, or an abstract blob.
+5. **Type and colour alone,** for directions built on them.
+
+Never: stock photos of laughing people, AI images passed off as real, illustration from mixed packs, a decorative blob standing in for a picture.
+
 **Removing slop leaves space. Don't fill it with another ornament.** Fill it with scale (make the main thing bigger), with the full content, or with the owned idea. One deliberate empty moment per screen at most.
 
 ### 5. Look at it, fix it, then report
+
+**Gate first.** Lint the files you wrote:
+
+```bash
+python3 <skill>/scripts/lint.py <changed .swift / .kt files or folder> [--allow <rule>,<rule>]
+```
+
+It flags the slop tells and craft defects the code itself shows: violet accents, stock greys, 5%-black shadows, fixed font sizes, placeholder-only fields, sub-44/48 targets, unlabelled icon buttons, emoji, placeholder data, animation without Reduce Motion, and more (`--list-rules`). Fix every `FAIL`. Treat each `WARN` as wrong unless you can defend it in one sentence. `--allow` is for deliberate style choices only (e.g. `blur-shadow` for a warm premium floating sheet); list each one in the report. It's a regex heuristic, so a clean lint proves nothing about taste: that's what the passes below are for.
 
 **Render what you built and look at the image before handing over.** Code that reads well often renders badly: a number clipped by a fixed-width box, a token stretched into a pill by its parent, a tick off-centre, a bar covering content. The user sees those first, and one of them makes a bold design look broken (Tuch et al. 2012: poor execution lowers perceived beauty). Use the best render path available:
 1. **Real render:** Compose `@Preview` screenshot tests (Roborazzi/Paparazzi), SwiftUI previews or snapshot tests, or the app on an emulator/simulator (`adb exec-out screencap -p > s.png`, `xcrun simctl io booted screenshot s.png`).
@@ -258,9 +275,11 @@ Bold choices sometimes trade against accessibility, such as neon-on-black contra
 - If the style needs a trade-off, make it, and list it under **⚠️ Accessibility warnings** with the criterion, the measured or estimated value, and the compliant fix (e.g. "Caption #8A8A8A on #FFF = 3.5:1, fails 1.4.3; #6B6B6B gives 5.3:1").
 - Never drop screen-reader labels, text scaling or the reduce-motion fallback to get a look. These cost nothing visually.
 
-## Slop tells (check before handing over)
+## Slop tells (as of 2026-10; check before handing over)
 
-Models produce slop because they sample the statistical average of their training data, which is mostly templates and tutorials (Anthropic calls it "distributional convergence"). If the output shows any of these without a deliberate reason, it has drifted back to that average. Fix it. (Compiled from Anthropic, impeccable.style, taste-skill and designers' write-ups; see `research/real-ui-references.md` §6.)
+Models produce slop because they sample the statistical average of their training data, which is mostly templates and tutorials (Anthropic calls it "distributional convergence"). If the output shows any of these without a deliberate reason, it has drifted back to that average. Fix it. (Compiled from Anthropic, impeccable.style, taste-skill and designers' write-ups; see `research/real-ui-references.md` §6.) `scripts/lint.py` catches the ones visible in code.
+
+**This list is dated, on purpose.** Tells move: each published "use this instead" becomes the next wave of defaults within months (Inter was replaced by Space Grotesk, Geist and Instrument Serif, which are now tells themselves; purple gradients were replaced by cream and terracotta). So the fix for a tell is a *procedure*, never a named replacement: deal a direction, take colour and type from the sheet or from the product's own material, and derive the idea from the inventory. Don't treat the font names in the preset files or the research notes as a new default list either; they're what the deal draws from. When you notice a new tell spreading, add it here with its date.
 
 **Colour**
 - Purple/indigo-to-violet gradients, gradient text, a gradient FAB or app bar.
@@ -301,6 +320,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Direction dealt (id + seed in the report), chosen against the inventory, sheet adopted; any redeal has a stated reason.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
+- [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
 - [ ] Taste pass written in `references/critique.md` format, top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.
