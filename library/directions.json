@@ -1,0 +1,566 @@
+{
+  "about": "Researched directions for app-ui-slopless, 5 per preset. Each is anchored in shipped apps from research/real-ui-references.md. Dealt by scripts/deal.py; do not read the whole file into context. Hex values are starting points checked for contrast by `deal.py --check`, not measured from the anchor apps. Fonts are OFL on Google Fonts unless marked.",
+  "dated": "2026-10-18",
+  "directions": [
+    {
+      "id": "wp-hero-object",
+      "preset": "warm-premium",
+      "name": "Hero object",
+      "anchors": ["Airbnb (2025 dimensional release)", "Robinhood (2024 single-object still lifes)"],
+      "composition": "One edge-to-edge picture or single object fills the top ~55% of the home screen. Title and the exaggerated key number sit below it, never on it. Supporting rows are dense and small. A sticky bottom bar holds the total and the one accent CTA.",
+      "device": "the single hero object every screen opens on",
+      "dials": {"B": 5, "M": 5, "D": 3, "C": 3, "F": 4},
+      "type": [
+        {"display": "Plus Jakarta Sans 800", "text": "Figtree 400-500", "data": "Figtree tabular figures"},
+        {"display": "Fraunces 600 (soft serif)", "text": "DM Sans 400-500", "data": "DM Sans tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Coral on warm white", "proportions": "Warm white ground ~80%, ink ~12%, coral accent <=8% (CTA, selection, one highlight). Photography supplies the rest.",
+         "light": {"ground": "#FBF9F6", "surface": "#FFFFFF", "ink": "#1C1A17", "ink2": "#5C564E", "accent": "#FF5F4F", "on_accent": "#1C1A17"},
+         "dark": {"ground": "#14120F", "surface": "#1F1C18", "ink": "#F5F1EA", "ink2": "#B8B0A4", "accent": "#FF7A6B", "on_accent": "#14120F"}},
+        {"name": "Deep green on cool white", "proportions": "Cool white ground, ink, one deep green accent used only for go and selected.",
+         "light": {"ground": "#F7F8F5", "surface": "#FFFFFF", "ink": "#121A14", "ink2": "#4F5A52", "accent": "#0F6E44", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#0F1411", "surface": "#18201B", "ink": "#EEF3EF", "ink2": "#A8B4AB", "accent": "#5FD39A", "on_accent": "#0F1411"}}
+      ],
+      "shape": "Radii by role: images 20, cards 24, buttons full pill, chips full. One low-blur, warm-tinted directional shadow on floating elements only; elsewhere separate surfaces by tone.",
+      "moves": ["Shared-element zoom from card to detail", "Exaggerated key number at 48-64pt with a small label beside it", "Sticky summary bar with one accent CTA in the thumb zone"],
+      "motion": "Low-bounce springs (damping 0.85-0.9) for spatial moves, fades for colour, numerals that roll when they change.",
+      "needs": ["photography"],
+      "not_for": ["kids", "games"],
+      "pitfall": "Stock photos of laughing people; text overlaid on photos without a checked scrim; every card the same height."
+    },
+    {
+      "id": "wp-departure-board",
+      "preset": "warm-premium",
+      "name": "Departure board",
+      "anchors": ["Flighty (ADA 2023)", "Uber (quiet near-monochrome chrome)"],
+      "composition": "The home screen is a board: one row per entity (trip, habit, order, account), fixed columns, status as colour plus word, layout identical when data changes. The one item that matters now is expanded at the top with a live countdown or progress ring.",
+      "device": "the board row and its live countdown",
+      "dials": {"B": 5, "M": 4, "D": 7, "C": 3, "F": 4},
+      "type": [
+        {"display": "Manrope 700", "text": "Manrope 400-500", "data": "Chivo Mono for times, codes and counts"},
+        {"display": "Albert Sans 700", "text": "Albert Sans 400", "data": "Martian Mono for times, codes and counts"}
+      ],
+      "palettes": [
+        {"name": "Night board", "proportions": "Dark ground ~85%, ink, one amber signal for live/now. Status hues only inside status labels.",
+         "light": {"ground": "#F6F7F8", "surface": "#FFFFFF", "ink": "#0F1113", "ink2": "#4B535A", "accent": "#F5A300", "on_accent": "#0F1113"},
+         "dark": {"ground": "#101214", "surface": "#1A1D20", "ink": "#F2F4F5", "ink2": "#A3ABB1", "accent": "#FFB020", "on_accent": "#101214"}},
+        {"name": "Paper timetable", "proportions": "Off-white paper ground, black ink, one signal green for on-time/go.",
+         "light": {"ground": "#F3F2EE", "surface": "#FFFFFF", "ink": "#161616", "ink2": "#55534E", "accent": "#007A50", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#121211", "surface": "#1C1C1A", "ink": "#F3F2EE", "ink2": "#ABA9A2", "accent": "#3FCB8C", "on_accent": "#121211"}}
+      ],
+      "shape": "Rows, not cards: radius 6-10, separated by a tone step. Status pills fully rounded with the word inside.",
+      "moves": ["Board rows with fixed columns and tabular figures", "Live countdown or progress ring in the expanded row, mirrored in a Live Activity / widget", "Status as colour plus word, never colour alone"],
+      "motion": "Calm. Numbers tick (numericText / AnimatedContent). The current row expands with a 0.85-damping spring.",
+      "needs": [],
+      "not_for": ["kids"],
+      "pitfall": "A fake dashboard of grey bars; rows that reflow when a value changes; status shown by colour alone."
+    },
+    {
+      "id": "wp-exaggerated-number",
+      "preset": "warm-premium",
+      "name": "Exaggerated number",
+      "anchors": ["Cash App (amount screen)", "Monzo (2024 'exaggerated UI')"],
+      "composition": "The home screen is one number: the balance, amount or time left at 56-72pt across the top third, one direct control under it (slider, keypad, stepper), then a quiet history list. Everything except the number is small.",
+      "device": "the one number and the control that moves it",
+      "dials": {"B": 7, "M": 5, "D": 3, "C": 4, "F": 5},
+      "type": [
+        {"display": "Familjen Grotesk 700", "text": "Hanken Grotesk 400-500", "data": "Hanken Grotesk tabular figures"},
+        {"display": "Bricolage Grotesque 800 (opsz)", "text": "Hanken Grotesk 400-500", "data": "Hanken Grotesk tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Navy field, hot coral", "proportions": "The money screen is a full navy field; coral only on the primary action and the changing digit.",
+         "light": {"ground": "#FFFFFF", "surface": "#F2F4F7", "ink": "#0E1A2B", "ink2": "#4A5568", "accent": "#FF6B5E", "on_accent": "#0E1A2B"},
+         "dark": {"ground": "#0E1A2B", "surface": "#17263B", "ink": "#FFFFFF", "ink2": "#B6C2D1", "accent": "#FF6B5E", "on_accent": "#0E1A2B"}},
+        {"name": "Signal green field", "proportions": "Near-black field, one fluorescent green for the action and positive deltas.",
+         "light": {"ground": "#FAFBFA", "surface": "#FFFFFF", "ink": "#0B0F0C", "ink2": "#4D5650", "accent": "#1FCB5F", "on_accent": "#0B0F0C"},
+         "dark": {"ground": "#0B0F0C", "surface": "#151B17", "ink": "#F4F7F4", "ink2": "#A7B3A9", "accent": "#2BD46A", "on_accent": "#0B0F0C"}}
+      ],
+      "shape": "Large flat colour fields; controls full pill; no shadows. The number never sits inside a card.",
+      "moves": ["The number rolls like an odometer when it changes", "A full-field accent screen for the money or success moment", "One oversized direct control under the number"],
+      "motion": "Number roll ~250 ms; selection haptic ticks while dragging; success notification haptic on commit.",
+      "needs": [],
+      "not_for": [],
+      "pitfall": "A huge number with a tiny label as decoration with nothing to do; the number truncated at its widest real value."
+    },
+    {
+      "id": "wp-quiet-canvas",
+      "preset": "warm-premium",
+      "name": "Quiet chrome, canvas as hero",
+      "anchors": ["Uber (map as hero, near-monochrome)", "Things 3 (Magic Plus)"],
+      "composition": "A full-bleed canvas (map, calendar, chart, camera, timeline) is the screen. Content lives in a bottom sheet with two detents. Chrome is near-monochrome, so the one accent means 'go'.",
+      "device": "the full-bleed canvas the sheet slides over",
+      "dials": {"B": 4, "M": 5, "D": 5, "C": 2, "F": 3},
+      "type": [
+        {"display": "Schibsted Grotesk 700", "text": "Schibsted Grotesk 400", "data": "Schibsted Grotesk tabular figures"},
+        {"display": "Albert Sans 700", "text": "Albert Sans 400", "data": "Albert Sans tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Black, white and go-blue", "proportions": "Black and white almost everywhere; blue only for the go action and the selected state.",
+         "light": {"ground": "#FFFFFF", "surface": "#F3F3F3", "ink": "#000000", "ink2": "#545454", "accent": "#1F63E0", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#000000", "surface": "#161616", "ink": "#FFFFFF", "ink2": "#A6A6A6", "accent": "#5B93FF", "on_accent": "#000000"}},
+        {"name": "Graphite and lime", "proportions": "Graphite chrome, one lime accent on go/selected only.",
+         "light": {"ground": "#F5F5F2", "surface": "#FFFFFF", "ink": "#111111", "ink2": "#555555", "accent": "#C6F432", "on_accent": "#111111"},
+         "dark": {"ground": "#0D0D0D", "surface": "#1A1A1A", "ink": "#F2F2F2", "ink2": "#A0A0A0", "accent": "#C6F432", "on_accent": "#0D0D0D"}}
+      ],
+      "shape": "Sheet radius 24 on the top edge only. Buttons either radius 8 or full pill, decided once. No card shadows.",
+      "moves": ["Two-detent sheet over the canvas", "One draggable creation affordance with a visible button fallback (Things' Magic Plus)", "Accent used only for go and selected"],
+      "motion": "Sheet springs (damping 0.9); the canvas recentres as the sheet height changes.",
+      "needs": [],
+      "not_for": ["kids"],
+      "pitfall": "A decorative canvas (a fake map); glass cards stacked over it."
+    },
+    {
+      "id": "wp-living-palette",
+      "preset": "warm-premium",
+      "name": "Living palette",
+      "anchors": ["Tide Guide (ADA 2026, palette follows the sky)", "Monzo (warm light)"],
+      "composition": "A full-screen hour-by-hour (or day-by-day) view of the product's main quantity. The surface tint follows the real time of day or the product's state. The current moment is a marker you can scrub; details sit in a compact list under it.",
+      "device": "the surface colour that follows real time or state",
+      "dials": {"B": 5, "M": 6, "D": 5, "C": 5, "F": 4},
+      "type": [
+        {"display": "Figtree 700", "text": "Figtree 400", "data": "Figtree tabular figures"},
+        {"display": "Outfit 600", "text": "DM Sans 400", "data": "DM Sans tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Sky ramp", "proportions": "Ground tint moves along a dawn-day-dusk-night ramp; ink switches to light on the night stop; accent stays fixed.",
+         "ramp": ["#F9E6DA", "#EAF4F8", "#F3DCCB", "#071621"],
+         "light": {"ground": "#EAF4F8", "surface": "#FFFFFF", "ink": "#0B2230", "ink2": "#3E5866", "accent": "#007C91", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#071621", "surface": "#0F2230", "ink": "#E6F1F5", "ink2": "#9DB4BF", "accent": "#4FC3D9", "on_accent": "#071621"}},
+        {"name": "Season ramp", "proportions": "Ground tint follows progress through a cycle (week, season, budget period); one green accent.",
+         "ramp": ["#F1F5EC", "#F6F2E4", "#EEF1F4", "#0D160B"],
+         "light": {"ground": "#F1F5EC", "surface": "#FFFFFF", "ink": "#13230F", "ink2": "#4A5A45", "accent": "#2F7D32", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#0D160B", "surface": "#162114", "ink": "#E8F0E4", "ink2": "#A5B5A0", "accent": "#7BC67E", "on_accent": "#0D160B"}}
+      ],
+      "shape": "Soft radii 16-20. Content on opaque surfaces one tone step from the field; system glass only where the platform itself uses it.",
+      "moves": ["Time- or state-aware palette", "Scrubbable timeline with selection haptics", "The chart is the screen, not a card on it"],
+      "motion": "Tint crossfades over seconds, never snaps; scrubbing ticks with selection haptics.",
+      "needs": [],
+      "not_for": [],
+      "pitfall": "A decorative gradient sky with no data behind it; a tint stop where text contrast fails."
+    },
+    {
+      "id": "nb-sticker-sheet",
+      "preset": "neo-brutalist",
+      "name": "Sticker sheet",
+      "anchors": ["Gumroad (2021 relaunch)", "neobrutalism.dev conventions"],
+      "composition": "Bordered blocks on an off-white sheet, each section owning one flat accent. One hero sticker is rotated 1-2 degrees. Buttons cast hard offset shadows. A bordered tab strip with the selected tab filled.",
+      "device": "the sticker or label the core object is printed on",
+      "dials": {"B": 9, "M": 4, "D": 5, "C": 7, "F": 8},
+      "type": [
+        {"display": "Archivo Black", "text": "Archivo 400-600", "data": "Space Mono for metadata only"},
+        {"display": "Familjen Grotesk 700", "text": "Hanken Grotesk 400-600", "data": "JetBrains Mono for metadata only"}
+      ],
+      "palettes": [
+        {"name": "Gumroad-style pastel punch", "proportions": "Off-white sheet, black ink and strokes, one accent per section from the set; text on accents is black.",
+         "support": ["#FFC900", "#23A094", "#90A8FF"],
+         "light": {"ground": "#FFFDF5", "surface": "#FFFFFF", "ink": "#000000", "ink2": "#3A3A3A", "accent": "#FF90E8", "on_accent": "#000000"},
+         "dark": {"ground": "#111111", "surface": "#1C1C1C", "ink": "#FFFDF5", "ink2": "#CFCAB8", "accent": "#FF90E8", "on_accent": "#000000"}},
+        {"name": "Primary punch", "proportions": "White sheet, black ink, orange as the action colour, cyan and yellow as section owners.",
+         "support": ["#00C2FF", "#FFE500"],
+         "light": {"ground": "#FFFFFF", "surface": "#FFFFFF", "ink": "#000000", "ink2": "#333333", "accent": "#FF5A1F", "on_accent": "#000000"},
+         "dark": {"ground": "#0A0A0A", "surface": "#161616", "ink": "#FFFFFF", "ink2": "#BDBDBD", "accent": "#FF6A2B", "on_accent": "#000000"}}
+      ],
+      "shape": "3dp black stroke on every interactive surface; 5dp hard offset shadow, zero blur; radius 0-4.",
+      "moves": ["The squash button: press sinks into its shadow", "One rotated hero sticker", "Colour assigned by section role, not per card"],
+      "motion": "80 ms squash; stamp (scale 1.15 to 1, no bounce); firm haptic on press.",
+      "needs": [],
+      "not_for": ["finance", "health", "government"],
+      "pitfall": "Soft brutalism (big radius, blurred shadow, black border); random colour per card."
+    },
+    {
+      "id": "nb-spec-sheet",
+      "preset": "neo-brutalist",
+      "name": "Spec sheet",
+      "anchors": ["Teenage Engineering (OP-1, field UIs)", "Halide Mark II (tool-honest controls)"],
+      "composition": "Lists are tables: rows split by 2dp rules, label left, monospace value right-aligned. Each task opens a full-screen mode with no persistent chrome and a big bordered close button. Colour comes only from content or one signal hue.",
+      "device": "the spec table and the full-screen task mode",
+      "dials": {"B": 7, "M": 3, "D": 7, "C": 2, "F": 8},
+      "type": [
+        {"display": "Familjen Grotesk 700", "text": "Hanken Grotesk 400", "data": "JetBrains Mono for values"},
+        {"display": "Archivo 800", "text": "Archivo 400", "data": "IBM Plex Mono for values"}
+      ],
+      "palettes": [
+        {"name": "Grey panel, signal orange", "proportions": "Light grey panel, black ink, orange only for the live value or record state.",
+         "light": {"ground": "#EDEDEB", "surface": "#F7F7F5", "ink": "#0A0A0A", "ink2": "#4D4D4D", "accent": "#FF5A00", "on_accent": "#0A0A0A"},
+         "dark": {"ground": "#0A0A0A", "surface": "#161616", "ink": "#EDEDEB", "ink2": "#9A9A9A", "accent": "#FF6A1A", "on_accent": "#0A0A0A"}},
+        {"name": "White and signal blue", "proportions": "Pure white, black ink, one electric blue for the active value.",
+         "light": {"ground": "#FFFFFF", "surface": "#F4F4F4", "ink": "#000000", "ink2": "#4A4A4A", "accent": "#0047FF", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#000000", "surface": "#141414", "ink": "#FFFFFF", "ink2": "#A0A0A0", "accent": "#5C88FF", "on_accent": "#000000"}}
+      ],
+      "shape": "Radius 0. 2dp rules. No shadows at all: borders and rules only.",
+      "moves": ["Table-honest lists with right-aligned monospace values", "Full-screen task modes with a big bordered close", "One signal colour for the live value"],
+      "motion": "Stepped or linear, 100-150 ms. No springs.",
+      "needs": [],
+      "not_for": ["kids", "health"],
+      "pitfall": "Monospace for paragraphs; tiny letter-spaced caps labels everywhere; low-contrast greys."
+    },
+    {
+      "id": "nb-dot-matrix",
+      "preset": "neo-brutalist",
+      "name": "Dot-matrix instrument",
+      "anchors": ["Nothing OS (Ndot type, dot widgets)"],
+      "composition": "A monochrome instrument panel: the key number in large dot-matrix figures, controls built from dots (a dot ring for progress, a dot bar for level), a plain grotesque for everything readable, one red signal.",
+      "device": "the dot-matrix readout",
+      "dials": {"B": 7, "M": 4, "D": 5, "C": 2, "F": 8},
+      "type": [
+        {"display": "Doto (numbers and hero labels only)", "text": "Hanken Grotesk 400-600", "data": "IBM Plex Mono"},
+        {"display": "DotGothic16 (numbers and hero labels only)", "text": "Archivo 400-600", "data": "JetBrains Mono"}
+      ],
+      "palettes": [
+        {"name": "Black panel, red signal", "proportions": "Monochrome; red only for live, record or alert.",
+         "light": {"ground": "#F2F2F2", "surface": "#FFFFFF", "ink": "#000000", "ink2": "#4F4F4F", "accent": "#D71921", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#000000", "surface": "#121212", "ink": "#FFFFFF", "ink2": "#A8A8A8", "accent": "#FF3B3B", "on_accent": "#000000"}},
+        {"name": "Phosphor", "proportions": "Near-black panel, phosphor-green readouts, one bright green for live.",
+         "light": {"ground": "#F4F6F4", "surface": "#FFFFFF", "ink": "#0A120A", "ink2": "#4B574B", "accent": "#0A7F36", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#050805", "surface": "#0E140E", "ink": "#E8FFE8", "ink2": "#8FB08F", "accent": "#39FF7A", "on_accent": "#050805"}}
+      ],
+      "shape": "Circles and pills built from dots; full radius on controls; 1-2dp strokes; no shadows.",
+      "moves": ["Dot-matrix key number", "A dot-built progress widget that is also a control", "Red reserved for live, record and alert"],
+      "motion": "Dots light in sequence (stepped, ~30 ms per dot). Reduce Motion shows the final state.",
+      "needs": [],
+      "not_for": ["kids"],
+      "pitfall": "Dot type for running text (Nothing itself retreated from it); decorative dots with no function."
+    },
+    {
+      "id": "nb-poster-blocks",
+      "preset": "neo-brutalist",
+      "name": "Poster blocks",
+      "anchors": ["Figma (2019 brand)", "Wise (2023, heavy display)"],
+      "composition": "Each section is a full-width flat colour block with a giant uppercase header cropped at the screen edge. Blocks butt against each other with no gaps. Content inside is plain and black.",
+      "device": "the colour block each section owns",
+      "dials": {"B": 9, "M": 4, "D": 4, "C": 8, "F": 8},
+      "type": [
+        {"display": "Anton", "text": "Archivo 400-500", "data": "Space Mono"},
+        {"display": "Dela Gothic One", "text": "Hanken Grotesk 400-500", "data": "JetBrains Mono"}
+      ],
+      "palettes": [
+        {"name": "Figma-ish clash", "proportions": "White and black, with section blocks in orange-red, yellow, cyan and green; text on every block is black.",
+         "support": ["#FFC700", "#1ABCFE", "#0ACF83"],
+         "light": {"ground": "#FFFFFF", "surface": "#FFFFFF", "ink": "#000000", "ink2": "#333333", "accent": "#FF7262", "on_accent": "#000000"},
+         "dark": {"ground": "#000000", "surface": "#141414", "ink": "#FFFFFF", "ink2": "#BBBBBB", "accent": "#FF7262", "on_accent": "#000000"}},
+        {"name": "Yellow and pink", "proportions": "Light grey ground, yellow as action, hot pink and teal as section owners.",
+         "support": ["#FF3EA5", "#00B8A9"],
+         "light": {"ground": "#F0F0F0", "surface": "#FFFFFF", "ink": "#111111", "ink2": "#444444", "accent": "#FFE500", "on_accent": "#111111"},
+         "dark": {"ground": "#111111", "surface": "#1C1C1C", "ink": "#F0F0F0", "ink2": "#B0B0B0", "accent": "#FFE500", "on_accent": "#111111"}}
+      ],
+      "shape": "Radius 0. Blocks touch. Hard shadows only on buttons.",
+      "moves": ["Giant uppercase section headers cropped at the edge", "A colour block per section", "The squash button"],
+      "motion": "Blocks slide in hard (150 ms, no bounce).",
+      "needs": [],
+      "not_for": ["finance", "health", "government"],
+      "pitfall": "White text on yellow; a brutalist skin on a generic card layout."
+    },
+    {
+      "id": "nb-hand-drawn",
+      "preset": "neo-brutalist",
+      "name": "Hand-drawn raw",
+      "anchors": ["grug (ADA 2026, scribbled UI and custom status bar)", "Pok Pok Playroom (everything may jitter)"],
+      "composition": "Everything drawn by hand and fully committed: wobbly strokes on every control and card, scribble fills for the selected state, a hand-drawn tab bar, a paper ground. The layout stays simple so the drawing carries it.",
+      "device": "the hand-drawn object the user marks",
+      "dials": {"B": 8, "M": 5, "D": 3, "C": 4, "F": 9},
+      "type": [
+        {"display": "Hand lettering drawn as paths in code", "text": "Archivo 500", "data": "Archivo tabular figures"},
+        {"display": "A handwriting face from Google Fonts (check it is OFL before shipping)", "text": "Hanken Grotesk 500", "data": "Hanken Grotesk tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Marker on paper", "proportions": "White paper, black marker strokes, one red marker for the selected or done state.",
+         "light": {"ground": "#FAFAF7", "surface": "#FFFFFF", "ink": "#1A1A1A", "ink2": "#4A4A4A", "accent": "#FF5A3C", "on_accent": "#1A1A1A"},
+         "dark": {"ground": "#161616", "surface": "#202020", "ink": "#F2F2EE", "ink2": "#B4B4AE", "accent": "#FF6B4F", "on_accent": "#161616"}},
+        {"name": "Biro and highlighter", "proportions": "White page, blue biro ink, yellow highlighter for selection.",
+         "light": {"ground": "#FFFFFF", "surface": "#F7F8FC", "ink": "#1B2A6B", "ink2": "#4A5480", "accent": "#FFD400", "on_accent": "#1B2A6B"},
+         "dark": {"ground": "#0E1330", "surface": "#171D40", "ink": "#F1F2F8", "ink2": "#A9AFCC", "accent": "#FFD400", "on_accent": "#0E1330"}}
+      ],
+      "shape": "Hand-drawn strokes 2-3dp with about 1dp of wobble. Nothing looks machine-made, including the tab bar.",
+      "moves": ["Boiling lines (2-3 frames at 8-12 fps)", "Scribble-fill selection", "Hand-drawn tab bar (a noted convention break: labels and 44/48 targets kept)"],
+      "motion": "Boil on illustrated elements; stops under Reduce Motion.",
+      "needs": [],
+      "not_for": ["finance", "health", "government", "enterprise"],
+      "pitfall": "Half-committed: hand-drawn icons on a stock UI reads unfinished, not raw."
+    },
+    {
+      "id": "pl-toy-box",
+      "preset": "playful",
+      "name": "Toy box",
+      "anchors": ["Duolingo (ADA 2023, shape language, lip buttons)"],
+      "composition": "Rhythm, not a grid: one big hero card (streak or progress), a pair of medium tiles, then small chips. Every pressable sits on a darker lip; static panels sit on a quieter base. A mascot in the hero reacts to real state.",
+      "device": "the toy piece the core verb is pressed on",
+      "dials": {"B": 8, "M": 8, "D": 3, "C": 8, "F": 7},
+      "type": [
+        {"display": "Fredoka 600-700", "text": "Nunito 600", "data": "Nunito tabular figures"},
+        {"display": "Nunito 900", "text": "Nunito 600", "data": "Nunito tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Sky and grass", "proportions": "Sky-tinted base, white pieces, green for the core verb; orange streak, gold XP and blue info each own a role.",
+         "support": ["#FF9600", "#FFC800", "#1CB0F6"],
+         "light": {"ground": "#F0F7FF", "surface": "#FFFFFF", "ink": "#1B2433", "ink2": "#4A5568", "accent": "#58CC02", "on_accent": "#1B2433"},
+         "dark": {"ground": "#131F33", "surface": "#1C2B45", "ink": "#F2F6FC", "ink2": "#AFC0D6", "accent": "#6FDB1F", "on_accent": "#131F33"}},
+        {"name": "Pink pop", "proportions": "Blush base, white pieces, hot pink for the core verb; gold, teal and sky as role colours.",
+         "support": ["#FFB800", "#00C2A8", "#5AA9FF"],
+         "light": {"ground": "#FFF5FA", "surface": "#FFFFFF", "ink": "#2A1630", "ink2": "#5E4A63", "accent": "#FF5FA2", "on_accent": "#2A1630"},
+         "dark": {"ground": "#24112B", "surface": "#32193B", "ink": "#FCEFF6", "ink2": "#C9AFC9", "accent": "#FF7AB6", "on_accent": "#24112B"}}
+      ],
+      "shape": "Three primitives (rounded rect, circle, rounded triangle), radius 14-20, 4-5dp lips on pressables, 2-3dp bases on static panels.",
+      "moves": ["Lip buttons and lip check-offs that compress on press", "Mascot tied to real state", "Streak hero with a week row of chunky day dots"],
+      "motion": "The preset's MOTION 7-10 row: squish on every pressable, draw-on check, rolling numbers, ambient mascot.",
+      "needs": [],
+      "not_for": ["enterprise", "government"],
+      "pitfall": "Too polite: white rows with hairlines and one bouncy moment."
+    },
+    {
+      "id": "pl-level-path",
+      "preset": "playful",
+      "name": "Level path",
+      "anchors": ["Duolingo (single path)", "(Not Boring) Habits (66-level journey)"],
+      "composition": "The home screen is a winding vertical path of nodes, one per lesson, day or step. The current node is big and invites a tap; done nodes are filled, future ones outlined. Milestones are landmarks on the path.",
+      "device": "the path and its landmarks",
+      "dials": {"B": 8, "M": 7, "D": 3, "C": 7, "F": 8},
+      "type": [
+        {"display": "Baloo 2 700", "text": "Nunito 600", "data": "Nunito tabular figures"},
+        {"display": "Fredoka 700", "text": "M PLUS Rounded 1c 500", "data": "M PLUS Rounded 1c tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Meadow", "proportions": "Pale green ground, orange for the current node and action, green for done, gold for landmarks.",
+         "support": ["#2FB344", "#FFD23F", "#4C9BFF"],
+         "light": {"ground": "#F2FAEE", "surface": "#FFFFFF", "ink": "#17301A", "ink2": "#4B634D", "accent": "#FF8A00", "on_accent": "#17301A"},
+         "dark": {"ground": "#0F2213", "surface": "#18301D", "ink": "#EAF6E8", "ink2": "#A9C2AB", "accent": "#FFA133", "on_accent": "#0F2213"}},
+        {"name": "Lagoon", "proportions": "Pale teal ground, coral for current and action, gold landmarks.",
+         "support": ["#FFC93C", "#2EC4B6"],
+         "light": {"ground": "#EAF7F6", "surface": "#FFFFFF", "ink": "#0E2A2A", "ink2": "#44605F", "accent": "#FF5D5D", "on_accent": "#0E2A2A"},
+         "dark": {"ground": "#0B2222", "surface": "#133232", "ink": "#E6F5F4", "ink2": "#9FC0BE", "accent": "#FF7676", "on_accent": "#0B2222"}}
+      ],
+      "shape": "Nodes are chunky circles on lips; the path is a thick rounded stroke; landmarks are larger custom shapes.",
+      "moves": ["Path map instead of a list", "Landmark milestones", "The path draws on to the next node after completion"],
+      "motion": "Node hop on completion; the path draws to the next node; milestone moment at landmarks.",
+      "needs": [],
+      "not_for": ["enterprise"],
+      "pitfall": "A path for a product with no real progression: points for points' sake."
+    },
+    {
+      "id": "pl-one-ritual",
+      "preset": "playful",
+      "name": "One big ritual",
+      "anchors": ["(Not Boring) Habits (ADA 2022, explosive check-off)"],
+      "composition": "Home is one giant object for today's core verb (a token, a button, a jar), pressed and held with a progress cue. Completion is a layered event. Everything else is stock and calm, a tab away.",
+      "device": "the one object you press to do the thing",
+      "dials": {"B": 8, "M": 9, "D": 2, "C": 6, "F": 6},
+      "type": [
+        {"display": "Nunito 900", "text": "System text (SF Pro / Roboto Flex)", "data": "System tabular figures"},
+        {"display": "Titan One (one-off hero words only)", "text": "Nunito 600", "data": "Nunito tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Slate and ember", "proportions": "Deep slate ground, one ember orange object; the rest neutral.",
+         "light": {"ground": "#F6F6F4", "surface": "#FFFFFF", "ink": "#15171C", "ink2": "#50545C", "accent": "#FF6B35", "on_accent": "#15171C"},
+         "dark": {"ground": "#15171C", "surface": "#1F2229", "ink": "#F5F6F8", "ink2": "#A9AFBA", "accent": "#FF6B35", "on_accent": "#15171C"}},
+        {"name": "Per-habit hue", "proportions": "Near-black ground; each habit's object owns one hue from the set; mint for the default.",
+         "support": ["#FFCF3F", "#FF6FA8", "#53A8FF"],
+         "light": {"ground": "#F7F9FA", "surface": "#FFFFFF", "ink": "#101418", "ink2": "#4E5862", "accent": "#2BD9A0", "on_accent": "#101418"},
+         "dark": {"ground": "#101418", "surface": "#1A2027", "ink": "#F2F5F7", "ink2": "#A3ADB5", "accent": "#2BD9A0", "on_accent": "#101418"}}
+      ],
+      "shape": "The object is dimensional, shaded with tone steps, not gradients. Everything else uses stock controls.",
+      "moves": ["Hold-to-complete (<=500 ms) with a progress ring and a tap alternative", "Layered success: scale burst, particles, sound, haptic", "Several slightly different sound variants, with a toggle"],
+      "motion": "Routine completion under 600 ms; milestones up to 2.5 s, skippable.",
+      "needs": [],
+      "not_for": ["enterprise"],
+      "pitfall": "Celebrating every routine tap equally; hold with no tap alternative."
+    },
+    {
+      "id": "pl-illustration-led",
+      "preset": "playful",
+      "name": "Illustration leads",
+      "anchors": ["Bears Gratitude (ADA 2024, art came first)", "Pok Pok Playroom (hand-animated)"],
+      "composition": "Each screen is built around one illustration from a single system (drawn in code or one commissioned set). Prompts are flip cards swiped left and right; art fills the top half; UI is minimal and rounded; lines boil gently.",
+      "device": "the illustrated character or object every screen is built around",
+      "dials": {"B": 6, "M": 6, "D": 2, "C": 6, "F": 7},
+      "type": [
+        {"display": "Baloo 2 600", "text": "Nunito 500", "data": "Nunito tabular figures"},
+        {"display": "Fredoka 500", "text": "Varela Round", "data": "Varela Round"}
+      ],
+      "palettes": [
+        {"name": "Warm paper, blue ink", "proportions": "Warm paper ground, illustrations carry the colour, blue for actions.",
+         "support": ["#F2B705", "#5BB98C"],
+         "light": {"ground": "#FBF6EE", "surface": "#FFFFFF", "ink": "#2B2118", "ink2": "#6B5D50", "accent": "#2F6FDB", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#1E1914", "surface": "#2A231C", "ink": "#F6EFE6", "ink2": "#BFB2A3", "accent": "#6E9BFF", "on_accent": "#1E1914"}},
+        {"name": "Mint and raspberry", "proportions": "Mint ground, raspberry for actions and hearts.",
+         "light": {"ground": "#EFF8F3", "surface": "#FFFFFF", "ink": "#13261C", "ink2": "#4A5E52", "accent": "#C92A62", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#102018", "surface": "#1A2E23", "ink": "#E9F5EE", "ink2": "#A3BCAE", "accent": "#F06595", "on_accent": "#102018"}}
+      ],
+      "shape": "Rounded primitives taken from the art itself; no decorative blobs.",
+      "moves": ["Flip-card prompts", "Boiling line on the art", "Art that reacts to state"],
+      "motion": "Boil at 8-12 fps; card flips on a spring; stops under Reduce Motion.",
+      "needs": ["illustration"],
+      "not_for": ["enterprise"],
+      "pitfall": "Illustration packs from different artists; stock 3D blobs."
+    },
+    {
+      "id": "pl-persona",
+      "preset": "playful",
+      "name": "Persona over data",
+      "anchors": ["CARROT Weather (personality levels)", "Gentler Streak (ADA 2024, Yorhart)"],
+      "composition": "Serious data shown clearly (charts, numbers, lists), topped on each screen by one line from the app's persona and an abstract mascot shape that reacts. Users choose how cheeky it is.",
+      "device": "the persona's one-line comment and its mood",
+      "dials": {"B": 6, "M": 6, "D": 5, "C": 6, "F": 6},
+      "type": [
+        {"display": "Fredoka 600", "text": "Figtree 400-500", "data": "Figtree tabular figures"},
+        {"display": "Baloo 2 700", "text": "DM Sans 400-500", "data": "DM Sans tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Friendly charts", "proportions": "Neutral ground so charts read; series colours have fixed roles; pink for the persona and the action.",
+         "support": ["#FFB547", "#3DC1A8", "#4D9DFF"],
+         "light": {"ground": "#F7F8FA", "surface": "#FFFFFF", "ink": "#1A1D24", "ink2": "#50565F", "accent": "#FF5C7A", "on_accent": "#1A1D24"},
+         "dark": {"ground": "#14161B", "surface": "#1E2128", "ink": "#F1F3F6", "ink2": "#A6ADB8", "accent": "#FF7A93", "on_accent": "#14161B"}},
+        {"name": "Sunny", "proportions": "White ground, sunny yellow persona and action, green and tomato as data roles.",
+         "support": ["#3FA34D", "#FF7043"],
+         "light": {"ground": "#FFFFFF", "surface": "#F4F6F2", "ink": "#1C2118", "ink2": "#50594A", "accent": "#FFC400", "on_accent": "#1C2118"},
+         "dark": {"ground": "#151912", "surface": "#20251C", "ink": "#F2F5EE", "ink2": "#ABB5A3", "accent": "#FFD23F", "on_accent": "#151912"}}
+      ],
+      "shape": "Radius 12-16; rounded chart bars; the mascot is built from the same primitives as the UI.",
+      "moves": ["A persona line per screen", "A personality dial in settings", "Mascot mood tied to the data"],
+      "motion": "Mascot blinks and breathes; chart bars grow once on first load.",
+      "needs": [],
+      "not_for": [],
+      "pitfall": "Guilt-trip copy; jokes on bad-news screens (calm those surfaces)."
+    },
+    {
+      "id": "ed-type-as-image",
+      "preset": "editorial",
+      "name": "Type as image",
+      "anchors": ["Nike SNKRS (drops as stories)", "Wise (2023, heavy display)"],
+      "composition": "A huge condensed headline (64-96pt) cropped at the screen edge is the hero. Chrome is monochrome; full-bleed photography or the product supplies all colour. Below, a strict 4-column grid with one breaker per screen.",
+      "device": "the word or number set so large it becomes the picture",
+      "dials": {"B": 8, "M": 5, "D": 5, "C": 3, "F": 6},
+      "type": [
+        {"display": "Big Shoulders Display 800", "text": "Archivo 400", "data": "Archivo tabular figures"},
+        {"display": "Anton", "text": "Libre Franklin 400", "data": "Libre Franklin tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Newsprint and flare", "proportions": "Paper white and true black; one orange-red only on the action.",
+         "light": {"ground": "#FAF8F3", "surface": "#FFFFFF", "ink": "#0D0D0D", "ink2": "#4D4A45", "accent": "#FF4A1C", "on_accent": "#0D0D0D"},
+         "dark": {"ground": "#0D0D0D", "surface": "#191919", "ink": "#FAF8F3", "ink2": "#B3AFA7", "accent": "#FF5A2E", "on_accent": "#0D0D0D"}},
+        {"name": "Lime on white", "proportions": "White and near-black; acid lime as a full-bleed field for the hero moment and the action.",
+         "light": {"ground": "#FFFFFF", "surface": "#F3F4F1", "ink": "#0E0F0C", "ink2": "#4A4D45", "accent": "#B8F04A", "on_accent": "#1B2A00"},
+         "dark": {"ground": "#0E0F0C", "surface": "#1A1C17", "ink": "#F4F6F0", "ink2": "#A9AFA0", "accent": "#B8F04A", "on_accent": "#1B2A00"}}
+      ],
+      "shape": "Radius 0 for editorial blocks; small radius on controls only; 1dp rules allowed.",
+      "moves": ["Cropped hero headline with tight leading", "Monochrome chrome, content supplies colour", "Grid with one breaker per screen"],
+      "motion": "Typographic: staggered line reveals 30-50 ms; no bounce.",
+      "needs": [],
+      "not_for": ["enterprise"],
+      "pitfall": "A huge headline with nothing behind it; squashing type with scaleX."
+    },
+    {
+      "id": "ed-story-cards",
+      "preset": "editorial",
+      "name": "Story cards",
+      "anchors": ["Spotify Wrapped (2022 grid, Mix typeface)", "Any Distance (ADA 2023, poster cards, oval mask)"],
+      "composition": "Key moments are 9:16 full-bleed cards, one stat or idea per card, tap to advance, each shareable. Photos sit in one distinctive mask (oval or arch) used everywhere. Everyday screens borrow the card proportions.",
+      "device": "the shareable card",
+      "dials": {"B": 8, "M": 6, "D": 3, "C": 6, "F": 7},
+      "type": [
+        {"display": "Bricolage Grotesque (animate wdth and wght)", "text": "Libre Franklin 400", "data": "Libre Franklin tabular figures"},
+        {"display": "Anybody (animate wdth)", "text": "Hanken Grotesk 400", "data": "Hanken Grotesk tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Duotone fields", "proportions": "Each card is one flat field; orange, lime and sky rotate as card grounds; ink is black or white per field.",
+         "support": ["#C3F53C", "#7FD3FF"],
+         "light": {"ground": "#F5F3EF", "surface": "#FFFFFF", "ink": "#121212", "ink2": "#4F4C47", "accent": "#FF6A3D", "on_accent": "#121212"},
+         "dark": {"ground": "#121212", "surface": "#1E1E1E", "ink": "#FFFFFF", "ink2": "#B3B3B3", "accent": "#FF6A3D", "on_accent": "#121212"}},
+        {"name": "Forest and yellow", "proportions": "Deep forest field, yellow for the stat and the action, pink for one surprise card.",
+         "support": ["#FF5FA2"],
+         "light": {"ground": "#FFFFFF", "surface": "#F2F5F3", "ink": "#0F1A14", "ink2": "#4B5A50", "accent": "#FFD60A", "on_accent": "#0F1A14"},
+         "dark": {"ground": "#0F1A14", "surface": "#18271E", "ink": "#F2F7F3", "ink2": "#A6B8AC", "accent": "#FFD60A", "on_accent": "#0F1A14"}}
+      ],
+      "shape": "Cards radius 24 (or 0 when full-bleed); one mask shape for every photo.",
+      "moves": ["Story cards, tap to advance, share", "Variable width/weight animated on advance", "One mask shape as a brand trait"],
+      "motion": "Width or weight animation on advance; numbers count up once; Reduce Motion shows final states.",
+      "needs": [],
+      "not_for": ["enterprise"],
+      "pitfall": "Squashed type and imagery that doesn't integrate (Wrapped 2021's criticism)."
+    },
+    {
+      "id": "ed-newspaper-frame",
+      "preset": "editorial",
+      "name": "Newspaper frame",
+      "anchors": ["NYT Games (ADA 2024)", "Robinhood (2024, serif authority)"],
+      "composition": "One editorial frame: a serif masthead and serif section heads, thin rules instead of cards, and each section or category owning one colour plus one bold glyph. Cards show progress state.",
+      "device": "the masthead and the per-section colour and glyph",
+      "dials": {"B": 6, "M": 4, "D": 6, "C": 5, "F": 6},
+      "type": [
+        {"display": "DM Serif Display", "text": "Libre Franklin 400-600", "data": "Libre Franklin tabular figures"},
+        {"display": "Gloock", "text": "Source Serif 4 for reading, Libre Franklin for UI", "data": "Libre Franklin tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Paper and section colours", "proportions": "Paper ground, black ink; blue for actions; each section owns one hue from the set for its glyph and progress.",
+         "support": ["#6AAA64", "#C9B458", "#E05C5C"],
+         "light": {"ground": "#FAF8F3", "surface": "#FFFFFF", "ink": "#121212", "ink2": "#4F4C47", "accent": "#1F5FBF", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#121212", "surface": "#1D1D1D", "ink": "#F5F3EE", "ink2": "#ABA79F", "accent": "#7EA6F2", "on_accent": "#121212"}},
+        {"name": "Black, white and deep red", "proportions": "White and black; deep red for the masthead mark and actions; teal and mustard as section hues.",
+         "support": ["#0B7A75", "#E0A100"],
+         "light": {"ground": "#FFFFFF", "surface": "#F5F5F5", "ink": "#000000", "ink2": "#4A4A4A", "accent": "#B3261E", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#111111", "surface": "#1C1C1C", "ink": "#F2F2F2", "ink2": "#A8A8A8", "accent": "#F2685F", "on_accent": "#111111"}}
+      ],
+      "shape": "1dp rules; radius 0-4; no shadows.",
+      "moves": ["Section colour and glyph identity inside one frame", "Serif for structure (heads, pull numbers), sans for UI", "Cards that show progress state"],
+      "motion": "Calm; sticky section headers that change as you pass them.",
+      "needs": [],
+      "not_for": ["kids"],
+      "pitfall": "An italic serif accent word; eyebrow labels; fake 01/02/03 numbering."
+    },
+    {
+      "id": "ed-article",
+      "preset": "editorial",
+      "name": "Article-shaped",
+      "anchors": ["Arc Search ('Browse for Me' pages)"],
+      "composition": "Results and details read like an article: a lede in large serif, an image carousel, a short answer, then sections with sticky headers. No card list. Reading comfort first: 17-19pt body, 45-75 characters per line.",
+      "device": "the lede: one sentence that answers before anything else",
+      "dials": {"B": 5, "M": 4, "D": 5, "C": 2, "F": 5},
+      "type": [
+        {"display": "Newsreader 600", "text": "Source Serif 4 for reading, Libre Franklin for UI", "data": "Libre Franklin tabular figures"},
+        {"display": "Fraunces 600", "text": "Source Serif 4 for reading, Instrument Sans for UI", "data": "Instrument Sans tabular figures"}
+      ],
+      "palettes": [
+        {"name": "Paper and vermilion", "proportions": "Paper ground, warm black ink, vermilion only for links and the action.",
+         "light": {"ground": "#FBFAF7", "surface": "#FFFFFF", "ink": "#161514", "ink2": "#55524D", "accent": "#C9301A", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#121110", "surface": "#1D1C1A", "ink": "#EEEBE5", "ink2": "#A9A49B", "accent": "#FF7A5C", "on_accent": "#121110"}},
+        {"name": "Cool reading", "proportions": "Cool white, blue-black ink, one deep sea blue for links and actions.",
+         "light": {"ground": "#F7F9FA", "surface": "#FFFFFF", "ink": "#0F1A20", "ink2": "#4A5961", "accent": "#0B6E99", "on_accent": "#FFFFFF"},
+         "dark": {"ground": "#0E151A", "surface": "#172128", "ink": "#E7EEF2", "ink2": "#9DADB6", "accent": "#5CB8E0", "on_accent": "#0E151A"}}
+      ],
+      "shape": "No cards: spacing and type separate content. Images radius 12 or 0.",
+      "moves": ["Lede-first answers", "Sticky section headers", "Words instead of icons for actions ('Share', 'Save')"],
+      "motion": "Calm, page-like transitions; nothing loops.",
+      "needs": [],
+      "not_for": ["kids", "games"],
+      "pitfall": "An article layout that breaks at accessibility text sizes."
+    },
+    {
+      "id": "ed-monogram-grid",
+      "preset": "editorial",
+      "name": "Monogram grid",
+      "anchors": ["Spotify Wrapped 2022 (16x16 monogram grid)"],
+      "composition": "A strict, visible grid (4 columns on phone) of interlocking flat shapes that are both background and container for data and images. One shape breaks the grid per screen. Type sits inside the shapes.",
+      "device": "the grid shapes that hold the data",
+      "dials": {"B": 8, "M": 5, "D": 5, "C": 7, "F": 7},
+      "type": [
+        {"display": "Bricolage Grotesque 800", "text": "Hanken Grotesk 400", "data": "Chivo Mono"},
+        {"display": "Schibsted Grotesk 800", "text": "Schibsted Grotesk 400", "data": "Martian Mono"}
+      ],
+      "palettes": [
+        {"name": "Orange grid", "proportions": "Light grey ground, black ink; orange, yellow and green shapes hold data; orange is also the action.",
+         "support": ["#FFD400", "#00B37A"],
+         "light": {"ground": "#F2F2F2", "surface": "#FFFFFF", "ink": "#111111", "ink2": "#4A4A4A", "accent": "#FF4F00", "on_accent": "#111111"},
+         "dark": {"ground": "#111111", "surface": "#1C1C1C", "ink": "#F2F2F2", "ink2": "#A8A8A8", "accent": "#FF6A26", "on_accent": "#111111"}},
+        {"name": "Navy ink, coral and apricot", "proportions": "White ground, navy ink; coral, apricot and mint shapes.",
+         "support": ["#F7B267", "#3CC4A3"],
+         "light": {"ground": "#FFFFFF", "surface": "#F4F5F8", "ink": "#0B132B", "ink2": "#4A5068", "accent": "#F25C54", "on_accent": "#0B132B"},
+         "dark": {"ground": "#0B132B", "surface": "#151E3A", "ink": "#F2F4FA", "ink2": "#A9B0C6", "accent": "#F7766F", "on_accent": "#0B132B"}}
+      ],
+      "shape": "Radius 0 or full (circles, quarter circles), dictated by the grid. No shadows.",
+      "moves": ["Interlocking grid shapes as data containers", "One breaker per screen", "Data set inside the shapes"],
+      "motion": "Shapes slide into their cells with a 40 ms stagger.",
+      "needs": [],
+      "not_for": ["enterprise"],
+      "pitfall": "Decorative shapes with nothing inside; random colour per cell."
+    }
+  ]
+}

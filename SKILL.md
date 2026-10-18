@@ -24,11 +24,46 @@ Work out which mode the user wants. A request can combine several (e.g. audit �
 | **Audit** | "review / critique / what's wrong" | Findings report (see `references/audit.md`) |
 | **Spec** | "design system", "tokens", "style guide" | Brief expanded into a token file |
 
-### 1. Pick the style (preset + dials)
+### 1. Inventory the product
+
+Before any style decision, list in your notes **8–12 things that belong to this product and to no competitor**. This list is where the owned idea comes from in step 3, and it's what you hold the dealt directions against in step 2. Look for:
+- **Its name** and what the name means or sounds like.
+- **Its numbers:** the streak, the price, the minutes, the seat count, the 66 levels, the 21:00 deadline.
+- **Its constraint:** one ferry a day, a weekly budget that resets on Monday, a habit that only counts before noon.
+- **Its objects and materials:** what the thing physically is or touches (a ticket, a jar of coins, a running shoe, a seed packet).
+- **Its rituals and hours:** when people open it and what they do in what order (the morning check-off, the Sunday plan, the boarding-gate glance).
+- **Its printed artefacts:** what paper or signage already exists in its world (a receipt, a boarding pass, a logbook, a score sheet, a seed catalogue, a departure board).
+- **Its place:** where it's used (on a bike, at the counter, in bed, on a platform) and what that place looks like.
+
+If the request is thin, infer plausible items from the domain, mark them as assumptions, and carry on. "Clean", "modern" and "fun" are not inventory items.
+
+### 2. Deal and pick the direction (+ dials)
 
 The user chooses the style; never silently default to something safe.
 
-If they named a preset, use it. If not and you can ask, offer the four presets with one line each and let them pick (or name a reference app; map it to the nearest preset and adjust dials). If you can't ask (non-interactive run), pick the preset that best fits the product and audience, state the choice and why in one line, and carry on.
+**Deal the directions; don't invent them.** Asked to choose a look, a model picks the category default every time (every fintech app gets the same warm premium). So a script deals researched directions, each anchored in shipped apps, and you choose among them:
+
+```bash
+python3 <skill>/scripts/deal.py --options 3 [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography,illustration]
+```
+
+- `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets.
+- `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example).
+- `--have`: the assets that really exist. Leave out `photography` if the product has none; directions that depend on it are then not dealt.
+
+Hold each dealt option against the inventory from step 1: which composition can carry something only this product has? Then:
+- **If you can ask,** show the three options in one line each (name, composition, the inventory item it would carry) and let the user pick. They may also name a reference app instead; map it to the nearest direction.
+- **If you can't ask** (non-interactive run), choose, and write one line on why it beats the other two for *this* product. Not the most familiar one: the familiar one is what this step exists to prevent.
+
+Then print the full sheet and adopt it. Don't blend it with the layout you would have made anyway:
+
+```bash
+python3 <skill>/scripts/deal.py --direction <id> --seed <seed from the deal>
+```
+
+The sheet gives the composition, the idea slot, a dealt type system and palette (light and dark, with measured contrast), shape, signature moves, motion and the way the direction goes wrong. If the brand already fixes colours or typefaces, pass `--keep palette,type` and map the brand onto the roles. Redeal only for a reason you can state (it contradicts the brand, or needs an asset that doesn't exist), and say so in the report. If the script can't run, read `library/directions.json` and pick by the same rules.
+
+The four presets behind the directions:
 
 | Preset | One-liner | Real-world anchors | File |
 |---|---|---|---|
@@ -37,9 +72,9 @@ If they named a preset, use it. If not and you can ask, offer the four presets w
 | **Playful / toy** | Chunky pressable shapes, springy motion, characters, rewards | Duolingo, Headspace, Finch | `references/presets/playful.md` |
 | **Editorial** | Huge display type, magazine grids, stark contrast | Arc, Spotify Wrapped, Nike, NYT | `references/presets/editorial.md` |
 
-Read **only** the chosen preset's file. It holds the palette strategy, type, shape, depth, motion, signature moves, real examples, and how cheap imitations of that style go wrong.
+Then read **only** the chosen direction's preset file. It holds the wider rules for that style: palette strategy, type, shape, depth, motion, more signature moves, real examples, and how cheap imitations go wrong. Where the sheet and the preset file differ, the sheet wins for this build.
 
-Then set the **dials** (1–10). Each preset file gives its defaults; the user can override any of them.
+Then set the **dials** (1–10). The sheet gives this direction's defaults; the user can override any of them.
 
 | Dial | 1 | 10 |
 |---|---|---|
@@ -51,13 +86,26 @@ Then set the **dials** (1–10). Each preset file gives its defaults; the user c
 
 `FIDELITY` controls the *look* of components. Platform *mechanics* (back behaviour, safe areas, text scaling, system gestures) stay native at every setting unless there's a written reason. See "Breaking conventions".
 
-### 2. Write the design brief (before any code)
+### 3. Find the idea, then write the brief (before any code)
 
-A short brief keeps the style coherent across every screen, and it's what turns "make it fun" into decisions. Keep it under ~30 lines, and put it in your reply (or in `DESIGN.md` for Spec mode or multi-screen work).
+**The owned idea** is what makes the app belong to this product and no other. Look at what recent Apple Design Award winners share: not polish, but *one strong idea carried through every surface*. Flighty is an airport departure board. Tide Guide's palette follows the sky. Duolingo has its cast of characters. Halide is a film camera.
+
+Write it as one sentence, and don't start the brief until both blanks are filled:
+
+> In this app, **[an item from the inventory]** becomes **[the device the direction calls for]**.
+
+For example: "In this app, the 21:00 last-ferry constraint becomes the departure-board countdown that every screen hangs from." Or: "In this app, the seed packet becomes the card shape of every habit, with the sowing date as its stamp."
+
+**The competitor test.** Put the nearest real competitor's name into the sentence. If it still works, the idea belongs to the category, not the product: "a check mark becomes a celebration" fits every habit app, so it fails. Go back to the inventory and pick something only this product has.
+
+**One live thing.** From the idea, make one interaction that is different every time or reacts to real state: the mascot that panics as the deadline nears (Duolingo's widget), the progress ring that keeps counting with no connection (Flighty), the budget jar that visibly empties as you spend. It uses the product's real data, works one-handed, has an accessible and reduce-motion fallback, and is one thing, not a playground. It is usually one of the signature moves.
+
+Then write the brief. A short brief keeps the style coherent across every screen, and it's what turns "make it fun" into decisions. Keep it under ~30 lines, and put it in your reply (or in `DESIGN.md` for Spec mode or multi-screen work).
 
 ```
-Preset: <name>   Dials: B<n> M<n> D<n> C<n> F<n>
-Owned idea: <the one metaphor carried through every surface: an airport board, a sky, a character, a camera, a ticket stub>
+Direction: <id, name> (seed <n>, or "user-picked preset")   Dials: B<n> M<n> D<n> C<n> F<n>
+Owned idea: In this app, <inventory item> becomes <device>. Competitor test: <competitor> → fails/passes
+Live thing: <the one interaction made from the idea, and the real state it reacts to>
 Persona: <one sentence: who the app is, as a character>
 This, not that: <3 pairs, e.g. "confident, not shouty · warm, not cute · fast, not frantic">
 Primary user + goal on this screen: <who, what they came to do, how often>
@@ -69,11 +117,11 @@ Motion: <spring/easing + the motion list for this MOTION level (see "Motion budg
 Signature moves: <2–3 things someone would recognise in a screenshot>
 ```
 
-The **owned idea** and **signature moves** are the antidote to slop. Look at what recent Apple Design Award winners share: not polish, but *one strong idea carried through every surface*. Flighty is an airport departure board. Tide Guide's palette follows the sky. Duolingo has its cast of characters. Halide is a film camera. Find the idea in the product's own domain (a transit app might borrow from ticket stubs, platform signage or a split-flap board). Then pick concrete, transferable moves from the preset file (e.g. "every pressable has a 4dp bottom lip that compresses on press"), not adjectives.
+The **owned idea** and **signature moves** are the antidote to slop. Carry the idea into every surface you build, including the empty state, settings, errors and the paywall: the commonest failure is a distinctive home screen followed by stock screens. Pick signature moves as concrete, transferable mechanics from the direction sheet or preset file (e.g. "every pressable has a 4dp bottom lip that compresses on press"), not adjectives.
 
 Want more real examples than the preset file has? See `research/real-ui-references.md`: award winners, design-team case studies, font alternatives, all from shipped apps.
 
-**Commit to the preset.** The dials are a promise to the user. A playful screen at `BOLDNESS 8` should look unmistakably playful in a screenshot. If a principle seems to argue for toning it down, look for a way to satisfy the principle *inside* the style (e.g. make a signifier louder, not the style quieter). Restraint is a dial setting, not a default.
+**Commit to the direction.** The dials are a promise to the user. A playful screen at `BOLDNESS 8` should look unmistakably playful in a screenshot. If a principle seems to argue for toning it down, look for a way to satisfy the principle *inside* the style (e.g. make a signifier louder, not the style quieter). Restraint is a dial setting, not a default.
 
 ### Icons are part of the signature
 
@@ -84,7 +132,7 @@ Stock icon sets are plumbing: fine for utility chrome (back, close, settings, sh
 
 The platform files show how to draw and animate custom glyphs.
 
-### 3. Build
+### 4. Build
 
 Read `references/platform-swiftui.md` or `references/platform-compose.md` (Compose Multiplatform uses the Compose file plus its CMP section). They show how to implement tokens, custom fonts that still scale, press states, springs, haptics, reduce-motion, and insets idiomatically.
 
@@ -94,23 +142,36 @@ Put tokens first (one theme/token file or block), then components, then the scre
 
 Apply the core rules below while building. `references/principles.md` has the full rule set with sources; read it for Audit mode or when a judgement call needs backing.
 
-### 4. Look at it, fix it, then report
+**Real content at real density.** A screen built on "Alex", "Lorem ipsum" and three tidy rows looks finished in code and thin on a phone. The design has to be judged with the content it will actually carry:
+- **Domain-real sample data.** Names, items, amounts and dates that belong to this product's world and its users (a varied, international set of names; real-sounding habit names, routes, dishes, merchants). No "Acme", "John Doe", "Item 1", "Lorem", "Good morning, Alex 👋".
+- **Full density.** Enough rows to scroll, the longest realistic name, the widest number ("365", "€12,480.50"), two-line titles, a missing photo. Design for those, not the happy average.
+- **Every state.** Empty, loading, error, offline and first-run, each carrying the owned idea, not a grey icon and "Nothing here yet".
+- **No invented proof.** No made-up ratings, reviews, testimonials, user counts, press logos or "Trusted by 10,000+". Placeholder business facts (prices, plan names) are fine; list them in the report so the user can replace them.
+- **Words named for what they do.** Buttons say the action ("Book for €84", "Mark as done"), not "Submit" or "Continue"; errors say what happened and how to fix it.
+
+**Removing slop leaves space. Don't fill it with another ornament.** Fill it with scale (make the main thing bigger), with the full content, or with the owned idea. One deliberate empty moment per screen at most.
+
+### 5. Look at it, fix it, then report
 
 **Render what you built and look at the image before handing over.** Code that reads well often renders badly: a number clipped by a fixed-width box, a token stretched into a pill by its parent, a tick off-centre, a bar covering content. The user sees those first, and one of them makes a bold design look broken (Tuch et al. 2012: poor execution lowers perceived beauty). Use the best render path available:
 1. **Real render:** Compose `@Preview` screenshot tests (Roborazzi/Paparazzi), SwiftUI previews or snapshot tests, or the app on an emulator/simulator (`adb exec-out screencap -p > s.png`, `xcrun simctl io booted screenshot s.png`).
 2. **Faithful mock:** if you can't run the platform, write an HTML/CSS mock with the same tokens, sizes and layout, and screenshot it headless at phone size with motion settled (e.g. Chromium-based `--headless=new --force-prefers-reduced-motion --window-size=390,844 --screenshot=s.png file.html`).
 3. **Neither possible:** say clearly in the report that the layout was never seen rendered.
 
-Then read the image like a picky designer:
+Judge only the pictures, never the code: you wrote the code, so you'll read your intentions into it. If a problem is visible in the screenshot, it's real.
+
+**Craft pass.** Read the image like a picky designer:
 - Text clipped, truncated or overflowing its container, especially the biggest numbers at their widest value ("12" vs "365").
 - Elements stretched or squashed by their parent (fill-height, flex stretch, `fillMaxSize` in a `Row`).
 - Icons and ticks off-centre in their circles or tiles; misaligned baselines.
 - Overlaps, content hidden under top or bottom bars, and uneven gaps that break the spacing scale.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
-Fix what you find and render again. Two passes is normal.
+**Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb. Score them, and write the critique down in its format.
 
-Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). End with a short list: what you built, the signature moves, any warnings, and anything you couldn't verify (e.g. "not run on device").
+Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
+
+Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). End with a short list: the direction (id and seed, and any redeal with its reason), the owned-idea sentence and the live thing, what you built, the signature moves, the final critique scores and what still falls short, sample content to replace, any warnings, and anything you couldn't verify (e.g. "not run on device"). Don't claim a check you didn't run.
 
 ## Core rules (the studied bones)
 
@@ -236,8 +297,13 @@ Models produce slop because they sample the statistical average of their trainin
 
 ## Final checklist
 
+- [ ] Inventory of 8–12 product-only items written before any style decision.
+- [ ] Direction dealt (id + seed in the report), chosen against the inventory, sheet adopted; any redeal has a stated reason.
+- [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
+- [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
-- [ ] Brief written: preset, dials, persona, 2–3 signature moves.
+- [ ] Taste pass written in `references/critique.md` format, top three fixed, at most two rounds; final scores reported.
+- [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.
 - [ ] Tokens defined once; no stray hex values or magic numbers in the screen.
 - [ ] Every interactive element has a visible signifier and a pressed state.
 - [ ] Primary action is in the thumb zone; targets are 44/48; destructive actions are isolated.
@@ -248,4 +314,4 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Depth signifiers (lips, strokes, shadows) visible at ≥3:1 against their surface.
 - [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels), or the break is justified.
 - [ ] None of the slop tells.
-- [ ] Report lists what was built, the signature moves, warnings, and what wasn't verified.
+- [ ] Report lists the direction and seed, the idea and live thing, what was built, the signature moves, the critique scores, warnings, and what wasn't verified.

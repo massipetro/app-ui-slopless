@@ -29,10 +29,11 @@ You pick the style: **one of four presets, then tune five dials.**
 Dials (1–10): `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR`, `FIDELITY` (how bespoke the components look; platform mechanics stay native).
 
 Every run:
-1. Writes a short **design brief**: owned idea, persona, type, colour, icons, motion, signature moves.
-2. Builds tokens first, then components, then the screen, following a **code baseline** (stable identity, state that survives, transforms not layout).
-3. **Renders the result and looks at it**, fixing clipped, stretched or off-centre elements.
-4. Reports accessibility trade-offs as warnings (it doesn't silently block bold choices).
+1. Lists what only this product has, then **deals three researched directions** (`scripts/deal.py`, 20 directions anchored in shipped apps) instead of reaching for the category default, and picks one against that list.
+2. Writes a short **design brief** around an owned idea that must pass a competitor test: owned idea, live interaction, persona, type, colour, icons, motion, signature moves.
+3. Builds tokens first, then components, then the screen, following a **code baseline** (stable identity, state that survives, transforms not layout).
+4. **Renders the result and looks at it** twice over: a craft pass (clipped, stretched, off-centre) and a scored taste pass (one-second glance, squint, cover the logo, fullness), at most two fix rounds.
+5. Reports accessibility trade-offs as warnings (it doesn't silently block bold choices).
 
 ## Grounded in
 
@@ -61,6 +62,9 @@ references/
   platform-swiftui.md       SwiftUI patterns + code baseline
   platform-compose.md       Compose / CMP patterns + code baseline
   presets/*.md              one file per style
+  critique.md               the scored taste pass on screenshots
+library/directions.json     20 dealt directions (5 per preset), with palettes checked for contrast
+scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
 research/                   the source material behind the rules
 evals/                      test prompts, input files, grade.py
 ```
