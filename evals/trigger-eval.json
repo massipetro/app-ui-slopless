@@ -1,0 +1,82 @@
+[
+ {
+  "query": "my SwiftUI home screen for a habit tracker looks like every other AI app, grey cards and a purple gradient. can you redesign it so it actually has a personality? ContentView.swift is in Sources/Home",
+  "should_trigger": true
+ },
+ {
+  "query": "Building a Compose Multiplatform screen for a train-ticket app (shared/ui/TripScreen.kt). I want it to feel editorial, like a magazine, not stock Material. Can you write it?",
+  "should_trigger": true
+ },
+ {
+  "query": "can you audit this onboarding flow screenshot for UX problems? thumb reach, hierarchy, contrast. its an iOS fitness app and my designer says it feels 'meh'",
+  "should_trigger": true
+ },
+ {
+  "query": "make my app look less AI. it's a Jetpack Compose budgeting app, everything is rounded cards with soft shadows and Inter. i want something bolder, maybe neo-brutalist",
+  "should_trigger": true
+ },
+ {
+  "query": "I need a settings screen in SwiftUI that follows HIG but doesn't look like the default Form. playful vibe, kids 8-12 use it",
+  "should_trigger": true
+ },
+ {
+  "query": "redesign the paywall for our Android app, currently it's a boring Material 3 bottom sheet. want warm premium feel, serif headings, nice motion",
+  "should_trigger": true
+ },
+ {
+  "query": "critique my KMP login screen: is the tap target size ok, are the error states clear, and is the visual style memorable or generic?",
+  "should_trigger": true
+ },
+ {
+  "query": "pick a type scale and color palette for a new iOS meditation app and show me the SwiftUI theme code, I want it distinctive not default system blue",
+  "should_trigger": true
+ },
+ {
+  "query": "our Compose app's order tracking screen is functional but ugly. can you restyle the whole flow (list, detail, map sheet) with a stronger visual identity?",
+  "should_trigger": true
+ },
+ {
+  "query": "write a landing page for my iOS app in React + Tailwind, bold neo-brutalist style with big type and hard shadows",
+  "should_trigger": false
+ },
+ {
+  "query": "my LazyColumn in Compose janks when scrolling a list of 500 items with images. recomposition counts are huge, how do I fix it?",
+  "should_trigger": false
+ },
+ {
+  "query": "write a Ktor endpoint in Kotlin that returns paginated trips from Postgres with Exposed, plus tests",
+  "should_trigger": false
+ },
+ {
+  "query": "in Figma, how do I make auto layout frames hug content and set up variables for light/dark mode?",
+  "should_trigger": false
+ },
+ {
+  "query": "build me a PostHog dashboard for onboarding funnel drop-off by app version, and add a retention insight",
+  "should_trigger": false
+ },
+ {
+  "query": "my SwiftUI view crashes with 'Modifying state during view update' when I tap save. here's the stack trace",
+  "should_trigger": false
+ },
+ {
+  "query": "convert this Android XML layout to Compose, keep it pixel-identical, no redesign. activity_main.xml attached",
+  "should_trigger": false
+ },
+ {
+  "query": "design a bold editorial website homepage for a coffee roaster in plain HTML/CSS, magazine-like",
+  "should_trigger": false
+ },
+ {
+  "query": "how do I set up Fastlane to upload my iOS build to TestFlight and my Android AAB to the Play Console?",
+  "should_trigger": false
+ },
+ {
+  "query": "write unit tests for my TripViewModel in KMP using Turbine and kotlinx-coroutines-test",
+  "should_trigger": false
+ },
+ {
+  "query": "what's the best way to do deep links in SwiftUI with NavigationStack? need to open a trip detail from a push notification",
+  "should_trigger": false
+ }
+]
