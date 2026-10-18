@@ -18,7 +18,7 @@ Look at each screenshot at phone size (not zoomed), light and dark if both were 
 3. **Cover the logo.** Hide the app's name. Could this screen belong to the nearest competitor you named in the brief, or to a different category entirely? If swapping the name would give an equally valid screen, the owned idea isn't visible here. Find where it should show and make it show.
 4. **Idea reach.** When you built more than one screen or state: does the idea reach the empty state, errors, settings, sheets and the paywall, or does the app turn stock after the home screen? A distinctive first screen followed by default screens is the commonest failure.
 5. **Sameness.** Write one word for each block on the screen (hero, board, rail, list, grid, cards, sheet, chart, number). The same word three times on one screen, or every screen opening with the same block, is the template showing. Also check: is every corner radius the same? Is every gap the same?
-6. **Type.** Is the jump from body text to the display moment decisive (three times or more)? More than six sizes visible? A big headline with one orphan word on its last line? Is the key number the biggest thing on the screen, and does it fit at its widest real value?
+6. **Type.** Is the jump from body text to the display moment decisive (three times or more)? More than six sizes visible? Count the tiny letter-spaced uppercase labels: more than one or two (an eyebrow above every heading, a caps label on every value) is a tell even inside a direction that uses caps, and the linter can't see it. A big headline with one orphan word on its last line? Is the key number the biggest thing on the screen, and does it fit at its widest real value?
 7. **Colour.** Name the proportions: what holds most of the surface, what supports, where the accent is. An accent in ten places means nothing; on the one action and one detail it means "here". Does the accent mean the same thing on every screen? Does dark mode hold up, or is it inverted grey?
 8. **Thumb.** Picture the phone in one hand. Is the primary action in the bottom third? Is there one obvious primary action? Do the targets look at least 44 pt / 48 dp, with destructive actions away from frequent ones?
 9. **Fullness and substance.** Is the content at real density (long names, wide numbers, enough rows to scroll)? Could the screen be mistaken for a wireframe: grey shapes, grey text, one small column? Is any region empty by accident (a hole) rather than by decision? Would the user leave knowing what they came to find out?
@@ -49,7 +49,7 @@ The aim is overall ≥ 8 with no criterion below 6.
 
 ## 3. Writing the critique
 
-Write it down in this format, in your notes or the reply, before fixing anything:
+Write it in your reply, in this format, before fixing anything. Each round goes in the reply, so the user can see what you looked at and why you changed it:
 
 ```
 Critique round <n>: <screens and modes looked at>

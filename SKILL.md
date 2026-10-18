@@ -26,7 +26,7 @@ Work out which mode the user wants. A request can combine several (e.g. audit �
 
 ### 1. Inventory the product
 
-Before any style decision, list in your notes **8–12 things that belong to this product and to no competitor**. This list is where the owned idea comes from in step 3, and it's what you hold the dealt directions against in step 2. Look for:
+Before any style decision, write **8–12 things that belong to this product and to no competitor** as a short bulleted list in your reply, not only in your head: the user should see what the design is built from, and can correct a wrong assumption before it shapes every screen. This list is where the owned idea comes from in step 3, and it's what you hold the dealt directions against in step 2. Look for:
 - **Its name** and what the name means or sounds like.
 - **Its numbers:** the streak, the price, the minutes, the seat count, the 66 levels, the 21:00 deadline.
 - **Its constraint:** one ferry a day, a weekly budget that resets on Monday, a habit that only counts before noon.
@@ -184,7 +184,7 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 - Overlaps, content hidden under top or bottom bars, and uneven gaps that break the spacing scale.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
-**Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb. Score them, and write the critique down in its format.
+**Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
 
@@ -316,13 +316,13 @@ Models produce slop because they sample the statistical average of their trainin
 
 ## Final checklist
 
-- [ ] Inventory of 8–12 product-only items written before any style decision.
+- [ ] Inventory of 8–12 product-only items written in the reply before any style decision.
 - [ ] Direction dealt (id + seed in the report), chosen against the inventory, sheet adopted; any redeal has a stated reason.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
-- [ ] Taste pass written in `references/critique.md` format, top three fixed, at most two rounds; final scores reported.
+- [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.
 - [ ] Tokens defined once; no stray hex values or magic numbers in the screen.
 - [ ] Every interactive element has a visible signifier and a pressed state.

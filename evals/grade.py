@@ -110,7 +110,7 @@ def process_checks(resp):
 
 
 def eval4(d):
-    sw = read(d, "*.swift")
+    sw = read(d, "**/*.swift")
     resp = read(d, "response.md")
     return process_checks(resp) + [
         ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
@@ -123,7 +123,7 @@ def eval4(d):
 
 
 def eval5(d):
-    kt = read(d, "*.kt")
+    kt = read(d, "**/*.kt")
     resp = read(d, "response.md")
     return process_checks(resp) + [
         ("lint.py: no FAIL in the produced Kotlin", *lint_fails(d)),
