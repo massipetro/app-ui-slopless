@@ -29,7 +29,7 @@ def absent(text, pattern, flags=re.I | re.S | re.M):
 
 
 def eval1(d):
-    kt = read(d, "*.kt")
+    kt = read(d, "**/*.kt")
     resp = read(d, "response.md")
     return [
         ("Brief states a style with concrete signature moves", *check(resp, r"signature|owned idea")),
@@ -49,7 +49,7 @@ def eval1(d):
 
 
 def eval2(d):
-    sw = read(d, "ProfileView.swift")
+    sw = read(d, "**/ProfileView.swift")
     return [
         ("Keeps NavigationStack (native mechanics)", *check(sw, r"NavigationStack")),
         ("Hard shadow is an offset shape, not blurred .shadow", *check(sw, r"\.offset\(\s*x:\s*\w+[^)]*y:")),
@@ -67,8 +67,8 @@ def eval2(d):
 
 
 def eval3(d):
-    audit = read(d, "audit.md")
-    kt = read(d, "CheckoutScreen.kt")
+    audit = read(d, "**/audit.md")
+    kt = read(d, "**/CheckoutScreen.kt")
     # named sources or rule IDs from references/principles.md (R-FORM-1 etc.)
     principles = len(set(m.lower() for m in re.findall(
         r"Nielsen|Fitts|Hoober|Norman|Shneiderman|Wroblewski|WCAG|Hick|Cowan|Gestalt|Tractinsky|Clark|Saffer|Cooper|HIG|Material|Baymard|R-[A-Z0-9]+-\d+", audit)))
@@ -147,8 +147,23 @@ def eval5(d):
     ]
 
 
+def eval6(d):
+    sw = read(d, "**/*.swift")
+    html = read(d, "**/*.html")
+    resp = read(d, "response.md")
+    return process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
+        ("Photo slots keep a fixed aspect ratio", *check(sw, r"aspectRatio\(")),
+        ("Remote photos handle loading and failure (AsyncImage phases or placeholder)", *check(sw, r"AsyncImage[\s\S]{0,600}(phase|placeholder:|\.failure|\.empty)")),
+        ("No grey placeholder boxes standing in for photos", *absent(sw + html, r"Rectangle\(\)\s*\.fill\(\s*(Color\.)?(gray|secondary)|fill\(Color\(\.system(Gray|Fill)|background:\s*#(ccc|ddd|e0e0e0|d9d9d9)\b")),
+        ("Picture sourcing is honest (licence / credit stated, or drawn)", *check(resp, r"licen[cs]e|public domain|CC[ -]BY|CC0|Wikimedia|Openverse|credit|drawn in code|illustrat")),
+        ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)")),
+    ]
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
-           "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5}
+           "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
+           "guesthouse-photos-no-preset-swiftui": eval6}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

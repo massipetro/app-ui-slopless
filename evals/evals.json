@@ -34,7 +34,13 @@
       "prompt": "Compose Multiplatform app for students sharing a flat: one shared grocery budget per week that resets every Monday. Build the main screen: what's left this week, recent spends by flatmate, and adding an expense. Don't make it look like a bank app. shared/ui/FlatBudgetScreen.kt",
       "expected_output": "No preset named, so the run inventories the product, deals directions (finance-unsafe ones are fine to exclude only if justified; students sharing groceries is not banking) and states id and seed with a reason, writes an owned-idea sentence that passes a competitor test (e.g. built from the Monday reset or the shared kitty), and builds one live thing tied to the remaining budget. Realistic flatmate names and grocery amounts, every state designed (empty week, over budget). lint.py run with no FAIL, a scored critique reported, sp text, 48dp targets, semantics and reduce-motion handled.",
       "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "I'm making an iOS app in SwiftUI for Casa Lucia, a six-room guesthouse in Polignano a Mare in Puglia, on the cliffs above the Adriatic. Build the room detail and booking screen: photos of the room, what's included, the nightly price, availability for the next two weeks, and a way to book. We don't have professional photos yet. Put it in RoomDetailView.swift.",
+      "expected_output": "No preset named and no photos available, so the run inventories the place, deals directions without --have photography (or states why the product has runtime photos), and never builds the screen around grey placeholder boxes. Room photo slots are designed for the real photos to come: fixed aspect ratio, AsyncImage with loading and failure states, and a drawn or tonal fallback. Any found picture shows Polignano's world (the town, the sea, the cliffs), is openly licensed and credited, and is never presented as the room itself. Real availability and a single primary booking action in the thumb zone, with the price visible. lint.py run with no FAIL, a scored critique, Dynamic Type, VoiceOver labels and Reduce Motion handled.",
+      "files": []
     }
   ],
-  "how_to_run": "See evals/README.md. Each eval is a full build session: run it with the skill and without it (baseline), grade both with grade.py, then judge screenshots blind with references/critique.md. Ask the user before running: 5 evals x 2 configs = 10 sessions per iteration."
+  "how_to_run": "See evals/README.md. Each eval is a full build session: run it with the skill and without it (baseline), grade both with grade.py, then judge screenshots blind with references/critique.md. Ask the user before running: 6 evals x 2 configs = 12 sessions per iteration."
 }

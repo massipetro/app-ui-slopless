@@ -5,7 +5,7 @@ Asked to invent a look, a model picks the category default every time. This
 script deals directions from library/directions.json instead; the model then
 chooses among them against the product inventory.
 
-  deal.py --options 3 [--preset P] [--sector S] [--have photography,illustration] [--seed N]
+  deal.py --options 3 [--preset P] [--sector S] [--have photography] [--seed N]
   deal.py --direction ID [--seed N] [--keep palette,type]
   deal.py --list
   deal.py --check
@@ -175,7 +175,7 @@ def main() -> int:
     ap.add_argument("--direction", help="print the full sheet for one direction id")
     ap.add_argument("--preset", choices=PRESETS, help="deal only within this preset (the user named it)")
     ap.add_argument("--sector", help="exclude directions marked not_for this sector, e.g. finance, health, kids")
-    ap.add_argument("--have", help="assets that really exist, comma-separated: photography, illustration")
+    ap.add_argument("--have", help="assets that really exist, comma-separated: photography (default: none, so photo-dependent directions are skipped)")
     ap.add_argument("--keep", default="", help="brand-fixed slots to leave undealt: palette, type")
     ap.add_argument("--seed", type=int, help="reuse a seed to reproduce a deal")
     ap.add_argument("--list", action="store_true", help="list all direction ids")
@@ -199,7 +199,8 @@ def main() -> int:
         print_sheet(match[0], seed, {k.strip() for k in args.keep.split(",") if k.strip()})
         return 0
     if args.options:
-        have = {h.strip() for h in args.have.split(",") if h.strip()} if args.have is not None else None
+        # No --have means no assets: directions that need photographs are not dealt (taste-skill's default).
+        have = {h.strip() for h in (args.have or "").split(",") if h.strip()}
         dealt = deal_options(directions, args.options, seed, args.preset, args.sector, have)
         if not dealt:
             print("no direction matches those filters", file=sys.stderr)

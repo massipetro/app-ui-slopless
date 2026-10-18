@@ -46,12 +46,12 @@ The user chooses the style; never silently default to something safe.
 **Deal the directions; don't invent them.** Asked to choose a look, a model picks the category default every time (every fintech app gets the same warm premium). So a script deals researched directions, each anchored in shipped apps, and you choose among them:
 
 ```bash
-python3 <skill>/scripts/deal.py --options 3 [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography,illustration]
+python3 <skill>/scripts/deal.py --options 3 [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography]
 ```
 
 - `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets.
 - `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example).
-- `--have`: the assets that really exist. Leave out `photography` if the product has none; directions that depend on it are then not dealt.
+- `--have photography`: only when the product really has photographs: its own photos in the project, or photos it shows at runtime (listings, products, places, people's uploads). Without it, directions that depend on photographs are not dealt, so a screen never ends up built around grey placeholder boxes. Drawn art never needs `--have`: it is made in code.
 
 Hold each dealt option against the inventory from step 1: which composition can carry something only this product has? Then:
 - **If you can ask,** show the three options in one line each (name, composition, the inventory item it would carry) and let the user pick. They may also name a reference app instead; map it to the nearest direction.
