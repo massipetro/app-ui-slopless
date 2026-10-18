@@ -37,6 +37,8 @@ Before any style decision, write **8–12 things that belong to this product and
 
 If the request is thin, infer plausible items from the domain, mark them as assumptions, and carry on. "Clean", "modern" and "fun" are not inventory items.
 
+**Gate:** don't run `deal.py` until the list is in your reply. It also opens the brief in step 3, so it can't get lost between steps.
+
 ### 2. Deal and pick the direction (+ dials)
 
 The user chooses the style; never silently default to something safe.
@@ -103,8 +105,9 @@ For example: "In this app, the 21:00 last-ferry constraint becomes the departure
 Then write the brief. A short brief keeps the style coherent across every screen, and it's what turns "make it fun" into decisions. Keep it under ~30 lines, and put it in your reply (or in `DESIGN.md` for Spec mode or multi-screen work).
 
 ```
-Direction: <id, name> (seed <n>, or "user-picked preset")   Dials: B<n> M<n> D<n> C<n> F<n>
-Owned idea: In this app, <inventory item> becomes <device>. Competitor test: <competitor> → fails/passes
+Inventory: <the 8–12 items from step 1, comma-separated; mark assumptions with (assumed)>
+Direction: <dealt id verbatim, e.g. pl-persona, then its name> (seed <n>, or "user-picked preset")   Dials: B<n> M<n> D<n> C<n> F<n>
+Owned idea: In this app, <one item from the Inventory line> becomes <device>. Competitor test: <competitor> → fails/passes
 Live thing: <the one interaction made from the idea, and the real state it reacts to>
 Persona: <one sentence: who the app is, as a character>
 This, not that: <3 pairs, e.g. "confident, not shouty · warm, not cute · fast, not frantic">
@@ -182,9 +185,10 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 - Elements stretched or squashed by their parent (fill-height, flex stretch, `fillMaxSize` in a `Row`).
 - Icons and ticks off-centre in their circles or tiles; misaligned baselines.
 - Overlaps, content hidden under top or bottom bars, and uneven gaps that break the spacing scale.
+- **Anything cut off by a pinned bottom element** (a CTA bar, tab bar, sheet handle or home indicator): a list row sliced in half behind the button is the commonest defect in generated screens. Give the scrolling content bottom padding of at least the pinned element's height plus the bottom safe area, and check the last visible row is either whole or clearly continues under a fade that reads as scroll.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
-**Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
+**Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
 
@@ -316,7 +320,7 @@ Models produce slop because they sample the statistical average of their trainin
 
 ## Final checklist
 
-- [ ] Inventory of 8–12 product-only items written in the reply before any style decision.
+- [ ] Inventory of 8–12 product-only items written in the reply before `deal.py` ran, and repeated as the brief's first line.
 - [ ] Direction dealt (id + seed in the report), chosen against the inventory, sheet adopted; any redeal has a stated reason.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.

@@ -25,6 +25,7 @@ Look at each screenshot at phone size (not zoomed), light and dark if both were 
 10. **Signature.** Could someone pick out the two or three signature moves from this still? Is the live thing visible, or at least hinted at (its current state, its affordance)?
 11. **Platform.** Does it still behave like the platform where it must: a visible back affordance, safe areas and system bars respected, the native sheet and keyboard? At large text, does the layout reflow or does it clip?
 12. **Slop tells.** Any tell from the SKILL.md list that you can't defend in one sentence?
+13. **Bottom edge.** Look at the bottom 150 pt of every screenshot. Is any row, card or text cut off behind a pinned button, tab bar or sheet, or sitting under the home indicator? A row sliced in half behind the CTA counts as a visible craft defect (see the caps). Content may continue below the fold only when it reads as scroll: a whole last row, or a clear fade, never a half-row under the button.
 
 ## 2. The score and its caps
 
@@ -34,12 +35,12 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 |---|---|---|
 | **Idea** | 3, 4, 10 | Unmistakably this product; the idea is on every surface and the live thing is there |
 | **Hierarchy** | 1, 2, 6, 7 | One answer at a glance, two or three masses, decisive type jumps, an accent that means "here" |
-| **Craft** | the craft pass, 5 | Nothing clipped, stretched, off-centre or uneven; rhythm varies on purpose |
+| **Craft** | the craft pass, 5, 13 | Nothing clipped, stretched, off-centre or uneven; rhythm varies on purpose |
 | **Substance** | 9 | Real content at real density; every state designed; nothing reads as a wireframe |
 | **Platform & access** | 8, 11, contrast | Thumb-zone primary, 44/48 targets, native mechanics intact, text scales, contrast holds in both modes |
 
 **Overall** = the mean, then apply the caps:
-- Any visible craft defect (clipping, overlap, content under a bar, an invisible signifier): Craft ≤ 4 and overall ≤ 6.
+- Any visible craft defect (clipping, overlap, content under a bar or cut off behind a pinned button, an invisible signifier): Craft ≤ 4 and overall ≤ 6.
 - Cover-the-logo fails: Idea ≤ 4.
 - Any slop tell without a stated reason: overall ≤ 6.
 - The screen reads as a wireframe: Substance ≤ 3.
@@ -65,6 +66,7 @@ Fullness: <density, holes, wireframe risk>
 Signature: <which moves are visible; the live thing>
 Platform: <back, insets, large text>
 Tells: <any, with reason or "none">
+Bottom edge: <anything cut off behind a pinned button, tab bar or the home indicator, or "clear">
 Scores: Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which applied>)
 Top three fixes: 1. … 2. … 3. …
 ```

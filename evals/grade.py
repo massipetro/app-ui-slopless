@@ -97,11 +97,23 @@ def lint_fails(d):
     return (not fails), ("no FAIL" if not fails else ", ".join(fails[:6]))
 
 
+LIBRARY = json.loads((Path(__file__).resolve().parent.parent / "library" / "directions.json").read_text())["directions"]
+
+
+def direction_stated(resp):
+    """A dealt direction counts when a seed (only deal.py makes one) sits near the direction's id,
+    its library name, or plain words like 'direction' / 'style' (runs often paraphrase the id)."""
+    names = [re.escape(d["id"]) for d in LIBRARY] + [re.escape(d["name"]) for d in LIBRARY]
+    named = r"(" + "|".join(names) + r"|\bdirections?\b|\bstyles?\b)"
+    near = named + r"[\s\S]{0,240}?seed\D{0,5}\d+|seed\D{0,5}\d+[\s\S]{0,240}?" + named
+    return check(resp, near)
+
+
 def process_checks(resp):
     # The no-preset evals test the workflow itself: inventory, deal, idea, critique.
     return [
         ("Inventory of product-only items listed", *check(resp, r"inventory")),
-        ("Direction dealt: id and seed stated", *check(resp, r"\b(wp|nb|pl|ed)-[a-z-]+\b[\s\S]{0,200}seed\D{0,5}\d+|seed\D{0,5}\d+[\s\S]{0,200}\b(wp|nb|pl|ed)-[a-z-]+\b")),
+        ("Direction dealt: named (id, name or plain words) with its seed", *direction_stated(resp)),
         ("Owned-idea sentence written", *check(resp, r"In this app,[^\n]{0,200}becomes")),
         ("Competitor test applied", *check(resp, r"competitor")),
         ("Critique scored (Idea / Hierarchy / overall)", *check(resp, r"Idea\s*\d+[\s\S]{0,80}Hierarchy\s*\d+|overall\s*\d")),
