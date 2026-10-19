@@ -183,10 +183,10 @@ Never: stock photos of laughing people, AI images passed off as real, illustrati
 - **SwiftUI:** typecheck every Swift file you wrote, together, against the iOS simulator SDK:
 
   ```bash
-  python3 <skill>/scripts/typecheck.py <changed .swift files or folder> [--ios <deployment target, default 17.0>]
+  python3 <skill>/scripts/typecheck.py <changed .swift files or folder>
   ```
 
-  Fix every error and run it again until it passes. It needs no Xcode project, so there's no excuse to skip it on a Mac. If it can't run (exit 3: no Xcode, or files that import third-party packages), say so under "Not verified"; never report Swift as compiled when it wasn't.
+  Fix every error and run it again until it passes. **Keep the deployment target.** The script reads it from the project (`Package.swift` platforms, or `IPHONEOS_DEPLOYMENT_TARGET` in the `.xcodeproj`) and uses iOS 17 when there's neither. An error like "'Tab' is only available in iOS 18.0 or newer" means the code is wrong for the target, not that the target is wrong: wrap the newer API in `if #available(iOS 18, *)` with an iOS 17 fallback, or use the older API (`references/platform-swiftui.md` rule 17). Never pass `--ios` to get past an availability error. Pass it only when the user or the project states a different target, and then name the target and where it came from on the report's Lint line. It needs no Xcode project, so there's no excuse to skip it on a Mac. If it can't run (exit 3: no Xcode, or files that import third-party packages), say so under "Not verified"; never report Swift as compiled when it wasn't.
 - **Compose / CMP:** if the project has a Gradle build, compile the module you changed there (`./gradlew :<module>:compileKotlin`, or `compileKotlinIosSimulatorArm64` / `compileDebugKotlinAndroid` for a CMP target). Without one, compile in the skill's throwaway project:
 
   ```bash
@@ -223,6 +223,12 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
   - **Fold check, row by row.** In the resting frame, name every row whose box comes within 24 pt of the bar's top edge, and say for each one: whole above the bar, under the fade with no text cut, or cut. "Cut" includes a row's text, avatar or card border sliced by the bar. Any "cut" is a defect: move the fold into a gap (tighten or reorder what's above, or change a row height; never grow the hero to push the list down) and render again. In the end frame, the last row must sit fully above the bar with at least 8 pt clear.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
+**Signature check: does the screen show the direction?** A dealt direction can come out as the category's stock layout in the direction's colours, and nothing above catches that. Using the resting frame only:
+- **Point at each signature move from the brief:** name the element and where it sits ("the departure time set at 120 pt fills the top third"), or write "not visible". A move that exists only in code, in another state or after an interaction doesn't count here. At least two must be visible at rest.
+- **Stock-layout test.** In one line, describe the screen a competent team would ship by default for this product and category, block by block (for a ferry home: route header, next-departure card, timetable list, buy button). Then write the built screen's blocks in the same way. If the order and proportions match and the only differences are colour, type and corners, the direction is a costume: rebuild the composition from the sheet around a signature move (change what leads, its scale and how the list is set), not the paint.
+
+Fix this before the taste pass, and put both results on the report's "Signature moves" line.
+
 **Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
@@ -237,8 +243,8 @@ Owned idea: In this app, <inventory item> becomes <device>.
 Competitor test: <competitor> → <why the idea fails for them>
 Live thing: <the interaction and the real state it reacts to>
 Built: <files, screens, states; the brief's must-haves visible at rest>
-Signature moves: <2–3>
-Lint: <compile: pass / FAIL / not run and why; lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
+Signature moves: <each move → where it shows at rest, or "not visible">; stock layout: <the default screen's blocks> → <what this screen does instead>
+Lint: <compile: pass / FAIL / not run and why, at iOS <target> (<from the project / default>); lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
 Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
 Bottom edge: rest frame <each row at the fold: whole / under fade / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
@@ -379,9 +385,10 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test), misfits dropped, redeal stated if none survived; direction id and seed in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
-- [ ] Swift typechecked with `scripts/typecheck.py`, Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`, both passing; if one couldn't run, the report says so.
+- [ ] Swift typechecked with `scripts/typecheck.py` at the project's deployment target (iOS 17 when the project sets none), newer APIs behind `if #available`, `--ios` never raised to get a pass; Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`; both passing, or the report says why not.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Scrolling screens rendered at rest and scrolled to the end; the row-by-row fold check found no cut row, and the last row clears the bar.
+- [ ] Signature check done on the resting frame: at least two signature moves pointed at, and the screen is not the category's stock layout in new colours.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
 - [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.

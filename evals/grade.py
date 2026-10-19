@@ -136,7 +136,8 @@ def swift_typechecks(d):
     if not files:
         return None
     tc = Path(__file__).resolve().parent.parent / "scripts" / "typecheck.py"
-    proc = subprocess.run([sys.executable, str(tc), *files], capture_output=True, text=True)
+    # Pinned: a run can't pass by writing its own Package.swift with a newer platform.
+    proc = subprocess.run([sys.executable, str(tc), *files, "--ios", "17.0"], capture_output=True, text=True)
     if proc.returncode == 3:
         return None
     last = (proc.stdout.strip().splitlines() or ["no output"])[-1]
@@ -176,6 +177,7 @@ def process_checks(resp):
         ("Competitor test applied", *check(resp, r"competitor")),
         ("Critique scored (Idea / Hierarchy / overall)", *check(resp, r"Idea\s*\d+[\s\S]{0,80}Hierarchy\s*\d+|overall\s*\d")),
         ("Lint gate run", *check(resp, r"lint\.py|\d+ FAIL")),
+        ("Signature moves pointed at in the resting frame", *check(resp, r"^\s*Signature moves\s*:[^\n]*(→|->|not visible)[^\n]*stock layout")),
     ]
 
 

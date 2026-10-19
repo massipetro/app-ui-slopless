@@ -141,7 +141,7 @@ Across the seven rounds the skill won 28 of 34 blind pairs. Round 4's Opus judge
 
 - Round 6 (open): a direction that fits on paper can still be built generically (stock cards and pills); the fit test checks the plan, not the execution. Kotlin compiles in evals now (see the compilation note).
 
-- Round 7 (open): a direction can still be executed as the stock layout (nothing checks the built screen against the direction's signature moves), and a run can raise the iOS deployment target to make newer APIs compile instead of keeping the documented iOS 17.
+- Round 7: a direction could still be executed as the stock layout (ferry run 2), and a run raised the iOS deployment target to make an iOS 18 API compile (ferry run 3, `Tab` checked with `--ios 18.0`). Step 5 now has a signature check on the resting frame: point at each signature move (at least two must show) and run a stock-layout test against the category default, with a matching critique cap (Idea ≤ 5) and a report field. `typecheck.py` reads the deployment target from the project (iOS 17 when none is set) and prints a note when `--ios` overrides it; the skill and SwiftUI rule 17 put newer APIs behind `#available` and never raise the target to pass. `grade.py` pins its typecheck to iOS 17 and checks the signature line. Not yet measured: no eval calls since.
 
 ### Limits
 

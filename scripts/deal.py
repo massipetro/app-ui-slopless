@@ -141,6 +141,7 @@ def print_sheet(d: dict, seed: int, keep: set[str]) -> None:
     print("Signature moves (pick 2-3):")
     for m in d["moves"]:
         print(f"  - {m}")
+    print("  After the build, point at each chosen move in the resting frame; at least two must show there.")
     print(f"Motion: {d['motion']}")
     if d["needs"]:
         print(f"Needs: {', '.join(d['needs'])}")
