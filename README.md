@@ -78,15 +78,15 @@ evals/                      test prompts, input files, grade.py
 
 ## Evals
 
-Five prompts, each run with and without the skill: a playful CMP home screen, a neo-brutalist SwiftUI redesign, a Compose checkout audit + warm-premium redesign, and two no-preset builds (a SwiftUI ferry app, a CMP flat-share budget) that test the dealt-direction workflow. `evals/grade.py` runs objective checks for craft and slop tells; screenshots are judged blind with `references/critique.md`. See [`evals/README.md`](evals/README.md).
+Six build briefs, each run with and without the skill and judged blind from screenshots with `references/critique.md`, plus `evals/grade.py` for objective craft and slop checks (it reuses `scripts/lint.py`). Full method, per-eval scores and limits: [`evals/README.md`](evals/README.md).
 
-The rounds below predate evals 4–5, the deal script, the linter and the critique; they haven't been re-run since.
+| Round | Builds | Briefs | Blind wins for the skill | Average margin |
+|---|---|---|---|---|
+| 3 | Opus 5.5 | all six | 6 of 6 (one tie on score) | +1.4 |
+| 2 | Opus 5.5 | ferry, flat budget | 2 of 2 | +0.5 |
+| 1 | Sonnet 5 | ferry, flat budget | 2 of 2 | +1.5 |
 
-| Round | Model | With skill | Without |
-|---|---|---|---|
-| 3 | Sonnet 5.5 (medium) | 100% | 76% |
-| 2 | Sonnet 5.5 (medium) | 100% | 75% |
-| 1 | Opus 5.5 | 100% | 92% |
+In round 3 the skill's outputs had 1 lint FAIL across six screens against 65 without it, and the skill runs cost about 2.1× as much. One run per config and one model judge per pair: treat each score as ±0.5.
 
 ## Licence
 

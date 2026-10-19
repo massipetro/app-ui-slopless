@@ -25,7 +25,7 @@ Look at each screenshot at phone size (not zoomed), light and dark if both were 
 10. **Signature.** Could someone pick out the two or three signature moves from this still? Is the live thing visible, or at least hinted at (its current state, its affordance)?
 11. **Platform.** Does it still behave like the platform where it must: a visible back affordance, safe areas and system bars respected, the native sheet and keyboard? At large text, does the layout reflow or does it clip?
 12. **Slop tells.** Any tell from the SKILL.md list that you can't defend in one sentence?
-13. **Bottom edge.** Look at the bottom 150 pt of every screenshot. Is any row, card or text cut off behind a pinned button, tab bar or sheet, or sitting under the home indicator? A row sliced in half behind the CTA counts as a visible craft defect (see the caps). Content may continue below the fold only when it reads as scroll: a whole last row, or a clear fade, never a half-row under the button.
+13. **Bottom edge.** Look at the bottom 150 pt of every screenshot, zoomed in. Is any row, card or text cut off behind a pinned button, tab bar or sheet, or sitting under the home indicator? A row sliced in half behind the CTA counts as a visible craft defect (see the caps), even if the code would let it scroll clear: the judge, and the user, see the resting frame. Content may continue below the fold only when it reads as scroll: the bar is opaque with a visible top edge, and the fold lands in a gap between rows or under a short fade. Never text cut mid-line under the button. Also check in the code that the bar is a `safeAreaInset` / `Scaffold` bottom bar whose height reaches the list's bottom padding.
 
 ## 2. The score and its caps
 

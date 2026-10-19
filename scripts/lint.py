@@ -39,6 +39,7 @@ RULES = {
     "generic-button-label": ("WARN", "button not named for its action", "Name the action: \"Pay €642\", \"Mark as done\""),
     "slop-copy": ("WARN", "generic marketing copy", "Say the specific thing this product does"),
     "stock-check": ("WARN", "core verb drawn with a stock check icon", "Custom-draw and animate the core verb's glyph"),
+    "pinned-bottom-overlap": ("WARN", "bottom bar laid over the scrolling content instead of insetting it", "SwiftUI: .safeAreaInset(edge: .bottom) on the ScrollView/List; Compose: Scaffold(bottomBar) with innerPadding in the list's contentPadding"),
     "no-reduce-motion": ("WARN", "animation with no Reduce Motion / Remove animations handling", "Read accessibilityReduceMotion / animator scale and swap travel for fades"),
 }
 
@@ -242,6 +243,19 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
             named = re.search(r"\bText\(|\bLabel\(|accessibilityLabel", body) or "accessibilityLabel" in "\n".join(trailing)
             if "Image(systemName:" in body and not named:
                 add("unlabelled-icon-button", line_of(m.start()))
+
+    # A bar pinned over a scroll view (ZStack/overlay/Box-align) hides the last rows unless padded by hand.
+    if swift:
+        scrolls = re.search(r"\bScrollView\b|\bList\s*[({]", text)
+        pinned = re.search(r"ZStack\(alignment:\s*\.bottom\w*\)|\.overlay\(alignment:\s*\.bottom\)\s*\{[^}]{0,400}?Button", text)
+        if scrolls and pinned and "safeAreaInset(edge: .bottom" not in text:
+            add("pinned-bottom-overlap", line_of(pinned.start()))
+    else:
+        scrolls = re.search(r"\bLazy(Column|VerticalGrid)\b|verticalScroll\(", text)
+        pinned = re.search(r"Alignment\.BottomCenter", text)
+        uses_inset = re.search(r"bottomBar\s*=", text) and re.search(r"calculateBottomPadding|innerPadding|paddingValues|contentPadding\s*=\s*\w*[Pp]adding\b", text)
+        if scrolls and pinned and not uses_inset:
+            add("pinned-bottom-overlap", line_of(pinned.start()))
 
     radii = re.findall(r"cornerRadius[:(]\s*(\d+)|RoundedRectangle\(cornerRadius:\s*(\d+)|RoundedCornerShape\(\s*(\d+)\.dp", text)
     values = [next(v for v in g if v) for g in radii]

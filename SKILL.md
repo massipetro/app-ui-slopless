@@ -156,6 +156,7 @@ Apply the core rules below while building. `references/principles.md` has the fu
 1. **The product's own:** user content, product photos, real maps or screenshots the project already has. In an app most images are runtime content, so design the slot: a fixed aspect ratio (no layout jump on load), a loading state that is a tone step in the palette, and a designed fallback (initials, a glyph from the icon family), never a grey rectangle or a broken-image icon.
 2. **Generated,** if you have an image tool and the user is fine with it. Never present a generated picture as a real person, product, place or customer.
 3. **Openly licensed pictures of the product's world,** for onboarding, empty states, category art and sample content: Wikimedia Commons, Openverse, and museum open-access collections (the Met, the Art Institute of Chicago, the Rijksmuseum), NASA. Search the inventory, not the category: the product's object up close, its city in an old postcard, a botanical plate, a timetable, an engraving of its trade. Use only licences that allow commercial use, download the file into the project's assets, and list title, creator, licence and source in the report. A found picture shows the world around the product, never the product's own team, customers or goods.
+   **Never send the user's identity to outside services.** Searching and downloading pictures (or fonts, or anything else) must not carry the user's email, name, account, organisation or machine details: not in a User-Agent header, a query string, an API key field or a "contact" parameter, even when a service's etiquette asks for contact details. Use a generic identifier such as `User-Agent: app-ui-slopless/1.0 (+https://github.com/massipetro/app-ui-slopless)`. If a service refuses requests without personal contact details, skip it and say so in the report.
 4. **Drawn in code from the inventory** (`Canvas` / `Path` / `ImageVector`): the product's objects in one consistent flat graphic language, in the palette's real colours. Better than a placeholder, an enlarged SF Symbol, or an abstract blob.
 5. **Type and colour alone,** for directions built on them.
 
@@ -185,14 +186,33 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 - Elements stretched or squashed by their parent (fill-height, flex stretch, `fillMaxSize` in a `Row`).
 - Icons and ticks off-centre in their circles or tiles; misaligned baselines.
 - Overlaps, content hidden under top or bottom bars, and uneven gaps that break the spacing scale.
-- **Anything cut off by a pinned bottom element** (a CTA bar, tab bar, sheet handle or home indicator): a list row sliced in half behind the button is the commonest defect in generated screens. Give the scrolling content bottom padding of at least the pinned element's height plus the bottom safe area, and check the last visible row is either whole or clearly continues under a fade that reads as scroll.
+- **Anything cut off by a pinned bottom element** (a CTA bar, tab bar, sheet handle or home indicator): a list row sliced in half behind the button is the commonest defect in generated screens, and it was the one most often penalised in our blind evals. Fix it in two places:
+  - **Structure, so the last row can scroll clear.** SwiftUI: pin the bar with `.safeAreaInset(edge: .bottom) { bar }` on the `ScrollView`/`List`, not a `ZStack(alignment: .bottom)` or `.overlay(alignment: .bottom)` over it. Compose: put the bar in `Scaffold(bottomBar = …)` and pass the `innerPadding` bottom into the list's `contentPadding`, not a `Box` with `Alignment.BottomCenter` over it. `lint.py` warns (`pinned-bottom-overlap`) when it sees the overlay pattern.
+  - **The resting frame, which is what people and screenshots see first.** Content that continues under the bar must read as scroll, not as cut: the bar is opaque with a visible top edge (a tone step, or the platform's scroll-edge effect), and either the fold lands in a gap between rows or a short fade of the page colour (16–24 pt) sits above the bar. A row whose text is cut mid-line at rest is a defect even when the code scrolls correctly; shorten or reorder what's above it, or move the fade.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
 **Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
 
-Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). End with a short list: the direction (id and seed, and any redeal with its reason), the owned-idea sentence and the live thing, what you built, the signature moves, the final critique scores and what still falls short, sample content to replace, any warnings, and anything you couldn't verify (e.g. "not run on device"). Don't claim a check you didn't run.
+Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). End with the report below as your **final message**. Repeat everything in it even if you wrote it earlier: some hosts (headless runs, some models) show only the last message, so a step that only appeared mid-run is invisible to the reader. Don't claim a check you didn't run.
+
+```
+Inventory: <the 8–12 items from step 1; (assumed) where inferred>
+Direction: <dealt id> (seed <n>); redeals: <none, or which and why>
+Owned idea: In this app, <inventory item> becomes <device>. Competitor test: <competitor> → <result>
+Live thing: <the interaction and the real state it reacts to>
+Built: <files, screens, states>
+Signature moves: <2–3>
+Lint: <n FAIL, n WARN; each --allow and each kept WARN with its reason>
+Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: …)
+Bottom edge: <clear, or what is cut off and why it reads as scroll>
+Still short: <what the critique found and you didn't fix>
+Sample content to replace: <names, prices, dates, photos>
+Pictures: <each found picture: title, creator, licence, source; or "none, drawn in code">
+Warnings: <accessibility trade-offs with criterion, value and fix>
+Not verified: <e.g. not compiled, not run on device, large text not checked>
+```
 
 ## Core rules (the studied bones)
 
@@ -328,6 +348,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
 - [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.
+- [ ] No request to an outside service carried the user's email, name or account; found pictures are credited.
 - [ ] Tokens defined once; no stray hex values or magic numbers in the screen.
 - [ ] Every interactive element has a visible signifier and a pressed state.
 - [ ] Primary action is in the thumb zone; targets are 44/48; destructive actions are isolated.
@@ -338,4 +359,4 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Depth signifiers (lips, strokes, shadows) visible at ≥3:1 against their surface.
 - [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels), or the break is justified.
 - [ ] None of the slop tells.
-- [ ] Report lists the direction and seed, the idea and live thing, what was built, the signature moves, the critique scores, warnings, and what wasn't verified.
+- [ ] The final message is the full report template from step 5, repeating the inventory, direction and seed, owned-idea sentence, critique scores and bottom-edge result even if they appeared earlier.
