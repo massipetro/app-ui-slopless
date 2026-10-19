@@ -70,7 +70,11 @@ Write the results in the report: "silhouette 24: reads (sprout); squint: face ho
 ```bash
 python3 <skill>/scripts/mascot.py svg2code pip.svg --swift -o PipMascot.swift
 python3 <skill>/scripts/mascot.py svg2code pip.svg --compose --package app.ui.mascot -o PipMascot.kt
+# the brief names one file for the code: add it to that file instead
+python3 <skill>/scripts/mascot.py svg2code pip.svg --compose --into HabitHomeScreen.kt
 ```
+
+`--into` merges the imports into the screen file, drops the package line, and puts the code in a marked block at the end; rerunning after an SVG edit replaces that block. This is how a single-file brief still gets the kit's drawing: never hand-copy or redraw the shapes. In the HTML mock, paste the same SVG inline and animate its groups with CSS, with `transform-origin` at each `data-pivot`, so the mock shows exactly what ships.
 
 No runtime library is needed. It handles path commands (M L H V C S Q T A Z, relative too; arcs become cubics), rect with rx/ry, circle, ellipse, line, polyline, polygon, nested transforms, fill, stroke, width, caps, joins, fill-rule and opacities. Styles can come from attributes, `style=""` or simple `<style>` rules (`.class`, `#id`, tag), as Illustrator exports them.
 

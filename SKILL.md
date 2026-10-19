@@ -141,7 +141,13 @@ Stock icon sets are plumbing: fine for utility chrome (back, close, settings, sh
 - **Hero and category icons:** tab icons at `BOLDNESS` ≥7, categories, empty-state art, the mascot. Draw them as one family: same stroke weight, corner treatment and fill/duotone logic, all made in code (`Canvas`/`ImageVector` in Compose, `Shape`/`Path` in SwiftUI) or from one commissioned set.
 - **System symbols done well count too.** SF Symbols with `.symbolEffect` and variable colour, or Material Symbols with fill/weight axes animated, are legitimate when `FIDELITY` is low. Stock and static, with no styling, is the default look.
 
-- **A mascot or an animated hero glyph: use the mascot kit.** Draw it as a small SVG rig from the direction's primitives and palette (`references/mascot.md`), then let `scripts/mascot.py` ship it: `svg2code --swift|--compose` for native code with no runtime library, `lottie` for authored states (an idle loop, a reaction) as Lottie JSON. Flat, geometric characters work; painterly or detailed ones don't, and Rive's `.riv` can't be generated, so say so instead of faking it.
+- **A mascot: the mascot kit is the required path, not an option.** This applies whenever the screen has a character or creature: one the brief asks for, one implied by "Duolingo-level fun", or one you add as the live thing. Don't draw it freehand in `Canvas`, `Path` or CSS; a freehand mascot comes out as a different drawing on each platform and in the mock, and it can't pass the kit's checks. Instead:
+  1. Draw it once as an SVG rig from the direction's primitives and palette (`references/mascot.md`), and save it with the code (e.g. `mascot/dot.svg`).
+  2. Generate the code: `python3 <skill>/scripts/mascot.py svg2code mascot/dot.svg --compose|--swift -o <DotMascot.kt|.swift>`. **When the brief names one file for the code** ("put the code in HabitHomeScreen.kt"), use `--into HabitHomeScreen.kt` instead of `-o`: the imports are merged, the code lands in a marked block at the end of that file, and rerunning replaces the block. Animate it by changing the generated pose (`rememberDotPainter(pose)` / `DotMascot(pose:)`), driven by the real state it reacts to.
+  3. In the HTML mock, paste the same SVG inline and animate its groups with CSS (`transform-origin` at each `data-pivot`), so the mock shows the drawing that ships.
+  4. Run `mascot.py check` (24 px silhouette, squint) and filmstrip its states (step 5). Use `lottie` when the project plays Lottie or the states are authored keyframes (an idle loop, a celebration).
+
+  If the kit can't run here, say so under "Not verified" with the reason; never fall back to a freehand drawing without saying so. An animated hero glyph (the streak flame, the core verb's check) may use the kit the same way. Flat, geometric characters work; painterly or detailed ones don't, and Rive's `.riv` can't be generated, so say so instead of faking it.
 
 The platform files show how to draw and animate custom glyphs.
 
@@ -213,7 +219,7 @@ It flags the slop tells and craft defects the code itself shows (violet accents,
 **Render every scrolling screen twice: at rest and scrolled to the end.** The resting frame is what people and screenshots see first; the end frame proves the last row clears the pinned bar. On a simulator, swipe to the bottom and screenshot again; in a Compose screenshot test, render a second preview with the list state scrolled to the last item. In the HTML mock, give the scroll container an id and end the file with one line, `<script>if (location.hash === '#end') { const s = document.getElementById('scroll'); s.scrollTop = s.scrollHeight; }</script>`, then render `mock.html` and `mock.html#end` as two frames.
 
 **Record the motion whenever there is some to judge.** Stills can't show motion: a stuck, janky or clipped animation passes every check above, and a good one earns nothing. When `MOTION` is 4 or more, or the core verb or the live thing animates, turn the motion into a filmstrip (frames over time in one image) and look at it:
-- **HTML mock:** build the motion with CSS animations or the Web Animations API (motion on `requestAnimationFrame` or timers can't be stepped), and start the motion under test on `#play`, the way `#end` scrolls: `<script>if (location.hash === '#play') document.body.classList.add('play');</script>`. Then run `python3 <skill>/scripts/filmstrip.py mock.html --crop <x,y,w,h of the moving element>`. It pauses every animation at 0–800 ms (`--times` to change), tiles the frames into one PNG, and prints how many animations run, the longest finite one in ms and how many loop forever. The two still frames above stay the Reduce Motion view.
+- **HTML mock:** build the motion with CSS animations or the Web Animations API (motion on `requestAnimationFrame` or timers can't be stepped), and start the motion under test on `#play`, the way `#end` scrolls: `<script>if (location.hash === '#play') document.body.classList.add('play');</script>`. Then run `python3 <skill>/scripts/filmstrip.py mock.html`. It pauses every animation at 0–800 ms (`--times` to change), crops the frames to the area that moves (`--crop x,y,w,h` to choose it yourself), renders them in light mode whatever the machine uses (`--scheme dark` for the dark frames), tiles them into one PNG, and prints how many animations run, the longest finite one in ms and how many loop forever. The two still frames above stay the Reduce Motion view.
 - **Compose:** in a UI or screenshot test, set `composeTestRule.mainClock.autoAdvance = false`, trigger the action, and capture a frame after each `mainClock.advanceTimeBy(40)` (`captureRoboImage` with Roborazzi); then `filmstrip.py frames/*.png`.
 - **SwiftUI on a simulator:** `xcrun simctl io booted recordVideo motion.mov`, do the action, stop it with Ctrl-C, then `ffmpeg -i motion.mov -vf fps=15 frames/f%03d.png` and `filmstrip.py` on the frames around the action.
 - **Mascot or hero glyph (Lottie):** `mascot.py lottie rig.svg motion.json -o m.json`, then `mascot.py preview m.json` and `filmstrip.py m.preview.html --crop 0,0,240,240` once for the reaction (`#play`) and once with `--hash state=idle` for the loop. The preview drives lottie-web from a Web Animations clock, so the strip's numbers are real. Native mascot code animates like any other view: use the Compose or SwiftUI route above. `references/mascot.md` §7 says what to look for.
@@ -260,7 +266,7 @@ Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platf
 Bottom edge: rest frame <each row at the fold: whole / under fade / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
 Sample content to replace: <names, prices, dates, photos>
-Pictures: <each found picture: title, creator, licence, source; or "none, drawn in code">
+Pictures: <each found picture: title, creator, licence, source; the mascot: its .svg and the mascot.py command that made the code; or "none, drawn in code">
 Warnings: <accessibility trade-offs with criterion, value and fix>
 Not verified: <e.g. not compiled, not run on device, large text not checked>
 ```
@@ -412,7 +418,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Type scale of 4–6 sizes, a real display moment, and custom fonts that scale with Dynamic Type / `sp`.
 - [ ] Contrast checked in light and dark (or a warning given); colour never carries meaning alone.
 - [ ] Core-verb icon and hero glyphs are custom-designed and animated; stock icons only for utility chrome.
-- [ ] A mascot, if the brief has one, passed `mascot.py check` (24 px silhouette, squint) and its states were filmstripped and read with pass 14.
+- [ ] A mascot, if the screen has one, was drawn as an SVG rig and generated with `mascot.py svg2code` (`--into` for a single-file brief), never freehand; it passed `mascot.py check` (24 px silhouette, squint) and its states were filmstripped and read with pass 14.
 - [ ] Motion matches the `MOTION` dial's row in the motion budget (at 7+: ambient life, press squish everywhere, animated icons); frequent paths ≤300 ms; reduce-motion fallback present.
 - [ ] Depth signifiers (lips, strokes, shadows) visible at ≥3:1 against their surface.
 - [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels), or the break is justified.

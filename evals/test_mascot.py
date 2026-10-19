@@ -13,6 +13,7 @@ Standard library only; works on Python 3.9.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import struct
 import subprocess
@@ -79,6 +80,28 @@ def changed_fraction(a: Path, b: Path) -> float:
     assert (wa, ha) == (wb, hb), f"frames differ in size: {a.name} is {wa}x{ha}, {b.name} is {wb}x{hb}"
     diff = sum(1 for i in range(0, len(pa), ca) if max(abs(pa[i + k] - pb[i * cb // ca + k]) for k in range(3)) > 24)
     return diff / (wa * ha)
+
+
+class Into(unittest.TestCase):
+    """Single-file briefs: svg2code --into adds the mascot to the screen file, once, and it still compiles."""
+
+    def test_into_compose_file_is_idempotent_and_compiles(self):
+        screen = TMP / "into" / "HabitHomeScreen.kt"
+        screen.parent.mkdir(parents=True, exist_ok=True)
+        screen.write_text("package app.habits\n\nimport androidx.compose.foundation.Image\n"
+                          "import androidx.compose.runtime.Composable\n\n"
+                          "@Composable\nfun HabitHome() {\n    Image(painter = rememberPipPainter(), contentDescription = null)\n}\n")
+        for _ in range(2):
+            r = run(SCRIPTS / "mascot.py", "svg2code", SVG, "--compose", "--into", screen)
+            self.assertEqual(r.returncode, 0, r.stderr)
+        text = screen.read_text()
+        self.assertEqual(text.count("---- mascot.py svg2code: Pip"), 1, "rerun must replace the block, not add another")
+        self.assertEqual(text.count("package "), 1)
+        self.assertEqual(len(re.findall(r"^import androidx.compose.runtime.Composable$", text, re.M)), 1)
+        c = run(SCRIPTS / "compile_kotlin.py", screen)
+        if c.returncode == 3:
+            self.skipTest("no Kotlin toolchain")
+        self.assertEqual(c.returncode, 0, c.stdout[-800:])
 
 
 class Parser(unittest.TestCase):
