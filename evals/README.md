@@ -32,7 +32,21 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Four rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+Five rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+
+### Round 5: three runs per config on evals 4 and 5 (main at `3d23111`)
+
+Builds and judge on `claude-opus-5-5`; each run-n pair judged separately. This round tested the two-frame bottom edge, the caps budget and the fixed report block, and averages out some single-run noise.
+
+| Eval | With skill (runs) | Mean | Without (runs) | Mean | Margin | Skill picked |
+|---|---|---|---|---|---|---|
+| 4 Ferry home, SwiftUI | 7.6 · 7.0 · 5.0 | 6.53 | 6.0 · 6.0 · 6.0 | 6.00 | +0.53 | 2 of 3 |
+| 5 Flat budget, CMP | 7.0 · 6.0 · 7.0 | 6.67 | 6.0 · 6.0 · 7.2 | 6.40 | +0.27 | 2 of 3 |
+
+- Process: every skill run passed 13 / 13 grader checks (baselines 2–4), ended with the full 15-label report block, rendered a scrolled-to-the-end frame, and had 0 lint FAILs (baselines 54) with no `caps-labels` or `pinned-bottom-overlap` warnings. No skill screen was capped for a cut row.
+- The two losses: ferry run 3 was dealt `nb-poster-blocks`, which the judge called "a trend, not a ferry idea" (5.0); flat-budget run 3 lost 7.0 to 7.2 because its hero pushed all but one receipt below the fold, although its idea scored higher.
+- In all three ferry pairs the skill's screen was in position B, so position bias isn't ruled out there.
+- Cost: $22.50 for 12 builds (skill runs $2.25 on average, baselines $1.49) plus $1.91 for 6 judge calls.
 
 ### Round 4: all six evals, Opus 5.5 builds and Opus 5.5 judge (main at `609d7b1`)
 
@@ -81,7 +95,7 @@ Builds on `claude-opus-5-5`, judge on `claude-sonnet-5-5`.
 
 Round 1 used a CLI whose `sonnet` alias still pointed at Sonnet 5; later rounds pass the model id explicitly and stop any session that reports a different model.
 
-Across the four rounds the skill won 14 of 16 blind pairs. Round 4's Opus judge applied the caps more strictly than round 3's Sonnet judge. The margin shrinks as the baseline model gets stronger: about 1.5 points on Sonnet 5, about 0.5 on Opus 5.5 for the same two briefs.
+Across the five rounds the skill won 18 of 22 blind pairs. Round 4's Opus judge applied the caps more strictly than round 3's Sonnet judge. The margin shrinks as the baseline model gets stronger: about 1.5 points on Sonnet 5, about 0.5 on Opus 5.5 for the same two briefs.
 
 ### What the rounds changed in the skill
 
@@ -89,7 +103,9 @@ Across the four rounds the skill won 14 of 16 blind pairs. Round 4's Opus judge 
 - Round 2: the inventory is the brief's first line and gates `deal.py`; a bottom-edge pass joined the critique.
 - Round 3: the final message repeats the full report (some hosts show only the last message); the bottom-edge rule covers both structure (`safeAreaInset` / `Scaffold` bottom bar, `pinned-bottom-overlap` lint) and the resting frame; requests to outside services must never carry the user's identity (one run put the user's email in a User-Agent).
 
-- Round 4: the resting frame still showed rows cut behind the pinned bar even when the list was inset correctly, and the neo-brutalist and editorial directions overused small uppercase labels. The skill now renders every scrolling screen twice (at rest and scrolled to the end, `mock.html#end` for the HTML mock) and runs a row-by-row fold check; a caps budget (at most two small uppercase labels per screen) runs through the core rules, presets, library and deal sheet, with a `caps-labels` lint warning. Not yet re-run.
+- Round 4: the resting frame still showed rows cut behind the pinned bar even when the list was inset correctly, and the neo-brutalist and editorial directions overused small uppercase labels. The skill now renders every scrolling screen twice (at rest and scrolled to the end, `mock.html#end` for the HTML mock) and runs a row-by-row fold check; a caps budget (at most two small uppercase labels per screen) runs through the core rules, presets, library and deal sheet, with a `caps-labels` lint warning. Round 5 confirmed all three in practice (see above).
+
+- Round 5 (open): a dealt direction can still miss the product (poster blocks for a ferry timetable), and a big hero can push the brief's content below the fold.
 
 ### Limits
 
