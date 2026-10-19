@@ -74,6 +74,7 @@ library/directions.json     20 dealt directions (5 per preset), with palettes ch
 scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator SDK, no Xcode project needed
+scripts/fold.py             measures the mock's bottom edge: every row at the pinned bar is whole, a clear peek, or cut; the last row clears the bar
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times (or tiled PNG frames), with measured durations
 scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code (svg2code), to Lottie JSON (lottie), a pausable lottie-web preview (preview), and the 24 px silhouette / squint sheet (check)
 scripts/compile_kotlin.py   compiles Compose / CMP files in a throwaway Kotlin 2.2.21 + Compose MP 1.9.0 project (JVM + Android)

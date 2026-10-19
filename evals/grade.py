@@ -172,11 +172,28 @@ def kotlin_compiles(d):
     return proc.returncode == 0, (last if proc.returncode == 0 else first_error.split("error:")[-1].strip()[:110] or last)
 
 
+def fold_passes(d):
+    """Measure the mock's bottom edge with scripts/fold.py. None when there's no mock, no pinned bar or no browser."""
+    import subprocess
+    mocks = sorted(d.rglob("mock.html"))
+    if not mocks:
+        return None
+    fp = Path(__file__).resolve().parent.parent / "scripts" / "fold.py"
+    proc = subprocess.run([sys.executable, str(fp), str(mocks[0])], capture_output=True, text=True)
+    out = proc.stdout.strip().splitlines()
+    if proc.returncode == 3 or any("no pinned bottom bar" in l for l in out):
+        return None
+    problem = next((l.strip() for l in out if l.strip().startswith(("CUT", "FAIL "))), "")
+    return proc.returncode == 0, (out[-1] if proc.returncode == 0 else problem[:120] or out[-1])
+
+
 def with_compile(checks, d):
     tc = swift_typechecks(d)
     kc = kotlin_compiles(d)
+    fo = fold_passes(d)
     return (checks + ([("Swift typechecks (iOS 17 simulator SDK)", *tc)] if tc is not None else [])
-            + ([("Kotlin compiles (Compose MP 1.9.0, JVM + Android)", *kc)] if kc is not None else []))
+            + ([("Kotlin compiles (Compose MP 1.9.0, JVM + Android)", *kc)] if kc is not None else [])
+            + ([("Bottom edge: no row cut by the pinned bar (fold.py)", *fo)] if fo is not None else []))
 
 
 def process_checks(resp):

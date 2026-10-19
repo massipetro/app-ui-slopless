@@ -162,9 +162,15 @@ Across the seven rounds the skill won 28 of 34 blind pairs. Round 4's Opus judge
 
 - Round 8: the skill runs read the mascot kit and then drew freehand anyway, partly because the brief asks for a single file. The kit is now the required path whenever the screen has a character. `mascot.py svg2code --into <screen file>` adds the generated code to a single-file brief's file, with imports merged, in a marked block that a rerun replaces. The HTML mock embeds the same SVG. The report's Pictures line names the rig and the command. `grade.py` checks for a rig `.svg` with pivots and generated code whenever the reply mentions a mascot. `filmstrip.py` now crops to the area that moves (`--crop auto`, the default: the union of the animated elements' boxes over their run, preferring the triggered motion over loops) and renders in light mode whatever the machine uses (`--scheme`). New headless Chrome's window frame no longer cuts the last row of frames. Not yet measured: no eval calls since.
 
+- After round 8: the fold check is measured, not eyeballed. A thin sliver of card above the tab bar cost the skill a Craft cap in rounds 4, 5 and 8, and every time the run's own look at the screenshot missed it (round 8 even had a fade over it). `scripts/fold.py` loads the mock at 390×844, finds the pinned bar (a buy bar stacked on a tab bar counts as one) and the scroller, and classes every row at the bar's edge as whole, peek (at least 40% and 24 px show, no line of text crosses) or cut. A sliver is cut whether or not a fade covers it. It also checks that the last row clears the bar by 8 px and that the mock scrolls at all. Step 5 treats it as a gate, critique pass 13 uses its result, the report's Bottom edge line carries it, and `grade.py` adds it to every eval with a mock and a pinned bar. Rerun on every earlier mock with a pinned bar, it flags 9 of 11 skill mocks from rounds 3–4, 2 of 18 from round 5 on (round 7 budget run 3, and round 8 run 1, the one the judge capped), and 11 of 17 baselines. I checked the flags against the screenshots: each is a sliver, a line of text through the bar, or a mock that can't scroll. `evals/test_fold.py` pins the rules on six generated mocks. Not yet measured in an eval round.
+
 ### Limits
 
 One run per config and one judge per pair, so a single score carries about half a point of noise. Judges are models, not people. The screens are HTML stand-ins for native renders. The briefs were written alongside the skill, so they may favour it.
+
+## Fold check tests
+
+`python3 evals/test_fold.py` runs `scripts/fold.py` on six generated mocks with known bottom edges. No model calls. A fold in a gap passes, and so does a clear peek. A 7 px sliver of card behind a fade fails, and so does a line of text through the bar's edge. A list with no bottom padding fails the end frame, and a mock that can't scroll fails too. Skipped without a Chromium browser.
 
 ## Mascot kit tests
 
