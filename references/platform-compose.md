@@ -151,6 +151,14 @@ val breathe = if (reduceMotion) 1f else rememberInfiniteTransition(label = "idle
 
 - **Staggered entrance:** keep a `visible` flag per item, set from `LaunchedEffect(Unit)` with `delay(index * 40L)`, and wrap each item in `AnimatedVisibility(enter = scaleIn(spring(0.6f)) + fadeIn())`. Do this only on first load, not on every recomposition.
 - **Particles:** a `Canvas` drawing N small shapes whose positions come from one `Animatable(0f → 1f)`, which is cheap and needs no library.
+- **Check it frame by frame.** A paused test clock gives exact frames for `scripts/filmstrip.py` (SKILL.md step 5):
+
+```kotlin
+composeTestRule.mainClock.autoAdvance = false
+composeTestRule.onNodeWithText("Mark done").performClick()
+repeat(12) { i -> composeTestRule.mainClock.advanceTimeBy(40); composeTestRule.onRoot().captureRoboImage("frames/f%02d.png".format(i)) }
+```
+
 - **Rive / Lottie:** use `rive-android` or Lottie Compose on Android. On CMP, wrap the native views per platform or use Compottie (Lottie for Compose Multiplatform).
 
 ## 6. Haptics

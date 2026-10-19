@@ -26,6 +26,7 @@ Look at each screenshot at phone size (not zoomed), light and dark if both were 
 11. **Platform.** Does it still behave like the platform where it must: a visible back affordance, safe areas and system bars respected, the native sheet and keyboard? At large text, does the layout reflow or does it clip?
 12. **Slop tells.** Any tell from the SKILL.md list that you can't defend in one sentence?
 13. **Bottom edge.** Use both frames, the resting one and the one scrolled to the end. In the resting frame, zoom into the bottom 150 pt and list every row whose box comes within 24 pt of the pinned bar's top edge: whole, under a fade with no text cut, or cut. A row whose text, avatar or border is sliced by the bar is a visible craft defect (see the caps), even if the code would let it scroll clear: people, and judges, see the resting frame. Content may continue below the fold only when it reads as scroll: an opaque bar with a visible top edge, and the fold in a gap between rows or under a short fade. In the end frame, the last row sits fully above the bar with at least 8 pt clear. Also check in the code that the bar is a `safeAreaInset` / `Scaffold` bottom bar whose height reaches the list's bottom padding.
+14. **Motion (from the filmstrip).** Skip only when the dial is under 4 and nothing on the core verb animates, and say so. Otherwise, on the frames: does the core verb or live thing visibly change, and does the last frame land on the designed rest state (nothing stuck halfway, no snap at the end)? Does anything clip against its container, or push its neighbours, in any frame, not just the last? Timing: the script's longest finite time for a frequent action is 300 ms or less (a milestone celebration may run longer); a stagger reads as a sequence, not a lump; overshoot is visible but small. Count the loops: each is subtle, never on text, and the static (Reduce Motion) render still carries the same information. Then hold it against the `MOTION` row: at 7 or more the strip shows ambient life; at 1–3 nothing loops.
 
 ## 2. The score and its caps
 
@@ -35,13 +36,14 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 |---|---|---|
 | **Idea** | 3, 4, 10 | Unmistakably this product; the idea is on every surface and the live thing is there |
 | **Hierarchy** | 1, 2, 6, 7 | One answer at a glance, two or three masses, decisive type jumps, an accent that means "here" |
-| **Craft** | the craft pass, 5, 13 | Nothing clipped, stretched, off-centre or uneven; rhythm varies on purpose |
+| **Craft** | the craft pass, 5, 13, 14 | Nothing clipped, stretched, off-centre or uneven; rhythm varies on purpose |
 | **Substance** | 9 | Real content at real density; every state designed; nothing reads as a wireframe |
 | **Platform & access** | 8, 11, contrast | Thumb-zone primary, 44/48 targets, native mechanics intact, text scales, contrast holds in both modes |
 
 **Overall** = the mean, then apply the caps:
 - Any visible craft defect (clipping, overlap, content under a bar or cut off behind a pinned button, an invisible signifier): Craft ≤ 4 and overall ≤ 6.
 - Cover-the-logo fails: Idea ≤ 4.
+- `MOTION` is 4 or more but the filmstrip shows the core verb or live thing standing still, or no filmstrip and no reason given: Idea ≤ 6. A frame that clips, or a jump at the end, counts as a visible craft defect.
 - Fewer than two signature moves visible at rest, or the stock-layout test fails (the category default in the direction's paint): Idea ≤ 5.
 - Any slop tell without a stated reason: overall ≤ 6.
 - The screen reads as a wireframe: Substance ≤ 3.

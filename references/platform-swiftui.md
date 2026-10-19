@@ -160,6 +160,7 @@ mascot
 - **Staggered entrance:** `.transition(.scale(scale: 0.9).combined(with: .opacity))` plus `.animation(.spring(response: 0.35, dampingFraction: 0.6).delay(Double(index) * 0.04), value: appeared)`, triggered once from `.onAppear`.
 - **Particles:** a `Canvas` + `TimelineView` drawing N shapes, or `KeyframeAnimator` per sparkle. No library is needed.
 - **Rive / Lottie:** `RiveRuntime` or `lottie-ios` via SwiftPM.
+- **Check it frame by frame:** record the simulator (`xcrun simctl io booted recordVideo motion.mov`), split it with `ffmpeg -i motion.mov -vf fps=15 frames/f%03d.png`, and tile the frames around the action with `scripts/filmstrip.py` (SKILL.md step 5). A `KeyframeAnimator` / `PhaseAnimator` whose last frame doesn't match the resting view snaps at the end; the strip shows it.
 
 ## 6. Haptics
 

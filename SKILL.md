@@ -210,6 +210,14 @@ It flags the slop tells and craft defects the code itself shows (violet accents,
 
 **Render every scrolling screen twice: at rest and scrolled to the end.** The resting frame is what people and screenshots see first; the end frame proves the last row clears the pinned bar. On a simulator, swipe to the bottom and screenshot again; in a Compose screenshot test, render a second preview with the list state scrolled to the last item. In the HTML mock, give the scroll container an id and end the file with one line, `<script>if (location.hash === '#end') { const s = document.getElementById('scroll'); s.scrollTop = s.scrollHeight; }</script>`, then render `mock.html` and `mock.html#end` as two frames.
 
+**Record the motion whenever there is some to judge.** Stills can't show motion: a stuck, janky or clipped animation passes every check above, and a good one earns nothing. When `MOTION` is 4 or more, or the core verb or the live thing animates, turn the motion into a filmstrip (frames over time in one image) and look at it:
+- **HTML mock:** build the motion with CSS animations or the Web Animations API (motion on `requestAnimationFrame` or timers can't be stepped), and start the motion under test on `#play`, the way `#end` scrolls: `<script>if (location.hash === '#play') document.body.classList.add('play');</script>`. Then run `python3 <skill>/scripts/filmstrip.py mock.html --crop <x,y,w,h of the moving element>`. It pauses every animation at 0–800 ms (`--times` to change), tiles the frames into one PNG, and prints how many animations run, the longest finite one in ms and how many loop forever. The two still frames above stay the Reduce Motion view.
+- **Compose:** in a UI or screenshot test, set `composeTestRule.mainClock.autoAdvance = false`, trigger the action, and capture a frame after each `mainClock.advanceTimeBy(40)` (`captureRoboImage` with Roborazzi); then `filmstrip.py frames/*.png`.
+- **SwiftUI on a simulator:** `xcrun simctl io booted recordVideo motion.mov`, do the action, stop it with Ctrl-C, then `ffmpeg -i motion.mov -vf fps=15 frames/f%03d.png` and `filmstrip.py` on the frames around the action.
+- **None possible:** write "motion not recorded" under "Not verified".
+
+Read the strip with `references/critique.md` pass 14, and put the numbers on the report's "Live thing" line.
+
 Judge only the pictures, never the code: you wrote the code, so you'll read your intentions into it. If a problem is visible in the screenshot, it's real.
 
 **Craft pass.** Read the image like a picky designer:
@@ -229,7 +237,7 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 
 Fix this before the taste pass, and put both results on the report's "Signature moves" line.
 
-**Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
+**Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge, the motion. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
 
@@ -241,7 +249,7 @@ Inventory: <the 8–12 items from step 1, comma-separated; (assumed) where infer
 Direction: <dealt id, e.g. pl-persona> (seed <n>); redeals: <none, or which and why>
 Owned idea: In this app, <inventory item> becomes <device>.
 Competitor test: <competitor> → <why the idea fails for them>
-Live thing: <the interaction and the real state it reacts to>
+Live thing: <the interaction and the real state it reacts to>; filmstrip: <n animations, longest n ms, n looping, and what the frames show; or "not recorded" and why>
 Built: <files, screens, states; the brief's must-haves visible at rest>
 Signature moves: <each move → where it shows at rest, or "not visible">; stock layout: <the default screen's blocks> → <what this screen does instead>
 Lint: <compile: pass / FAIL / not run and why, at iOS <target> (<from the project / default>); lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
@@ -389,6 +397,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Scrolling screens rendered at rest and scrolled to the end; the row-by-row fold check found no cut row, and the last row clears the bar.
 - [ ] Signature check done on the resting frame: at least two signature moves pointed at, and the screen is not the category's stock layout in new colours.
+- [ ] Motion recorded as a filmstrip (`scripts/filmstrip.py`, or test / simulator frames) when `MOTION` ≥ 4 or the core verb animates: it moves, settles on the rest state, clips nothing, and frequent paths finish within 300 ms.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
 - [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.

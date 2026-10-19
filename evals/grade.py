@@ -177,6 +177,7 @@ def process_checks(resp):
         ("Competitor test applied", *check(resp, r"competitor")),
         ("Critique scored (Idea / Hierarchy / overall)", *check(resp, r"Idea\s*\d+[\s\S]{0,80}Hierarchy\s*\d+|overall\s*\d")),
         ("Lint gate run", *check(resp, r"lint\.py|\d+ FAIL")),
+        ("Motion recorded as a filmstrip, or stated as not recorded", *check(resp, r"filmstrip|motion not recorded")),
         ("Signature moves pointed at in the resting frame", *check(resp, r"^\s*Signature moves\s*:[^\n]*(→|->|not visible)[^\n]*stock layout")),
     ]
 
