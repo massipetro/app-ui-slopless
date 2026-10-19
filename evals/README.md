@@ -146,3 +146,7 @@ Across the seven rounds the skill won 28 of 34 blind pairs. Round 4's Opus judge
 ### Limits
 
 One run per config and one judge per pair, so a single score carries about half a point of noise. Judges are models, not people. The screens are HTML stand-ins for native renders. The briefs were written alongside the skill, so they may favour it.
+
+## Mascot kit tests
+
+`python3 evals/test_mascot.py` checks `scripts/mascot.py` on a hand-written mascot (`fixtures/pip.svg`, a rig in the pl-toy-box palette, written the way Illustrator exports) and its motion spec (`fixtures/pip.motion.json`: an idle loop with breathing and a blink, and a celebration with a hop, a mouth morph and sparks drawing on). No model calls. It checks that the path parser handles relative commands, S/T curves and compact arc flags; that the SwiftUI output typechecks (`typecheck.py`) and renders on macOS with the eyes open at rest and covered on the blink; that the Compose output compiles (`compile_kotlin.py`); that the Lottie has `v fr ip op w h layers`, is parented and anchored at the pivots, and doesn't leave its canvas; that a morph between shapes with different vertex counts and an unknown part are refused; and that the preview runs through `filmstrip.py`, which measures the reaction at 900 ms and the idle state as looping, and that its frames visibly change and land back on rest, in both clock and `--frames` mode. Steps whose toolchain is missing are skipped, not failed: Xcode, JDK 17 + Gradle, a Chromium browser, and network for lottie-web.

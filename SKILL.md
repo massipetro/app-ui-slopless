@@ -141,6 +141,8 @@ Stock icon sets are plumbing: fine for utility chrome (back, close, settings, sh
 - **Hero and category icons:** tab icons at `BOLDNESS` ≥7, categories, empty-state art, the mascot. Draw them as one family: same stroke weight, corner treatment and fill/duotone logic, all made in code (`Canvas`/`ImageVector` in Compose, `Shape`/`Path` in SwiftUI) or from one commissioned set.
 - **System symbols done well count too.** SF Symbols with `.symbolEffect` and variable colour, or Material Symbols with fill/weight axes animated, are legitimate when `FIDELITY` is low. Stock and static, with no styling, is the default look.
 
+- **A mascot or an animated hero glyph: use the mascot kit.** Draw it as a small SVG rig from the direction's primitives and palette (`references/mascot.md`), then let `scripts/mascot.py` ship it: `svg2code --swift|--compose` for native code with no runtime library, `lottie` for authored states (an idle loop, a reaction) as Lottie JSON. Flat, geometric characters work; painterly or detailed ones don't, and Rive's `.riv` can't be generated, so say so instead of faking it.
+
 The platform files show how to draw and animate custom glyphs.
 
 ### 4. Build
@@ -165,7 +167,7 @@ Apply the core rules below while building. `references/principles.md` has the fu
 2. **Generated,** if you have an image tool and the user is fine with it. Never present a generated picture as a real person, product, place or customer.
 3. **Openly licensed pictures of the product's world,** for onboarding, empty states, category art and sample content: Wikimedia Commons, Openverse, and museum open-access collections (the Met, the Art Institute of Chicago, the Rijksmuseum), NASA. Search the inventory, not the category: the product's object up close, its city in an old postcard, a botanical plate, a timetable, an engraving of its trade. Use only licences that allow commercial use, download the file into the project's assets, and list title, creator, licence and source in the report. A found picture shows the world around the product, never the product's own team, customers or goods.
    **Never send the user's identity to outside services.** Searching and downloading pictures (or fonts, or anything else) must not carry the user's email, name, account, organisation or machine details: not in a User-Agent header, a query string, an API key field or a "contact" parameter, even when a service's etiquette asks for contact details. Use a generic identifier such as `User-Agent: app-ui-slopless/1.0 (+https://github.com/massipetro/app-ui-slopless)`. If a service refuses requests without personal contact details, skip it and say so in the report.
-4. **Drawn in code from the inventory** (`Canvas` / `Path` / `ImageVector`): the product's objects in one consistent flat graphic language, in the palette's real colours. Better than a placeholder, an enlarged SF Symbol, or an abstract blob.
+4. **Drawn in code from the inventory** (`Canvas` / `Path` / `ImageVector`): the product's objects in one consistent flat graphic language, in the palette's real colours. Better than a placeholder, an enlarged SF Symbol, or an abstract blob. For empty-state art, a character or a hero object, draw it once as SVG and convert it with `scripts/mascot.py svg2code` (`references/mascot.md`), so both platforms get the same drawing; run `mascot.py check` for the 24 px silhouette and squint tests.
 5. **Type and colour alone,** for directions built on them.
 
 Never: stock photos of laughing people, AI images passed off as real, illustration from mixed packs, a decorative blob standing in for a picture.
@@ -214,6 +216,7 @@ It flags the slop tells and craft defects the code itself shows (violet accents,
 - **HTML mock:** build the motion with CSS animations or the Web Animations API (motion on `requestAnimationFrame` or timers can't be stepped), and start the motion under test on `#play`, the way `#end` scrolls: `<script>if (location.hash === '#play') document.body.classList.add('play');</script>`. Then run `python3 <skill>/scripts/filmstrip.py mock.html --crop <x,y,w,h of the moving element>`. It pauses every animation at 0–800 ms (`--times` to change), tiles the frames into one PNG, and prints how many animations run, the longest finite one in ms and how many loop forever. The two still frames above stay the Reduce Motion view.
 - **Compose:** in a UI or screenshot test, set `composeTestRule.mainClock.autoAdvance = false`, trigger the action, and capture a frame after each `mainClock.advanceTimeBy(40)` (`captureRoboImage` with Roborazzi); then `filmstrip.py frames/*.png`.
 - **SwiftUI on a simulator:** `xcrun simctl io booted recordVideo motion.mov`, do the action, stop it with Ctrl-C, then `ffmpeg -i motion.mov -vf fps=15 frames/f%03d.png` and `filmstrip.py` on the frames around the action.
+- **Mascot or hero glyph (Lottie):** `mascot.py lottie rig.svg motion.json -o m.json`, then `mascot.py preview m.json` and `filmstrip.py m.preview.html --crop 0,0,240,240` once for the reaction (`#play`) and once with `--hash state=idle` for the loop. The preview drives lottie-web from a Web Animations clock, so the strip's numbers are real. Native mascot code animates like any other view: use the Compose or SwiftUI route above. `references/mascot.md` §7 says what to look for.
 - **None possible:** write "motion not recorded" under "Not verified".
 
 Read the strip with `references/critique.md` pass 14, and put the numbers on the report's "Live thing" line.
@@ -409,6 +412,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Type scale of 4–6 sizes, a real display moment, and custom fonts that scale with Dynamic Type / `sp`.
 - [ ] Contrast checked in light and dark (or a warning given); colour never carries meaning alone.
 - [ ] Core-verb icon and hero glyphs are custom-designed and animated; stock icons only for utility chrome.
+- [ ] A mascot, if the brief has one, passed `mascot.py check` (24 px silhouette, squint) and its states were filmstripped and read with pass 14.
 - [ ] Motion matches the `MOTION` dial's row in the motion budget (at 7+: ambient life, press squish everywhere, animated icons); frequent paths ≤300 ms; reduce-motion fallback present.
 - [ ] Depth signifiers (lips, strokes, shadows) visible at ≥3:1 against their surface.
 - [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels), or the break is justified.

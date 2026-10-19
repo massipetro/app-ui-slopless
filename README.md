@@ -69,15 +69,17 @@ references/
   platform-compose.md       Compose / CMP patterns + code baseline
   presets/*.md              one file per style
   critique.md               the scored taste pass on screenshots
+  mascot.md                 designing a mascot or hero glyph the skill can draw, rig it, ship it, animate it
 library/directions.json     20 dealt directions (5 per preset), with palettes checked for contrast
 scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator SDK, no Xcode project needed
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times (or tiled PNG frames), with measured durations
+scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code (svg2code), to Lottie JSON (lottie), a pausable lottie-web preview (preview), and the 24 px silhouette / squint sheet (check)
 scripts/compile_kotlin.py   compiles Compose / CMP files in a throwaway Kotlin 2.2.21 + Compose MP 1.9.0 project (JVM + Android)
 scripts/kotlin-check/       the Gradle template that compile_kotlin.py copies code into
 research/                   the source material behind the rules
-evals/                      test prompts, input files, grade.py
+evals/                      test prompts, input files, grade.py; test_mascot.py + fixtures/ (a sample mascot and motion spec) test the mascot kit without model calls
 ```
 
 ## Evals
