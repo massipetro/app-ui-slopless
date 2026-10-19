@@ -187,7 +187,13 @@ Never: stock photos of laughing people, AI images passed off as real, illustrati
   ```
 
   Fix every error and run it again until it passes. It needs no Xcode project, so there's no excuse to skip it on a Mac. If it can't run (exit 3: no Xcode, or files that import third-party packages), say so under "Not verified"; never report Swift as compiled when it wasn't.
-- **Compose / CMP:** if the project has a Gradle build, compile the module you changed (`./gradlew :<module>:compileKotlin`, or `compileKotlinIosSimulatorArm64` / `compileDebugKotlinAndroid` for a CMP target) and fix every error. Without a project, Kotlin can't be compiled here: say "Kotlin not compiled" under "Not verified".
+- **Compose / CMP:** if the project has a Gradle build, compile the module you changed there (`./gradlew :<module>:compileKotlin`, or `compileKotlinIosSimulatorArm64` / `compileDebugKotlinAndroid` for a CMP target). Without one, compile in the skill's throwaway project:
+
+  ```bash
+  python3 <skill>/scripts/compile_kotlin.py <changed .kt files or folder>
+  ```
+
+  It compiles against Kotlin 2.2.21 and Compose Multiplatform 1.9.0 (Material 3 1.4) for JVM and Android; shared code must compile for both, so Android-only APIs in `commonMain` code fail as they would in a real CMP module. Compose `Res` and Android `R` resources are stubbed, and listed so you can check the real files exist. Fix every error and run it again until it passes. The first run downloads what isn't in `~/.gradle`; if it can't run (exit 3: no JDK 17+, no Gradle, offline), say "Kotlin not compiled" under "Not verified".
 
 Then lint the files you wrote:
 
@@ -373,7 +379,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test), misfits dropped, redeal stated if none survived; direction id and seed in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
-- [ ] Swift typechecked with `scripts/typecheck.py` (or Kotlin compiled with Gradle) and passing; if it couldn't run, the report says so.
+- [ ] Swift typechecked with `scripts/typecheck.py`, Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`, both passing; if one couldn't run, the report says so.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Scrolling screens rendered at rest and scrolled to the end; the row-by-row fold check found no cut row, and the last row clears the bar.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).

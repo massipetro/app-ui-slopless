@@ -31,7 +31,7 @@ def absent(text, pattern, flags=re.I | re.S | re.M):
 def eval1(d):
     kt = read(d, "**/*.kt")
     resp = read(d, "response.md")
-    return [
+    return with_compile([
         ("Brief states a style with concrete signature moves", *check(resp, r"signature|owned idea")),
         ("Text sized in sp", *check(kt, r"\d+(\.\d+)?\.sp")),
         ("Pressed state driven by interaction source", *check(kt, r"collectIsPressedAsState|isPressed|detectTapGestures\([^)]*onPress|onPress\s*=")),
@@ -45,7 +45,7 @@ def eval1(d):
         ("Check glyph is custom-drawn, not a stock Icons.*.Check", *check(kt, r"PathMeasure|getSegment|drawPath|ImageVector\.Builder|PathParser")),
         ("Ambient/idle motion present (infinite transition)", *check(kt, r"rememberInfiniteTransition|infiniteRepeatable")),
         ("Lazy list items keyed (stable identity)", *check(kt, r"items\([^)]*key\s*=|itemsIndexed\([^)]*key\s*=|key\(\s*\w+\.id\s*\)")),
-    ]
+    ], d)
 
 
 def eval2(d):
@@ -72,7 +72,7 @@ def eval3(d):
     # named sources or rule IDs from references/principles.md (R-FORM-1 etc.)
     principles = len(set(m.lower() for m in re.findall(
         r"Nielsen|Fitts|Hoober|Norman|Shneiderman|Wroblewski|WCAG|Hick|Cowan|Gestalt|Tractinsky|Clark|Saffer|Cooper|HIG|Material|Baymard|R-[A-Z0-9]+-\d+", audit)))
-    return [
+    return with_compile([
         ("Audit cites >= 5 distinct named principles/sources", principles >= 5, f"{principles} distinct"),
         ("Audit gives measured contrast ratios", *check(audit, r"\d(\.\d+)?\s*:\s*1")),
         ("Audit rates severity", *check(audit, r"sev|severity|critical|major|minor")),
@@ -84,7 +84,7 @@ def eval3(d):
         ("Checkbox target >= 48dp (no 20dp checkbox)", *absent(kt, r"Checkbox\([^)]*size\(20\.dp\)")),
         ("Autofill / content type hints for card", *check(kt, r"ContentType\.CreditCard|autofill|AutofillType|contentType")),
         ("User input survives rotation (rememberSaveable / TextFieldState / ViewModel)", *check(kt, r"rememberSaveable|rememberTextFieldState|TextFieldState|SavedStateHandle")),
-    ]
+    ], d)
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
@@ -144,9 +144,26 @@ def swift_typechecks(d):
     return proc.returncode == 0, (last if proc.returncode == 0 else first_error.split("error:")[-1].strip()[:110] or last)
 
 
+def kotlin_compiles(d):
+    """Compile the run's Kotlin with scripts/compile_kotlin.py. None when it can't run here (check skipped)."""
+    import subprocess
+    files = [str(f) for f in sorted(d.rglob("*.kt"))]
+    if not files:
+        return None
+    ck = Path(__file__).resolve().parent.parent / "scripts" / "compile_kotlin.py"
+    proc = subprocess.run([sys.executable, str(ck), *files], capture_output=True, text=True)
+    if proc.returncode == 3:
+        return None
+    last = (proc.stdout.strip().splitlines() or ["no output"])[-1]
+    first_error = next((l for l in proc.stdout.splitlines() if ": error:" in l), "")
+    return proc.returncode == 0, (last if proc.returncode == 0 else first_error.split("error:")[-1].strip()[:110] or last)
+
+
 def with_compile(checks, d):
     tc = swift_typechecks(d)
-    return checks + ([("Swift typechecks (iOS 17 simulator SDK)", *tc)] if tc is not None else [])
+    kc = kotlin_compiles(d)
+    return (checks + ([("Swift typechecks (iOS 17 simulator SDK)", *tc)] if tc is not None else [])
+            + ([("Kotlin compiles (Compose MP 1.9.0, JVM + Android)", *kc)] if kc is not None else []))
 
 
 def process_checks(resp):
@@ -178,14 +195,14 @@ def eval4(d):
 def eval5(d):
     kt = read(d, "**/*.kt")
     resp = read(d, "response.md")
-    return process_checks(resp) + [
+    return with_compile(process_checks(resp) + [
         ("lint.py: no FAIL in the produced Kotlin", *lint_fails(d)),
         ("Weekly reset modelled (Monday / week start)", *check(kt, r"MONDAY|Monday|weekStart|startOfWeek|resetsOn")),
         ("Over-budget or empty-week state designed", *check(kt, r"over ?budget|overBudget|isEmpty|EmptyWeek|empty state", re.I)),
         ("Text sized in sp", *check(kt, r"\d+(\.\d+)?\.sp")),
         ("Semantics on custom elements", *check(kt, r"semantics|contentDescription|stateDescription")),
         ("Reduce-motion handled", *check(kt, r"reduceMotion|ReduceMotion|ANIMATOR_DURATION_SCALE|animationsEnabled|MotionDurationScale")),
-    ]
+    ], d)
 
 
 def eval6(d):

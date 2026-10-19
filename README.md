@@ -32,7 +32,7 @@ Every run:
 1. Lists what only this product has, names the screen's content shapes, then **deals three researched directions** that can show them (`scripts/deal.py`, 20 directions anchored in shipped apps) instead of reaching for the category default, and drops any that fail a fit test (content at rest, owned idea, costume test) before picking one.
 2. Writes a short **design brief** around an owned idea that must pass a competitor test: owned idea, live interaction, persona, type, colour, icons, motion, signature moves.
 3. Builds tokens first, then components, then the screen, following a **code baseline** (stable identity, state that survives, transforms not layout).
-4. **Compiles and lints the code** (`scripts/typecheck.py` for Swift, Gradle for Kotlin where a project exists; `scripts/lint.py`), then **renders the result and looks at it** twice over: a craft pass (clipped, stretched, off-centre) and a scored taste pass (one-second glance, squint, cover the logo, fullness), at most two fix rounds.
+4. **Compiles and lints the code** (`scripts/typecheck.py` for Swift; the project's Gradle build or `scripts/compile_kotlin.py` for Kotlin; `scripts/lint.py`), then **renders the result and looks at it** twice over: a craft pass (clipped, stretched, off-centre) and a scored taste pass (one-second glance, squint, cover the logo, fullness), at most two fix rounds.
 5. Reports accessibility trade-offs as warnings (it doesn't silently block bold choices).
 
 ## Grounded in
@@ -73,6 +73,8 @@ library/directions.json     20 dealt directions (5 per preset), with palettes ch
 scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator SDK, no Xcode project needed
+scripts/compile_kotlin.py   compiles Compose / CMP files in a throwaway Kotlin 2.2.21 + Compose MP 1.9.0 project (JVM + Android)
+scripts/kotlin-check/       the Gradle template that compile_kotlin.py copies code into
 research/                   the source material behind the rules
 evals/                      test prompts, input files, grade.py
 ```

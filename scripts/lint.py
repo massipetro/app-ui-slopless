@@ -39,6 +39,8 @@ RULES = {
     "generic-button-label": ("WARN", "button not named for its action", "Name the action: \"Pay €642\", \"Mark as done\""),
     "slop-copy": ("WARN", "generic marketing copy", "Say the specific thing this product does"),
     "stock-check": ("WARN", "core verb drawn with a stock check icon", "Custom-draw and animate the core verb's glyph"),
+    "missing-animate-import": ("FAIL", "transition.animateFloat/animateColor/animateDp called without importing the extension (doesn't compile)", "import androidx.compose.animation.core.animateFloat (animateDp, animateValue) or androidx.compose.animation.animateColor"),
+    "wrong-import": ("FAIL", "import from a package the symbol isn't in (doesn't compile)", "rememberSaveable lives in androidx.compose.runtime.saveable"),
     "index-identity": ("WARN", "list identity from indices or offsets", "SwiftUI: ForEach over Identifiable with a stored id; Compose: items(rows, key = { it.id })"),
     "anyview": ("WARN", "AnyView erases identity and costs diffing", "@ViewBuilder, a generic, or an enum-driven switch"),
     "dispatch-delay": ("WARN", "DispatchQueue delay used to sequence UI", "withAnimation { } completion: { }, .task with Task.sleep, or a phase/keyframe animator"),
@@ -271,6 +273,16 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
                 if t[1] in actor_types:
                     add("mainactor-default-arg", line_of(m.start()), t[1])
     else:
+        # Transition extensions need their own import; animateFloatAsState doesn't bring them in.
+        ext_pkg = {"animateFloat": "androidx.compose.animation.core", "animateDp": "androidx.compose.animation.core",
+                   "animateValue": "androidx.compose.animation.core", "animateOffset": "androidx.compose.animation.core",
+                   "animateColor": "androidx.compose.animation"}
+        for fn, pkg in ext_pkg.items():
+            call = re.search(r"\.\s*" + fn + r"\s*\(", text)
+            if call and not re.search(r"^\s*import\s+" + re.escape(pkg) + r"\.(" + fn + r"\b|\*)", raw, re.M):
+                add("missing-animate-import", line_of(call.start()), fn)
+        for m in re.finditer(r"^\s*import\s+androidx\.compose\.runtime\.rememberSaveable\b", raw, re.M):
+            add("wrong-import", raw.count("\n", 0, m.start()) + 1, "androidx.compose.runtime.rememberSaveable")
         for m in re.finditer(r"(?<![\w.])(items|itemsIndexed)\(", text):
             span = call_span(text, m.start())
             args = span[:span.find(")") + 1] if ")" in span else span

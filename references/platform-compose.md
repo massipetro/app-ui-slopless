@@ -184,7 +184,7 @@ Modifier
 
 ## 8b. Code baseline (what users feel)
 
-A bold screen that janks reads as broken (Tuch et al. 2012). These rules cover only what's visible: smooth scrolling, steady animation, state that survives. Sources and the full list of 20 are in `../research/code-baseline.md`. Where third-party skills disagree, the official docs win.
+A bold screen that janks reads as broken (Tuch et al. 2012). These rules cover only what's visible: smooth scrolling, steady animation, state that survives. Sources and the full list of 20 are in `../research/code-baseline.md`; rules 13–14 come from compile failures in our own evals. Where third-party skills disagree, the official docs win.
 
 1. **Stable keys in lazy lists:** `items(rows, key = { it.id }, contentType = { it.kind })`. Never an index. That's what makes `Modifier.animateItem()` and per-row saved state work.
 2. **Reserve space for async content:** images get a fixed size or `aspectRatio` plus a placeholder, so rows don't jump.
@@ -194,11 +194,12 @@ A bold screen that janks reads as broken (Tuch et al. 2012). These rules cover o
 6. **Defer fast reads into lambda modifiers:** `Modifier.offset { … }`, `drawBehind {}`, `graphicsLayer { scaleX = s }`. Animate transforms and alpha, not size, padding or `offset(dp)`. This is what keeps press squish and ambient loops at 60/120 fps.
 7. **Don't chase stability by reflex.** Strong skipping is the default (Kotlin 2.0.20+). Check Layout Inspector recomposition counts before adding `@Stable` or `ImmutableList`.
 8. **Choose each state's lifespan on purpose:** `remember` for transient UI; `rememberSaveable` for anything the user did (typed text, selection, tab, expanded); ViewModel + `SavedStateHandle` for screen state that must survive process death. Save IDs, not objects.
-9. **Text fields use the state-based API:** `TextField(state = rememberTextFieldState())`. No dropped characters or cursor jumps, and it survives rotation.
+9. **Text fields use the state-based API:** `TextField(state = rememberTextFieldState())`. No dropped characters or cursor jumps, and it survives rotation. This needs Material 3 1.4 (Compose Multiplatform: `org.jetbrains.compose.material3:material3:1.9.0` or later; the `compose.material3` accessor in CMP 1.9.0 still pins the older 1.8.2). On an older Material 3, use `value`/`onValueChange` with `rememberSaveable` and say so.
 10. **`collectAsStateWithLifecycle()`** for flows (common code via `org.jetbrains.androidx.lifecycle`). Hoist state: the screen collects, children get values and lambdas, and the ViewModel is never passed down.
 11. **Preview every state** (loading, empty, error, longest real string) with fake `UiState` and `@PreviewLightDark` / `@PreviewFontScales`.
 12. **Judge smoothness in a release build (R8) on a real device**, and ship a Baseline Profile for startup and the main scroll. CMP: the iOS side needs Instruments on a release framework, and `CADisableMinimumFrameDurationOnPhone = YES` in Info.plist for 120 Hz.
-13. **Compile before you hand over.** With a Gradle project, `./gradlew :<module>:compileKotlin` (CMP: the `compileKotlinIosSimulatorArm64` and Android compile tasks) must pass. Without one, say "Kotlin not compiled" in the report rather than implying it builds.
+13. **Compile before you hand over.** With a Gradle project, `./gradlew :<module>:compileKotlin` (CMP: the `compileKotlinIosSimulatorArm64` and Android compile tasks) must pass. Without one, run `scripts/compile_kotlin.py` on the files you wrote. Only if neither can run, say "Kotlin not compiled" in the report.
+14. **Import transition extensions explicitly.** `infiniteTransition.animateFloat(…)`, `animateDp`, `animateValue` (`androidx.compose.animation.core`) and `animateColor` (`androidx.compose.animation`) are extension functions with their own imports; importing `animateFloatAsState` doesn't bring them in. `rememberSaveable` is in `androidx.compose.runtime.saveable`. These two caused most of the compile failures in our evals; `lint.py` fails both.
 
 **Companion skill:** for deeper Compose and CMP correctness, suggest that users install [aldefy/compose-skill](https://github.com/aldefy/compose-skill) (MIT): `/plugin marketplace add aldefy/compose-skill`. Where it conflicts with the rules above (stability/`ImmutableList`, CMP `rememberSaveable`), these rules win.
 
