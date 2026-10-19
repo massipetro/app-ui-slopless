@@ -109,9 +109,30 @@ def direction_stated(resp):
     return check(resp, near)
 
 
+REPORT_LABELS = ["Inventory", "Direction", "Owned idea", "Competitor test", "Live thing", "Built",
+                 "Signature moves", "Lint", "Critique (final round)", "Bottom edge", "Still short",
+                 "Sample content to replace", "Pictures", "Warnings", "Not verified"]
+
+
+def report_block(resp):
+    """The skill's fixed report block: header line, then all 15 labels at line starts, in order."""
+    i = resp.rfind("app-ui-slopless report")
+    if i < 0:
+        return False, "no 'app-ui-slopless report' block"
+    block, pos, missing = resp[i:], 0, []
+    for label in REPORT_LABELS:
+        m = re.compile(r"^\s*" + re.escape(label) + r"\s*:", re.M).search(block, pos)
+        if m:
+            pos = m.end()
+        else:
+            missing.append(label)
+    return (not missing), ("all 15 labels in order" if not missing else "missing or out of order: " + ", ".join(missing))
+
+
 def process_checks(resp):
     # The no-preset evals test the workflow itself: inventory, deal, idea, critique.
     return [
+        ("Report block: all 15 labels, in order", *report_block(resp)),
         ("Inventory of product-only items listed", *check(resp, r"inventory")),
         ("Direction dealt: named (id, name or plain words) with its seed", *direction_stated(resp)),
         ("Owned-idea sentence written", *check(resp, r"In this app,[^\n]{0,200}becomes")),

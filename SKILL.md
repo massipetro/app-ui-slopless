@@ -198,17 +198,19 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
 
-Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). End with the report below as your **final message**. Repeat everything in it even if you wrote it earlier: some hosts (headless runs, some models) show only the last message, so a step that only appeared mid-run is invisible to the reader. Don't claim a check you didn't run.
+Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). **End with the report block.** Your final message ends with the block below, filled in. It is a fixed format, not a suggestion: copy the 15 labels exactly, in this order, one per line, inside the fenced block, starting with the `app-ui-slopless report` line. Don't rename, merge, reorder or drop a label, and don't restate it as prose or under your own headings. Fill every field; if one doesn't apply, write `n/a` and why. You may write anything you like before the block (what you built, notes for the user), but the block comes last and stands on its own: some hosts (headless runs, some models) show only the last message, so a step that only appeared mid-run is invisible to the reader. Don't claim a check you didn't run.
 
 ```
-Inventory: <the 8–12 items from step 1; (assumed) where inferred>
-Direction: <dealt id> (seed <n>); redeals: <none, or which and why>
-Owned idea: In this app, <inventory item> becomes <device>. Competitor test: <competitor> → <result>
+app-ui-slopless report
+Inventory: <the 8–12 items from step 1, comma-separated; (assumed) where inferred>
+Direction: <dealt id, e.g. pl-persona> (seed <n>); redeals: <none, or which and why>
+Owned idea: In this app, <inventory item> becomes <device>.
+Competitor test: <competitor> → <why the idea fails for them>
 Live thing: <the interaction and the real state it reacts to>
 Built: <files, screens, states>
 Signature moves: <2–3>
 Lint: <n FAIL, n WARN; each --allow and each kept WARN with its reason>
-Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: …)
+Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
 Bottom edge: rest frame <each row at the fold: whole / under fade / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
 Sample content to replace: <names, prices, dates, photos>
@@ -364,4 +366,4 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Depth signifiers (lips, strokes, shadows) visible at ≥3:1 against their surface.
 - [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels), or the break is justified.
 - [ ] None of the slop tells.
-- [ ] The final message is the full report template from step 5, repeating the inventory, direction and seed, owned-idea sentence, critique scores and bottom-edge result even if they appeared earlier.
+- [ ] The final message ends with the `app-ui-slopless report` block from step 5: all 15 labels verbatim, in order, every field filled (or `n/a` with a reason).
