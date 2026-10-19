@@ -107,6 +107,8 @@ Across the five rounds the skill won 18 of 22 blind pairs. Round 4's Opus judge 
 
 - Round 5: a dealt direction could miss the product (poster blocks for a ferry timetable), and a big hero could push the brief's content below the fold. Each direction now declares the content shapes it can hold, `deal.py --content` only deals directions that can show the screen's primary shape, and every option goes through a fit test (content at rest, owned idea, costume test) before it can be chosen. A "brief at rest" rule keeps every must-have visible in the resting frame (three rows for a list, hero under about 45% of the height), with a matching critique cap. Not yet re-run.
 
+- Compilation (checked afterwards, no model calls): typechecking every Swift output from rounds 3–5 against the iOS simulator SDK, 4 of the skill's 10 files failed and 0 of 9 baselines. All four were ferry screens; three created a `@MainActor` model in a default argument, which the skill's own code baseline had encouraged, and one hit a compiler failure on a `keyframeAnimator` with a conditional inside its builder. Step 5 now typechecks before handing over (`scripts/typecheck.py`), the SwiftUI baseline has rules for both causes, `lint.py` warns on the default-argument pattern, and `grade.py` adds "Swift typechecks" to the Swift evals. Kotlin is still not compiled in evals: that needs a Gradle project.
+
 ### Limits
 
 One run per config and one judge per pair, so a single score carries about half a point of noise. Judges are models, not people. The screens are HTML stand-ins for native renders. The briefs were written alongside the skill, so they may favour it.

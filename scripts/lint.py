@@ -39,6 +39,15 @@ RULES = {
     "generic-button-label": ("WARN", "button not named for its action", "Name the action: \"Pay €642\", \"Mark as done\""),
     "slop-copy": ("WARN", "generic marketing copy", "Say the specific thing this product does"),
     "stock-check": ("WARN", "core verb drawn with a stock check icon", "Custom-draw and animate the core verb's glyph"),
+    "index-identity": ("WARN", "list identity from indices or offsets", "SwiftUI: ForEach over Identifiable with a stored id; Compose: items(rows, key = { it.id })"),
+    "anyview": ("WARN", "AnyView erases identity and costs diffing", "@ViewBuilder, a generic, or an enum-driven switch"),
+    "dispatch-delay": ("WARN", "DispatchQueue delay used to sequence UI", "withAnimation { } completion: { }, .task with Task.sleep, or a phase/keyframe animator"),
+    "observableobject": ("WARN", "ObservableObject / @Published / @StateObject in new code", "@Observable model held in @State; children get let, @Bindable or @Environment"),
+    "mainactor-default-arg": ("WARN", "@MainActor model created in a default argument (fails to compile)", "Pass the model from the caller, or create it in @State private var model = Model()"),
+    "lazy-items-no-key": ("WARN", "lazy list items without a stable key", "items(rows, key = { it.id }, contentType = { it.kind })"),
+    "nested-scroll": ("WARN", "LazyColumn inside a verticalScroll container", "One scroll container per axis: put headers in as item { }"),
+    "collect-no-lifecycle": ("WARN", "flow collected with collectAsState()", "collectAsStateWithLifecycle()"),
+    "text-in-remember": ("WARN", "typed text held in remember { mutableStateOf(\"\") }", "rememberTextFieldState(), or rememberSaveable for anything the user typed"),
     "caps-labels": ("WARN", "more than two uppercase labels on one screen", "Caps budget: two small uppercase labels at most; sentence case elsewhere, caps only at display size"),
     "pinned-bottom-overlap": ("WARN", "bottom bar laid over the scrolling content instead of insetting it", "SwiftUI: .safeAreaInset(edge: .bottom) on the ScrollView/List; Compose: Scaffold(bottomBar) with innerPadding in the list's contentPadding"),
     "no-reduce-motion": ("WARN", "animation with no Reduce Motion / Remove animations handling", "Read accessibilityReduceMotion / animator scale and swap travel for fades"),
@@ -244,6 +253,48 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
             named = re.search(r"\bText\(|\bLabel\(|accessibilityLabel", body) or "accessibilityLabel" in "\n".join(trailing)
             if "Image(systemName:" in body and not named:
                 add("unlabelled-icon-button", line_of(m.start()))
+
+    # Code baseline (platform files, section 8b): patterns that hurt what users feel, or don't compile.
+    if swift:
+        for m in re.finditer(r"ForEach\([^\n]*?(\.indices\b|id:\s*\\\.offset|\.enumerated\(\)[^\n]*id:\s*\\\.offset)", text):
+            add("index-identity", line_of(m.start()))
+        for m in re.finditer(r"\bAnyView\(", text):
+            add("anyview", line_of(m.start()))
+        for m in re.finditer(r"DispatchQueue\.main\.asyncAfter", text):
+            add("dispatch-delay", line_of(m.start()))
+        for m in re.finditer(r":\s*ObservableObject\b|@Published\b|@StateObject\b|@ObservedObject\b", text):
+            add("observableobject", line_of(m.start()))
+        # Classes isolated to the main actor (@Observable alone is not).
+        actor_types = set(re.findall(r"@MainActor\b(?:\s*@\w+(?:\([^)]*\))?)*\s*(?:(?:final|public|private|fileprivate|internal)\s+)*class\s+(\w+)", text))
+        for m in re.finditer(r"\binit\(([^)]*)\)", text):
+            for t in re.findall(r":\s*(\w+)\??\s*=\s*(\w+)\(", m.group(1)):
+                if t[1] in actor_types:
+                    add("mainactor-default-arg", line_of(m.start()), t[1])
+    else:
+        for m in re.finditer(r"(?<![\w.])(items|itemsIndexed)\(", text):
+            span = call_span(text, m.start())
+            args = span[:span.find(")") + 1] if ")" in span else span
+            depth, end = 0, len(span)
+            for k, ch in enumerate(span):
+                if ch == "(":
+                    depth += 1
+                elif ch == ")":
+                    depth -= 1
+                    if depth == 0:
+                        end = k
+                        break
+            args = span[:end]
+            if re.search(r"\bLazy(Column|Row|VerticalGrid|HorizontalGrid|VerticalStaggeredGrid)\b", text) and "key" not in args:
+                add("lazy-items-no-key", line_of(m.start()))
+        for m in re.finditer(r"verticalScroll\(", text):
+            block = brace_block(text, m.end())
+            inner = text[block[0]:block[1]]
+            if re.search(r"\bLazyColumn\b", inner):
+                add("nested-scroll", line_of(m.start()))
+        for m in re.finditer(r"\.collectAsState\(", text):
+            add("collect-no-lifecycle", line_of(m.start()))
+        for m in re.finditer(r"(?<!Saveable)\bremember\s*\{\s*mutableStateOf\(\s*\"\"\s*\)", text):
+            add("text-in-remember", line_of(m.start()))
 
     # Caps budget: uppercase transforms plus ALL-CAPS text literals (2+ words or 4+ letters).
     caps_sites = []

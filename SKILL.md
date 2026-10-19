@@ -178,13 +178,24 @@ Never: stock photos of laughing people, AI images passed off as real, illustrati
 
 ### 5. Look at it, fix it, then report
 
-**Gate first.** Lint the files you wrote:
+**Gate first: compile, then lint.** Code that doesn't build is not a deliverable, however good the render looks.
+
+- **SwiftUI:** typecheck every Swift file you wrote, together, against the iOS simulator SDK:
+
+  ```bash
+  python3 <skill>/scripts/typecheck.py <changed .swift files or folder> [--ios <deployment target, default 17.0>]
+  ```
+
+  Fix every error and run it again until it passes. It needs no Xcode project, so there's no excuse to skip it on a Mac. If it can't run (exit 3: no Xcode, or files that import third-party packages), say so under "Not verified"; never report Swift as compiled when it wasn't.
+- **Compose / CMP:** if the project has a Gradle build, compile the module you changed (`./gradlew :<module>:compileKotlin`, or `compileKotlinIosSimulatorArm64` / `compileDebugKotlinAndroid` for a CMP target) and fix every error. Without a project, Kotlin can't be compiled here: say "Kotlin not compiled" under "Not verified".
+
+Then lint the files you wrote:
 
 ```bash
 python3 <skill>/scripts/lint.py <changed .swift / .kt files or folder> [--allow <rule>,<rule>]
 ```
 
-It flags the slop tells and craft defects the code itself shows: violet accents, stock greys, 5%-black shadows, fixed font sizes, placeholder-only fields, sub-44/48 targets, unlabelled icon buttons, emoji, placeholder data, animation without Reduce Motion, and more (`--list-rules`). Fix every `FAIL`. Treat each `WARN` as wrong unless you can defend it in one sentence. `--allow` is for deliberate style choices only (e.g. `blur-shadow` for a warm premium floating sheet); list each one in the report. It's a regex heuristic, so a clean lint proves nothing about taste: that's what the passes below are for.
+It flags the slop tells and craft defects the code itself shows (violet accents, stock greys, 5%-black shadows, fixed font sizes, placeholder-only fields, sub-44/48 targets, unlabelled icon buttons, emoji, placeholder data, animation without Reduce Motion) and the code-baseline patterns from the platform files (index-based list identity, `AnyView`, `DispatchQueue` delays, `ObservableObject`, `@MainActor` models in default arguments, lazy `items` without keys, a `LazyColumn` inside `verticalScroll`, `collectAsState()`, typed text in plain `remember`). `--list-rules` shows them all. Fix every `FAIL`. Treat each `WARN` as wrong unless you can defend it in one sentence. `--allow` is for deliberate style choices only (e.g. `blur-shadow` for a warm premium floating sheet); list each one in the report. It's a regex heuristic, so a clean lint proves nothing about taste: that's what the passes below are for.
 
 **Render what you built and look at the image before handing over.** Code that reads well often renders badly: a number clipped by a fixed-width box, a token stretched into a pill by its parent, a tick off-centre, a bar covering content. The user sees those first, and one of them makes a bold design look broken (Tuch et al. 2012: poor execution lowers perceived beauty). Use the best render path available:
 1. **Real render:** Compose `@Preview` screenshot tests (Roborazzi/Paparazzi), SwiftUI previews or snapshot tests, or the app on an emulator/simulator (`adb exec-out screencap -p > s.png`, `xcrun simctl io booted screenshot s.png`).
@@ -221,7 +232,7 @@ Competitor test: <competitor> → <why the idea fails for them>
 Live thing: <the interaction and the real state it reacts to>
 Built: <files, screens, states; the brief's must-haves visible at rest>
 Signature moves: <2–3>
-Lint: <n FAIL, n WARN; each --allow and each kept WARN with its reason>
+Lint: <compile: pass / FAIL / not run and why; lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
 Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
 Bottom edge: rest frame <each row at the fold: whole / under fade / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
@@ -362,6 +373,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test), misfits dropped, redeal stated if none survived; direction id and seed in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
+- [ ] Swift typechecked with `scripts/typecheck.py` (or Kotlin compiled with Gradle) and passing; if it couldn't run, the report says so.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Scrolling screens rendered at rest and scrolled to the end; the row-by-row fold check found no cut row, and the last row clears the bar.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).

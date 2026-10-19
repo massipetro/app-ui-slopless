@@ -50,7 +50,7 @@ def eval1(d):
 
 def eval2(d):
     sw = read(d, "**/ProfileView.swift")
-    return [
+    return with_compile([
         ("Keeps NavigationStack (native mechanics)", *check(sw, r"NavigationStack")),
         ("Hard shadow is an offset shape, not blurred .shadow", *check(sw, r"\.offset\(\s*x:\s*\w+[^)]*y:")),
         ("No blurred .shadow(radius > 0)", *absent(sw, r"\.shadow\([^)]*radius:\s*[1-9]")),
@@ -63,7 +63,7 @@ def eval2(d):
         ("No default Color.gray slop", *absent(sw, r"Color\.gray|\.foregroundColor\(\.gray\)")),
         ("Reduce Motion respected", *check(sw, r"accessibilityReduceMotion")),
         ("No index-based ForEach identity", *absent(sw, r"ForEach\([^)]*\.indices|id:\s*\\\.offset")),
-    ]
+    ], d)
 
 
 def eval3(d):
@@ -129,6 +129,26 @@ def report_block(resp):
     return (not missing), ("all 15 labels in order" if not missing else "missing or out of order: " + ", ".join(missing))
 
 
+def swift_typechecks(d):
+    """Typecheck the run's Swift with scripts/typecheck.py. None when there's no Xcode here (check skipped)."""
+    import subprocess
+    files = [str(f) for f in sorted(d.rglob("*.swift"))]
+    if not files:
+        return None
+    tc = Path(__file__).resolve().parent.parent / "scripts" / "typecheck.py"
+    proc = subprocess.run([sys.executable, str(tc), *files], capture_output=True, text=True)
+    if proc.returncode == 3:
+        return None
+    last = (proc.stdout.strip().splitlines() or ["no output"])[-1]
+    first_error = next((l for l in proc.stdout.splitlines() if ": error:" in l), "")
+    return proc.returncode == 0, (last if proc.returncode == 0 else first_error.split("error:")[-1].strip()[:110] or last)
+
+
+def with_compile(checks, d):
+    tc = swift_typechecks(d)
+    return checks + ([("Swift typechecks (iOS 17 simulator SDK)", *tc)] if tc is not None else [])
+
+
 def process_checks(resp):
     # The no-preset evals test the workflow itself: inventory, deal, idea, critique.
     return [
@@ -145,14 +165,14 @@ def process_checks(resp):
 def eval4(d):
     sw = read(d, "**/*.swift")
     resp = read(d, "response.md")
-    return process_checks(resp) + [
+    return with_compile(process_checks(resp) + [
         ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
         ("Live countdown driven by time (TimelineView / Timer / Date math)", *check(sw, r"TimelineView|Timer\.publish|\.timeIntervalSince|Date\.now|countdown")),
         ("Real place names, no placeholder data", *check(sw, r"Procida|Ischia|Napoli|Naples|Molo|Beverello|Pozzuoli")),
         ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)")),
         ("VoiceOver labels on custom elements", *check(sw, r"accessibility(Label|Value|Element|AddTraits)")),
         ("Reduce Motion respected", *check(sw, r"accessibilityReduceMotion")),
-    ]
+    ], d)
 
 
 def eval5(d):
@@ -172,14 +192,14 @@ def eval6(d):
     sw = read(d, "**/*.swift")
     html = read(d, "**/*.html")
     resp = read(d, "response.md")
-    return process_checks(resp) + [
+    return with_compile(process_checks(resp) + [
         ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
         ("Photo slots keep a fixed aspect ratio", *check(sw, r"aspectRatio\(")),
         ("Remote photos handle loading and failure (AsyncImage phases or placeholder)", *check(sw, r"AsyncImage[\s\S]{0,600}(phase|placeholder:|\.failure|\.empty)")),
         ("No grey placeholder boxes standing in for photos", *absent(sw + html, r"Rectangle\(\)\s*\.fill\(\s*(Color\.)?(gray|secondary)|fill\(Color\(\.system(Gray|Fill)|background:\s*#(ccc|ddd|e0e0e0|d9d9d9)\b")),
         ("Picture sourcing is honest (licence / credit stated, or drawn)", *check(resp, r"licen[cs]e|public domain|CC[ -]BY|CC0|Wikimedia|Openverse|credit|drawn in code|illustrat")),
         ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)")),
-    ]
+    ], d)
 
 
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,

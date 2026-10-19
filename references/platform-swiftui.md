@@ -194,9 +194,9 @@ CustomToggle(isOn: $on)
 
 ## 8b. Code baseline (what users feel)
 
-A bold screen that hitches reads as broken (Tuch et al. 2012). These rules cover only what's visible: smooth scrolling, animations that don't reset, state that survives. Sources and the full list of 20 are in `../research/code-baseline.md`.
+A bold screen that hitches reads as broken (Tuch et al. 2012). These rules cover only what's visible: smooth scrolling, animations that don't reset, state that survives. Sources and the full list of 20 are in `../research/code-baseline.md`; rules 15–16 come from compile failures in our own evals.
 
-1. **`@Observable` (`@MainActor`) models.** The owner holds `@State private var model = Model()`. Children get `let`, `@Bindable` or `@Environment(Model.self)`. No `ObservableObject` in new code.
+1. **`@Observable` models** (add `@MainActor` when the model drives UI state, then see rule 15 for where it may be created). The owner holds `@State private var model = Model()`. Children get `let`, `@Bindable` or `@Environment(Model.self)`. No `ObservableObject` in new code.
 2. **`@State` is `private` and never mirrors a parent value** (it would freeze on the first value). Use `let` or `@Binding`.
 3. **Stable identity:** `ForEach` over `Identifiable` with a stored `id`. Never `indices`, `\.offset`, or a `UUID()` made in `body`, because they reset row state and break insert/delete animations.
 4. **Same view shape per `ForEach` element:** filter before the loop, and wrap conditional content in a `VStack`.
@@ -210,6 +210,8 @@ A bold screen that hitches reads as broken (Tuch et al. 2012). These rules cover
 12. **Animate transforms and opacity, not `frame`/`padding`.** Attach `.animation(_:value:)` to the smallest subtree, and sequence with `withAnimation {} completion: {}`, not `DispatchQueue` delays.
 13. **Per-window state** (tab, selection, `NavigationPath`) goes in `@SceneStorage`. Navigate by value with `navigationDestination(for:)`, and present with `sheet(item:)`.
 14. **One `#Preview` per state** (loading, empty, error, longest string) plus dark and AX sizes. Profile a release build on device with the Instruments SwiftUI template.
+15. **Create `@MainActor` models only where the main actor runs.** `View` is main-actor isolated, so `@State private var model = Model()` is fine. A default argument is not: `init(model: Model = Model())` fails to compile with "call to main actor-isolated initializer in a synchronous nonisolated context", and so does a `static let` or a global. Pass the model in from the caller, or create it in the `@State` initializer.
+16. **Keep each view expression small enough to typecheck.** When the compiler reports "failed to produce diagnostic" or "unable to type-check this expression in reasonable time", it gave up on one expression: extract parts into small subviews or computed properties until it names the real error. Don't put conditionals inside result builders that don't support them (`keyframes:`, `ShapeStyle` chains): branch outside the builder, e.g. `trigger: reduceMotion ? 0 : stamp`, or apply the modifier conditionally on a value. Typecheck with `scripts/typecheck.py` before you render.
 
 **Companion skill:** for deeper SwiftUI correctness, suggest that users install [twostraws/swiftui-agent-skill](https://github.com/twostraws/swiftui-agent-skill) (SwiftUI Pro, MIT): `/plugin marketplace add twostraws/SwiftUI-Agent-Skill`, and tell it the real deployment target. Use [avdlee/swiftui-agent-skill](https://github.com/avdlee/swiftui-agent-skill) (MIT) instead if Instruments trace analysis is needed.
 

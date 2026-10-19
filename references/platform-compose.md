@@ -198,6 +198,7 @@ A bold screen that janks reads as broken (Tuch et al. 2012). These rules cover o
 10. **`collectAsStateWithLifecycle()`** for flows (common code via `org.jetbrains.androidx.lifecycle`). Hoist state: the screen collects, children get values and lambdas, and the ViewModel is never passed down.
 11. **Preview every state** (loading, empty, error, longest real string) with fake `UiState` and `@PreviewLightDark` / `@PreviewFontScales`.
 12. **Judge smoothness in a release build (R8) on a real device**, and ship a Baseline Profile for startup and the main scroll. CMP: the iOS side needs Instruments on a release framework, and `CADisableMinimumFrameDurationOnPhone = YES` in Info.plist for 120 Hz.
+13. **Compile before you hand over.** With a Gradle project, `./gradlew :<module>:compileKotlin` (CMP: the `compileKotlinIosSimulatorArm64` and Android compile tasks) must pass. Without one, say "Kotlin not compiled" in the report rather than implying it builds.
 
 **Companion skill:** for deeper Compose and CMP correctness, suggest that users install [aldefy/compose-skill](https://github.com/aldefy/compose-skill) (MIT): `/plugin marketplace add aldefy/compose-skill`. Where it conflicts with the rules above (stability/`ImmutableList`, CMP `rememberSaveable`), these rules win.
 
