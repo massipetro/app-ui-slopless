@@ -19,16 +19,64 @@ Work out which mode the user wants. A request can combine several (e.g. audit �
 
 | Mode | Trigger | Output |
 |---|---|---|
-| **Build** | "make me a … screen" | Brief → code |
-| **Redesign** | existing screen + "make it better/bolder" | Brief → code + short "what changed and why" |
+| **Build** | "make me a … screen" | Intake → brief → code |
+| **Redesign** | existing screen + "make it better/bolder" | Intake (read what exists, then ask) → brief → code + short "what changed and why" |
 | **Audit** | "review / critique / what's wrong" | Findings report (see `references/audit.md`) |
-| **Spec** | "design system", "tokens", "style guide" | Brief expanded into a token file |
+| **Spec** | "design system", "tokens", "style guide" | Intake → brief expanded into a token file |
 
-### 1. Pick the style (preset + dials)
+### 1. Intake: read what exists, match the product, then ask
 
-The user chooses the style; never silently default to something safe.
+The user chooses the style, but they choose from a recommendation, not from a neutral menu. A preset that ignores the product or throws away a brand people already recognise is the most expensive mistake this skill can make, because everything after it is built on top.
 
-If they named a preset, use it. If not and you can ask, offer the four presets with one line each and let them pick (or name a reference app; map it to the nearest preset and adjust dials). If you can't ask (non-interactive run), pick the preset that best fits the product and audience, state the choice and why in one line, and carry on.
+#### 1a. Read what exists (Redesign, Audit, and Build inside an existing app)
+
+Before proposing anything, take stock of the current visual language from the theme/token files, font and drawable resources, and a screenshot if you can get one:
+- **Type:** which faces, and how they feel (rounded and friendly, geometric, serif, condensed).
+- **Colour:** brand colour, surfaces, how status colours are used.
+- **Shape and depth:** radius language, cards vs rules, shadows.
+- **Identity assets:** mascot or characters, illustrations, photography, a custom logo or font. These carry recognition. **Keep them by default**; dropping one is the user's call, asked in 1c.
+- **Closest preset:** name the family the app already sits in (e.g. "rounded faces + mascot + illustrated heroes = already near Playful / Warm premium").
+
+#### 1b. Match the product to a preset
+
+| Product category | Good fit | Poor fit (offer only with the warning) |
+|---|---|---|
+| Navigation, transit, mobility, maps, travel | Warm premium; Playful if the app already has a mascot or illustrations | Editorial (utility screens have little content to set), Neo-brutalist (reads unreliable when people depend on it) |
+| Utilities (weather, scanners, calculators, settings-heavy tools) | Warm premium at low `BOLDNESS`; Neo-brutalist for indie or dev tools | Editorial |
+| Finance, banking, insurance | Warm premium; Playful only for beginner/teen finance | Neo-brutalist (reads untrustworthy) |
+| Health, medical | Warm premium, calm dials | Neo-brutalist, loud Playful |
+| Wellbeing, habits, fitness, learning, kids, games | Playful | Editorial, Neo-brutalist (except indie games) |
+| Social, messaging, dating | Playful; Neo-brutalist for Gen-Z or creator-led | Editorial for chat-heavy screens |
+| Media, news, reading, music, podcasts, sports stats | Editorial | Playful on news (bad-news surfaces) |
+| Commerce, marketplaces, food, hospitality | Warm premium; Editorial for drops and fashion | Neo-brutalist for mass-market retail |
+| Creator tools, dev tools, events, portfolios | Neo-brutalist, Editorial | none strong |
+| Productivity, enterprise, form-heavy flows | Warm premium at low `BOLDNESS` | Editorial, Playful |
+
+Combine it with 1a. When the existing look and the category point to the same preset, that's the recommendation. When they disagree, recommend the category fit and say which existing assets carry over into it, unless the user asked for a rethink. Each preset file's "Fits / Doesn't fit" lines go into more detail.
+
+#### 1c. Ask: one prompt, at most four questions
+
+Put the recommended option first, labelled "(Recommended)", with its one-line reason. Every preset option says how it would treat the app's existing assets ("keeps the rabbit and the city art", "replaces the rounded faces"). A poor-fit preset stays on the menu, but its description carries the warning from the table. Skip any question the request or the code already answers.
+
+**Redesign intake:**
+1. **Preset:** recommended first; poor fits carry their warning.
+2. **Keep** (multi-select): the identity assets found in 1a, plus the current layout order.
+3. **Scope:** *reskin* (same layout and flow, new skin) · *restructure* (rethink this screen's hierarchy and layout) · *rethink* (question what the screen is for and what belongs on it).
+4. **Focus:** what bothers them today, or which state matters most (the app's key alert or error state, empty, loading), or dial overrides shown next to the preset's defaults. Pick whichever the code leaves least clear.
+
+**Build intake:**
+1. **Category and audience** (only if the request doesn't say): who it's for, how often they use it, and where (on the move, at a desk).
+2. **Reference app:** "an app whose look you like". Map it to the nearest preset and adjust the dials.
+3. **Preset:** recommended from the fit table and the reference.
+4. **Dials:** the preset's defaults, or "louder / calmer / denser / airier".
+
+**Spec intake:** the Build questions, plus which platforms the tokens are for.
+
+If you can't ask (non-interactive run): take the recommendation, keep every identity asset, use *restructure* scope for a Redesign, and state each assumption in one line before the brief.
+
+### 2. Set the style (preset + dials)
+
+If the user named a preset, use it, even a poor fit. Warn them once, in one line, then commit to it.
 
 | Preset | One-liner | Real-world anchors | File |
 |---|---|---|---|
@@ -51,12 +99,13 @@ Then set the **dials** (1–10). Each preset file gives its defaults; the user c
 
 `FIDELITY` controls the *look* of components. Platform *mechanics* (back behaviour, safe areas, text scaling, system gestures) stay native at every setting unless there's a written reason. See "Breaking conventions".
 
-### 2. Write the design brief (before any code)
+### 3. Write the design brief (before any code)
 
 A short brief keeps the style coherent across every screen, and it's what turns "make it fun" into decisions. Keep it under ~30 lines, and put it in your reply (or in `DESIGN.md` for Spec mode or multi-screen work).
 
 ```
 Preset: <name>   Dials: B<n> M<n> D<n> C<n> F<n>
+Kept from the current app: <identity assets carried over (Redesign), or "new app">
 Owned idea: <the one metaphor carried through every surface: an airport board, a sky, a character, a camera, a ticket stub>
 Persona: <one sentence: who the app is, as a character>
 This, not that: <3 pairs, e.g. "confident, not shouty · warm, not cute · fast, not frantic">
@@ -84,7 +133,7 @@ Stock icon sets are plumbing: fine for utility chrome (back, close, settings, sh
 
 The platform files show how to draw and animate custom glyphs.
 
-### 3. Build
+### 4. Build
 
 Read `references/platform-swiftui.md` or `references/platform-compose.md` (Compose Multiplatform uses the Compose file plus its CMP section). They show how to implement tokens, custom fonts that still scale, press states, springs, haptics, reduce-motion, and insets idiomatically.
 
@@ -94,7 +143,7 @@ Put tokens first (one theme/token file or block), then components, then the scre
 
 Apply the core rules below while building. `references/principles.md` has the full rule set with sources; read it for Audit mode or when a judgement call needs backing.
 
-### 4. Look at it, fix it, then report
+### 5. Look at it, fix it, then report
 
 **Render what you built and look at the image before handing over.** Code that reads well often renders badly: a number clipped by a fixed-width box, a token stretched into a pill by its parent, a tick off-centre, a bar covering content. The user sees those first, and one of them makes a bold design look broken (Tuch et al. 2012: poor execution lowers perceived beauty). Use the best render path available:
 1. **Real render:** Compose `@Preview` screenshot tests (Roborazzi/Paparazzi), SwiftUI previews or snapshot tests, or the app on an emulator/simulator (`adb exec-out screencap -p > s.png`, `xcrun simctl io booted screenshot s.png`).
@@ -237,7 +286,8 @@ Models produce slop because they sample the statistical average of their trainin
 ## Final checklist
 
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
-- [ ] Brief written: preset, dials, persona, 2–3 signature moves.
+- [ ] Intake done: existing look and identity assets inventoried (Redesign), preset recommended from the fit table, questions asked or assumptions stated.
+- [ ] Brief written: preset, dials, persona, 2–3 signature moves, what's kept from the current app.
 - [ ] Tokens defined once; no stray hex values or magic numbers in the screen.
 - [ ] Every interactive element has a visible signifier and a pressed state.
 - [ ] Primary action is in the thumb zone; targets are 44/48; destructive actions are isolated.

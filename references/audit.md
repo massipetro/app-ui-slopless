@@ -13,7 +13,7 @@ How to critique an existing mobile screen against the studied principles. Read `
    - **2 Minor:** slows people down or confuses them occasionally.
    - **1 Cosmetic:** polish; fix if time allows.
    - Slop and blandness findings are usually 1–2, but say so explicitly. Blandness has a measured cost (R-COG-1, evidence table).
-6. **Then the redesign direction.** Recommend a preset and dials that fit the product, or use the user's choice.
+6. **Then the redesign direction.** Inventory the existing look and identity assets, and recommend a preset from the fit table (SKILL.md step 1a–1b). Say which assets carry over. If the user already chose a preset, use it, and warn once if the table lists it as a poor fit.
 
 ## Report template
 
@@ -38,7 +38,7 @@ How to critique an existing mobile screen against the studied principles. Read `
 <1–3 bullets: keep these>
 
 ## Redesign direction
-Preset: <name>, dials: B<n> M<n> D<n> C<n> F<n>, and why. Signature moves: <2–3>.
+Current look: <closest preset + identity assets>. Preset: <name>, dials: B<n> M<n> D<n> C<n> F<n>, and why (product category + existing look). Keeps: <assets>. Signature moves: <2–3>.
 ```
 
 Order the findings by severity, then by frequency of use. Keep each finding to one line. The fix should be concrete enough to implement.

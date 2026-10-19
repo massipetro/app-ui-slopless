@@ -17,7 +17,7 @@ Studied bones, unmistakable skin.
 | **Audit** | "UX audit of this checkout screen, then redesign it" |
 | **Spec** | "Give me a design system / tokens for this app" |
 
-You pick the style: **one of four presets, then tune five dials.**
+You pick the style: **one of four presets, then tune five dials.** You don't pick blind: for a redesign the skill first reads your app's current look (fonts, colours, mascot, illustrations), matches the product category to a preset, and asks up to four questions (preset, what to keep, how far to go, what to focus on), with its recommendation first.
 
 | Preset | Feel | Real-world anchors |
 |---|---|---|
