@@ -32,7 +32,22 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Five rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+Six rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+
+### Round 6: three runs per config, with the fit test and compile gate (main at `5f8b172`)
+
+Same setup as round 5, now with the content-shape deal, the fit test, the brief-at-rest rule and the Swift compile gate. Builds and judge on `claude-opus-5-5`; the judging is balanced, with the skill's screen shown as A in three pairs and B in three.
+
+| Eval | With skill (runs) | Mean | Without (runs) | Mean | Margin | Skill picked |
+|---|---|---|---|---|---|---|
+| 4 Ferry home, SwiftUI | 7.4 · 7.2 · 6.0 | 6.87 | 6.0 · 5.8 · 6.0 | 5.93 | +0.93 | 2 of 3 |
+| 5 Flat budget, CMP | 7.0 · 7.0 · 7.0 | 7.00 | 5.8 · 6.0 · 6.0 | 5.93 | +1.07 | 3 of 3 |
+
+- Average margin +1.0 (round 5: +0.4); the skill won 3 of 3 pairs as A and 2 of 3 as B.
+- Every skill run passed `--content`, and no misfit direction was dealt (newspaper frame and departure board for the ferry; toy box, dot matrix and persona for the budget).
+- All three skill ferry files typecheck (round 5: 1 of 3). Grader 14 / 14 (ferry) and 13 / 13 (budget) on every skill run; baselines 3–5. 0 lint FAILs.
+- The one loss was a 6.0 tie: the departure board passed the fit test but was built as stock cards and pills, while that baseline found its own maritime ticket idea.
+- Two budget builds were cut off by a usage limit and rebuilt before judging. Cost: $22.90 for the 12 valid builds, $2.37 for the cut-off ones, $1.94 for six judge calls.
 
 ### Round 5: three runs per config on evals 4 and 5 (main at `3d23111`)
 
@@ -95,7 +110,7 @@ Builds on `claude-opus-5-5`, judge on `claude-sonnet-5-5`.
 
 Round 1 used a CLI whose `sonnet` alias still pointed at Sonnet 5; later rounds pass the model id explicitly and stop any session that reports a different model.
 
-Across the five rounds the skill won 18 of 22 blind pairs. Round 4's Opus judge applied the caps more strictly than round 3's Sonnet judge. The margin shrinks as the baseline model gets stronger: about 1.5 points on Sonnet 5, about 0.5 on Opus 5.5 for the same two briefs.
+Across the six rounds the skill won 23 of 28 blind pairs. Round 4's Opus judge applied the caps more strictly than round 3's Sonnet judge. The margin shrinks as the baseline model gets stronger: about 1.5 points on Sonnet 5, about 0.5 on Opus 5.5 for the same two briefs.
 
 ### What the rounds changed in the skill
 
@@ -105,9 +120,11 @@ Across the five rounds the skill won 18 of 22 blind pairs. Round 4's Opus judge 
 
 - Round 4: the resting frame still showed rows cut behind the pinned bar even when the list was inset correctly, and the neo-brutalist and editorial directions overused small uppercase labels. The skill now renders every scrolling screen twice (at rest and scrolled to the end, `mock.html#end` for the HTML mock) and runs a row-by-row fold check; a caps budget (at most two small uppercase labels per screen) runs through the core rules, presets, library and deal sheet, with a `caps-labels` lint warning. Round 5 confirmed all three in practice (see above).
 
-- Round 5: a dealt direction could miss the product (poster blocks for a ferry timetable), and a big hero could push the brief's content below the fold. Each direction now declares the content shapes it can hold, `deal.py --content` only deals directions that can show the screen's primary shape, and every option goes through a fit test (content at rest, owned idea, costume test) before it can be chosen. A "brief at rest" rule keeps every must-have visible in the resting frame (three rows for a list, hero under about 45% of the height), with a matching critique cap. Not yet re-run.
+- Round 5: a dealt direction could miss the product (poster blocks for a ferry timetable), and a big hero could push the brief's content below the fold. Each direction now declares the content shapes it can hold, `deal.py --content` only deals directions that can show the screen's primary shape, and every option goes through a fit test (content at rest, owned idea, costume test) before it can be chosen. A "brief at rest" rule keeps every must-have visible in the resting frame (three rows for a list, hero under about 45% of the height), with a matching critique cap. Round 6 measured these together with the compile gate: +1.0.
 
 - Compilation (checked afterwards, no model calls): typechecking every Swift output from rounds 3–5 against the iOS simulator SDK, 4 of the skill's 10 files failed and 0 of 9 baselines. All four were ferry screens; three created a `@MainActor` model in a default argument, which the skill's own code baseline had encouraged, and one hit a compiler failure on a `keyframeAnimator` with a conditional inside its builder. Step 5 now typechecks before handing over (`scripts/typecheck.py`), the SwiftUI baseline has rules for both causes, `lint.py` warns on the default-argument pattern, and `grade.py` adds "Swift typechecks" to the Swift evals. Kotlin is still not compiled in evals: that needs a Gradle project.
+
+- Round 6 (open): a direction that fits on paper can still be built generically (stock cards and pills); the fit test checks the plan, not the execution. Kotlin is still never compiled.
 
 ### Limits
 
