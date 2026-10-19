@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Typecheck SwiftUI files against the iOS simulator SDK, without an Xcode project.
 
-  typecheck.py <file.swift or folder> [...] [--ios 17.0]
+  typecheck.py <file.swift or folder> [...] [--ios <target>]
 
 All files are checked together as one module, so types shared between files resolve.
 Exit 0: no errors. Exit 1: errors (printed as file:line: message). Exit 3: no Xcode
@@ -24,10 +24,29 @@ import sys
 from pathlib import Path
 
 
+def project_target(files: list[Path]) -> tuple[str, str] | None:
+    """The iOS deployment target the project declares, searching up from the first file."""
+    start = files[0].resolve().parent
+    for d in [start, *start.parents]:
+        pkg = d / "Package.swift"
+        if pkg.exists():
+            m = re.search(r"\.iOS\(\s*(?:\.v(\d+)(?:_(\d+))?|\"(\d+(?:\.\d+)?)\")", pkg.read_text(errors="ignore"))
+            if m:
+                ver = m.group(3) or (m.group(1) + "." + (m.group(2) or "0"))
+                return ver, str(pkg)
+        for proj in d.glob("*.xcodeproj/project.pbxproj"):
+            vers = re.findall(r"IPHONEOS_DEPLOYMENT_TARGET = ([\d.]+);", proj.read_text(errors="ignore"))
+            if vers:
+                return min(vers, key=lambda v: tuple(int(x) for x in v.split("."))), str(proj)
+        if (d / ".git").exists():
+            break
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("paths", nargs="+")
-    ap.add_argument("--ios", default="17.0", help="deployment target to check against (default 17.0)")
+    ap.add_argument("--ios", help="deployment target; default: the project's (Package.swift / .xcodeproj), else 17.0")
     args = ap.parse_args()
 
     files = []
@@ -57,6 +76,15 @@ def main() -> int:
                                 "UniformTypeIdentifiers", "QuartzCore", "SafariServices", "WebKit", "EventKit"})
     if foreign:
         print(f"typecheck: note: imports outside the SDK ({', '.join(foreign)}) will fail to resolve here")
+
+    declared = project_target(files)
+    default_ios, source = declared if declared else ("17.0", "skill default; no project target found")
+    if args.ios and args.ios != default_ios:
+        print(f"typecheck: note: --ios {args.ios} overrides the deployment target {default_ios} ({source}). "
+              "Only do this if the project really targets it, and say so in the report; "
+              "otherwise keep the target and wrap newer APIs in `if #available`.")
+    args.ios = args.ios or default_ios
+    print(f"typecheck: deployment target iOS {args.ios}" + ("" if args.ios != default_ios else f" ({source})"))
 
     arch = "arm64" if subprocess.run(["uname", "-m"], capture_output=True, text=True).stdout.strip() == "arm64" else "x86_64"
     cmd = ["xcrun", "--sdk", "iphonesimulator", "swiftc", "-typecheck",

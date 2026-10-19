@@ -194,7 +194,7 @@ CustomToggle(isOn: $on)
 
 ## 8b. Code baseline (what users feel)
 
-A bold screen that hitches reads as broken (Tuch et al. 2012). These rules cover only what's visible: smooth scrolling, animations that don't reset, state that survives. Sources and the full list of 20 are in `../research/code-baseline.md`; rules 15–16 come from compile failures in our own evals.
+A bold screen that hitches reads as broken (Tuch et al. 2012). These rules cover only what's visible: smooth scrolling, animations that don't reset, state that survives. Sources and the full list of 20 are in `../research/code-baseline.md`; rules 15–17 come from compile failures and drift in our own evals.
 
 1. **`@Observable` models** (add `@MainActor` when the model drives UI state, then see rule 15 for where it may be created). The owner holds `@State private var model = Model()`. Children get `let`, `@Bindable` or `@Environment(Model.self)`. No `ObservableObject` in new code.
 2. **`@State` is `private` and never mirrors a parent value** (it would freeze on the first value). Use `let` or `@Binding`.
@@ -206,12 +206,16 @@ A bold screen that hitches reads as broken (Tuch et al. 2012). These rules cover
 8. **Async work in `.task {}` / `.task(id:)`**, which cancels automatically and restarts when the input changes.
 9. **Never block the main actor:** decode JSON and images off-main, and downsample large images to display size.
 10. **Give rows their element** (`Row(item:)`), not the store plus an id, so one change doesn't redraw every row.
-11. **Fast-changing values stay out of broad state:** use `scrollTransition` / `visualEffect` for scroll-driven visuals and `onScrollGeometryChange` (iOS 18) thresholded to a Bool for logic.
+11. **Fast-changing values stay out of broad state:** use `scrollTransition` / `visualEffect` for scroll-driven visuals and `onScrollGeometryChange` (iOS 18, so behind `#available`; see rule 17) thresholded to a Bool for logic.
 12. **Animate transforms and opacity, not `frame`/`padding`.** Attach `.animation(_:value:)` to the smallest subtree, and sequence with `withAnimation {} completion: {}`, not `DispatchQueue` delays.
 13. **Per-window state** (tab, selection, `NavigationPath`) goes in `@SceneStorage`. Navigate by value with `navigationDestination(for:)`, and present with `sheet(item:)`.
 14. **One `#Preview` per state** (loading, empty, error, longest string) plus dark and AX sizes. Profile a release build on device with the Instruments SwiftUI template.
 15. **Create `@MainActor` models only where the main actor runs.** `View` is main-actor isolated, so `@State private var model = Model()` is fine. A default argument is not: `init(model: Model = Model())` fails to compile with "call to main actor-isolated initializer in a synchronous nonisolated context", and so does a `static let` or a global. Pass the model in from the caller, or create it in the `@State` initializer.
 16. **Keep each view expression small enough to typecheck.** When the compiler reports "failed to produce diagnostic" or "unable to type-check this expression in reasonable time", it gave up on one expression: extract parts into small subviews or computed properties until it names the real error. Don't put conditionals inside result builders that don't support them (`keyframes:`, `ShapeStyle` chains): branch outside the builder, e.g. `trigger: reduceMotion ? 0 : stamp`, or apply the modifier conditionally on a value. Typecheck with `scripts/typecheck.py` before you render.
+17. **Build for the project's deployment target, not the newest SDK.** Read it from the project (`IPHONEOS_DEPLOYMENT_TARGET`, or `platforms: [.iOS(...)]` in `Package.swift`); with none, target iOS 17. Use newer APIs only behind a check, with a fallback that still looks designed:
+    - iOS 18: `Tab(...)` in `TabView` (use `.tabItem` on 17), `onScrollGeometryChange`, `MeshGradient`, `.navigationTransition(.zoom(...))`, `ScrollPosition`, `.presentationSizing`. iOS 26: `.glassEffect()`, `GlassEffectContainer`.
+    - Inside a body: `if #available(iOS 18, *) { MeshGradient(...) } else { LinearGradient(...) }`. For a modifier, wrap it in a small `ViewModifier` that branches, so the call site stays one line. For a whole type, mark it `@available(iOS 18, *)` and branch where it's used.
+    - Never raise the target (or `typecheck.py --ios`) to make an availability error go away. If the project really targets something newer, say so in the report.
 
 **Companion skill:** for deeper SwiftUI correctness, suggest that users install [twostraws/swiftui-agent-skill](https://github.com/twostraws/swiftui-agent-skill) (SwiftUI Pro, MIT): `/plugin marketplace add twostraws/SwiftUI-Agent-Skill`, and tell it the real deployment target. Use [avdlee/swiftui-agent-skill](https://github.com/avdlee/swiftui-agent-skill) (MIT) instead if Instruments trace analysis is needed.
 
@@ -220,4 +224,4 @@ A bold screen that hitches reads as broken (Tuch et al. 2012). These rules cover
 In iOS 26, system bars, tab bars and toolbars are glass automatically when you use the system components.
 - In **warm premium** and **editorial**, let the system glass float over rich content (photos, big type). That's where it looks right.
 - In **neo-brutalist**, glass conflicts with the flat, opaque look. Use `.toolbarBackgroundVisibility(.visible, for: .navigationBar)` with a solid colour, or build an opaque custom bar (and note it as a convention break).
-- `.glassEffect()` on custom controls: only over real content, never as decoration on a flat background (a slop tell).
+- `.glassEffect()` on custom controls (iOS 26, so behind `if #available(iOS 26, *)` unless the project targets 26; rule 17): only over real content, never as decoration on a flat background (a slop tell).
