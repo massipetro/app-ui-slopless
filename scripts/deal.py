@@ -135,6 +135,7 @@ def print_sheet(d: dict, seed: int, keep: set[str]) -> None:
     if d["needs"]:
         print(f"Needs: {', '.join(d['needs'])}")
     print(f"How it goes wrong: {d['pitfall']}")
+    print("Caps budget: at most two small uppercase labels per screen; caps belong at display size.")
     print()
     print(f"Reproduce: deal.py --direction {d['id']} --seed {seed}")
 

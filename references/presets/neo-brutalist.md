@@ -18,9 +18,9 @@ Honest note: fully neo-brutalist *native mobile* apps are rare among well-docume
 - Implementation kit: [neobrutalism.dev](https://neobrutalism.dev/) (web, but its border and shadow conventions translate directly).
 
 ## Type
-- An **oversized grotesque or condensed display face** plus **monospace for metadata** (timestamps, counts, tags).
+- An **oversized grotesque or condensed display face** plus **monospace for metadata** (timestamps, counts, tags), set in natural case at a readable size, never as tracked uppercase labels.
 - OFL options: display **Archivo Black**, **Anton**, or **Familjen Grotesk 700**; text **Archivo** / **Hanken Grotesk**; mono **JetBrains Mono**, **Space Mono**, or **IBM Plex Mono**; dot-matrix numbers **Doto**.
-- Headlines are BIG (34–56 pt), tight (line height 0.95–1.05), and can go uppercase for short labels. Body stays sentence case at 16–17 pt in the text face, never monospace for paragraphs.
+- Headlines are BIG (34–56 pt), tight (line height 0.95–1.05), and can go uppercase at display size for one or two words. Small labels stay sentence case (caps budget: at most two small uppercase labels per screen). Body stays sentence case at 16–17 pt in the text face, never monospace for paragraphs.
 
 ## Colour
 - **Off-white or white base, pure black ink, 2–3 flat saturated accents from different hue families.** Example: base `#FFFDF5`, ink `#000000`, pink `#FF90E8`, yellow `#FFC900`, green `#23A094`, blue `#3B5BFF`.
@@ -61,6 +61,7 @@ Honest note: fully neo-brutalist *native mobile* apps are rare among well-docume
 - Native mechanics stay: system back and edge-swipe, sheets (restyle them with a stroke and a hard shadow at the top edge), text scaling. Thick strokes must not clip at 200% text.
 
 ## How cheap imitations go wrong
+- Monospace uppercase labels on every value, tag and heading. It reads as costume, and blind judges cap it; keep caps for the one giant header.
 - **"Soft brutalism":** rounded-xl + *blurred* shadow + black border. Blur is the giveaway.
 - A brutalist skin on a generic layout (centred hero, three bordered feature cards).
 - Random clashing colour with no system.

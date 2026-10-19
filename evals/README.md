@@ -89,7 +89,7 @@ Across the four rounds the skill won 14 of 16 blind pairs. Round 4's Opus judge 
 - Round 2: the inventory is the brief's first line and gates `deal.py`; a bottom-edge pass joined the critique.
 - Round 3: the final message repeats the full report (some hosts show only the last message); the bottom-edge rule covers both structure (`safeAreaInset` / `Scaffold` bottom bar, `pinned-bottom-overlap` lint) and the resting frame; requests to outside services must never carry the user's identity (one run put the user's email in a User-Agent).
 
-- Round 4 (open): the resting frame still shows rows cut behind the pinned bar even when the list is inset correctly, and the neo-brutalist and editorial directions overuse small tracked uppercase labels.
+- Round 4: the resting frame still showed rows cut behind the pinned bar even when the list was inset correctly, and the neo-brutalist and editorial directions overused small uppercase labels. The skill now renders every scrolling screen twice (at rest and scrolled to the end, `mock.html#end` for the HTML mock) and runs a row-by-row fold check; a caps budget (at most two small uppercase labels per screen) runs through the core rules, presets, library and deal sheet, with a `caps-labels` lint warning. Not yet re-run.
 
 ### Limits
 

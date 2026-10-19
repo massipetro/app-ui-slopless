@@ -454,12 +454,12 @@
         {
           "display": "Archivo Black",
           "text": "Archivo 400-600",
-          "data": "Space Mono for metadata only"
+          "data": "Space Mono for metadata only, natural case"
         },
         {
           "display": "Familjen Grotesk 700",
           "text": "Hanken Grotesk 400-600",
-          "data": "JetBrains Mono for metadata only"
+          "data": "JetBrains Mono for metadata only, natural case"
         }
       ],
       "palettes": [
@@ -526,7 +526,7 @@
         "health",
         "government"
       ],
-      "pitfall": "Soft brutalism (big radius, blurred shadow, black border); random colour per card."
+      "pitfall": "Soft brutalism (big radius, blurred shadow, black border); random colour per card; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     },
     {
       "id": "nb-spec-sheet",
@@ -694,7 +694,7 @@
       "not_for": [
         "kids"
       ],
-      "pitfall": "Dot type for running text (Nothing itself retreated from it); decorative dots with no function."
+      "pitfall": "Dot type for running text (Nothing itself retreated from it); decorative dots with no function; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     },
     {
       "id": "nb-poster-blocks",
@@ -789,7 +789,7 @@
         "health",
         "government"
       ],
-      "pitfall": "White text on yellow; a brutalist skin on a generic card layout."
+      "pitfall": "White text on yellow; a brutalist skin on a generic card layout; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     },
     {
       "id": "nb-hand-drawn",
@@ -876,7 +876,7 @@
         "government",
         "enterprise"
       ],
-      "pitfall": "Half-committed: hand-drawn icons on a stock UI reads unfinished, not raw."
+      "pitfall": "Half-committed: hand-drawn icons on a stock UI reads unfinished, not raw; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     },
     {
       "id": "pl-toy-box",
@@ -1414,7 +1414,7 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "A huge headline with nothing behind it; squashing type with scaleX."
+      "pitfall": "A huge headline with nothing behind it; squashing type with scaleX; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     },
     {
       "id": "ed-story-cards",
@@ -1505,7 +1505,7 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "Squashed type and imagery that doesn't integrate (Wrapped 2021's criticism)."
+      "pitfall": "Squashed type and imagery that doesn't integrate (Wrapped 2021's criticism); more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     },
     {
       "id": "ed-newspaper-frame",
@@ -1682,7 +1682,7 @@
         "kids",
         "games"
       ],
-      "pitfall": "An article layout that breaks at accessibility text sizes."
+      "pitfall": "An article layout that breaks at accessibility text sizes; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     },
     {
       "id": "ed-monogram-grid",
@@ -1773,7 +1773,7 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "Decorative shapes with nothing inside; random colour per cell."
+      "pitfall": "Decorative shapes with nothing inside; random colour per cell; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     }
   ]
 }

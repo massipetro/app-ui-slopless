@@ -179,6 +179,8 @@ It flags the slop tells and craft defects the code itself shows: violet accents,
 2. **Faithful mock:** if you can't run the platform, write an HTML/CSS mock with the same tokens, sizes and layout, and screenshot it headless at phone size with motion settled (e.g. Chromium-based `--headless=new --force-prefers-reduced-motion --window-size=390,844 --screenshot=s.png file.html`).
 3. **Neither possible:** say clearly in the report that the layout was never seen rendered.
 
+**Render every scrolling screen twice: at rest and scrolled to the end.** The resting frame is what people and screenshots see first; the end frame proves the last row clears the pinned bar. On a simulator, swipe to the bottom and screenshot again; in a Compose screenshot test, render a second preview with the list state scrolled to the last item. In the HTML mock, give the scroll container an id and end the file with one line, `<script>if (location.hash === '#end') { const s = document.getElementById('scroll'); s.scrollTop = s.scrollHeight; }</script>`, then render `mock.html` and `mock.html#end` as two frames.
+
 Judge only the pictures, never the code: you wrote the code, so you'll read your intentions into it. If a problem is visible in the screenshot, it's real.
 
 **Craft pass.** Read the image like a picky designer:
@@ -189,6 +191,7 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 - **Anything cut off by a pinned bottom element** (a CTA bar, tab bar, sheet handle or home indicator): a list row sliced in half behind the button is the commonest defect in generated screens, and it was the one most often penalised in our blind evals. Fix it in two places:
   - **Structure, so the last row can scroll clear.** SwiftUI: pin the bar with `.safeAreaInset(edge: .bottom) { bar }` on the `ScrollView`/`List`, not a `ZStack(alignment: .bottom)` or `.overlay(alignment: .bottom)` over it. Compose: put the bar in `Scaffold(bottomBar = …)` and pass the `innerPadding` bottom into the list's `contentPadding`, not a `Box` with `Alignment.BottomCenter` over it. `lint.py` warns (`pinned-bottom-overlap`) when it sees the overlay pattern.
   - **The resting frame, which is what people and screenshots see first.** Content that continues under the bar must read as scroll, not as cut: the bar is opaque with a visible top edge (a tone step, or the platform's scroll-edge effect), and either the fold lands in a gap between rows or a short fade of the page colour (16–24 pt) sits above the bar. A row whose text is cut mid-line at rest is a defect even when the code scrolls correctly; shorten or reorder what's above it, or move the fade.
+  - **Fold check, row by row.** In the resting frame, name every row whose box comes within 24 pt of the bar's top edge, and say for each one: whole above the bar, under the fade with no text cut, or cut. "Cut" includes a row's text, avatar or card border sliced by the bar. Any "cut" is a defect: move the fold into a gap (shorten or reorder what's above, change a row height, or start the list lower) and render again. In the end frame, the last row must sit fully above the bar with at least 8 pt clear.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
 **Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
@@ -206,7 +209,7 @@ Built: <files, screens, states>
 Signature moves: <2–3>
 Lint: <n FAIL, n WARN; each --allow and each kept WARN with its reason>
 Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: …)
-Bottom edge: <clear, or what is cut off and why it reads as scroll>
+Bottom edge: rest frame <each row at the fold: whole / under fade / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
 Sample content to replace: <names, prices, dates, photos>
 Pictures: <each found picture: title, creator, licence, source; or "none, drawn in code">
@@ -243,6 +246,7 @@ These hold in every preset. Each one exists because ignoring it measurably hurts
 **Type, colour, hierarchy**
 - Use 4–6 type sizes with real jumps between them. Make the key number big (a price, time or streak at 34–60 pt). A timid 15/16/17 ladder has no hierarchy (Bringhurst; Lupton).
 - Change one variable per hierarchy level. Use tabular figures for numbers that update or align.
+- **Caps budget: at most two small uppercase labels per screen, in every preset.** "Small" means under about 20 pt, tracked or not, monospace or not: eyebrows, section labels, metadata, units, badges, button text. Uppercase earns its place at display size (a one- or two-word hero, a giant section header); everywhere else use sentence case at a readable size and let size, weight or colour carry the hierarchy. Neo-brutalist and editorial directions are where this goes wrong most: both ferry screens in our round-4 eval were capped for it. `lint.py` warns (`caps-labels`) when the code uppercases more than two labels, counting every call of a helper that does it.
 - Never use colour alone to carry meaning. Pair it with shape, icon or text (Johnson; WCAG 1.4.1).
 - Judge colour in context, in both light and dark, never as a lone swatch (Albers). Build ramps in OKLCH, then check contrast with WCAG (and APCA for dark mode).
 
@@ -345,6 +349,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
+- [ ] Scrolling screens rendered at rest and scrolled to the end; the row-by-row fold check found no cut row, and the last row clears the bar.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
 - [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.

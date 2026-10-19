@@ -50,7 +50,7 @@
 
 ## Signature moves (pick 2–3)
 1. **Type as image:** a 64–96 pt hero headline cropped at the edge, with tight leading.
-2. **The one number:** 72–120 pt tabular numerals, with the unit in small caps beside it.
+2. **The one number:** 72–120 pt tabular numerals, with the unit beside it in the text face, lowercase ("42 min"), not a tracked caps label.
 3. **Story cards:** 9:16 full-bleed, one stat or idea per card, tap to advance, shareable (Wrapped, Any Distance).
 4. **Serif + grotesk contrast:** serif headline, grotesk UI.
 5. **Grid with one breaker** per screen.
@@ -70,5 +70,5 @@
 - Crushed tracking on body text, or collisions on display text.
 - Squashed or distorted type to fit (`scaleX`), Wrapped 2021's sin.
 - Too many sizes per screen, which kills the contrast.
-- A tiny letter-spaced uppercase "eyebrow" above every heading, and fake numbered sections (01/02/03) with no real sequence.
+- A tiny letter-spaced uppercase "eyebrow" above every heading, and fake numbered sections (01/02/03) with no real sequence. Editorial caps belong to the condensed hero headline; the caps budget (at most two small uppercase labels per screen) holds here too.
 - Magazine layouts that break at large text sizes.

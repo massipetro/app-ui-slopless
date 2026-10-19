@@ -39,6 +39,7 @@ RULES = {
     "generic-button-label": ("WARN", "button not named for its action", "Name the action: \"Pay €642\", \"Mark as done\""),
     "slop-copy": ("WARN", "generic marketing copy", "Say the specific thing this product does"),
     "stock-check": ("WARN", "core verb drawn with a stock check icon", "Custom-draw and animate the core verb's glyph"),
+    "caps-labels": ("WARN", "more than two uppercase labels on one screen", "Caps budget: two small uppercase labels at most; sentence case elsewhere, caps only at display size"),
     "pinned-bottom-overlap": ("WARN", "bottom bar laid over the scrolling content instead of insetting it", "SwiftUI: .safeAreaInset(edge: .bottom) on the ScrollView/List; Compose: Scaffold(bottomBar) with innerPadding in the list's contentPadding"),
     "no-reduce-motion": ("WARN", "animation with no Reduce Motion / Remove animations handling", "Read accessibilityReduceMotion / animator scale and swap travel for fades"),
 }
@@ -243,6 +244,22 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
             named = re.search(r"\bText\(|\bLabel\(|accessibilityLabel", body) or "accessibilityLabel" in "\n".join(trailing)
             if "Image(systemName:" in body and not named:
                 add("unlabelled-icon-button", line_of(m.start()))
+
+    # Caps budget: uppercase transforms plus ALL-CAPS text literals (2+ words or 4+ letters).
+    caps_sites = []
+    for m in re.finditer(r"\.textCase\(\s*\.uppercase\s*\)|\.uppercased\(\)|\.uppercase\(\)|textTransform\s*=", text):
+        # Inside a helper (func / fun), count the helper's call sites instead of the one transform.
+        helper = re.findall(r"\b(?:func|fun)\s+(\w+)", text[max(0, m.start() - 600):m.start()])
+        calls = [c.start() for c in re.finditer(r"(?<!\w)" + re.escape(helper[-1]) + r"\s*\(", text)
+                 if not re.search(r"\b(?:func|fun)\s+$", text[max(0, c.start() - 12):c.start()])] if helper else []
+        caps_sites += calls if calls else [m.start()]
+    for m in re.finditer(r"\bText\(\s*\"([^\"\n]{2,40})\"", text):
+        lit = m.group(1)
+        letters = re.sub(r"[^A-Za-z]", "", lit)
+        if letters and letters.isupper() and (len(letters) >= 4 or " " in lit.strip()):
+            caps_sites.append(m.start())
+    if len(caps_sites) > 2:
+        add("caps-labels", line_of(sorted(caps_sites)[2]), f"{len(caps_sites)} uppercase labels")
 
     # A bar pinned over a scroll view (ZStack/overlay/Box-align) hides the last rows unless padded by hand.
     if swift:
