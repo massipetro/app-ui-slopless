@@ -64,12 +64,16 @@ class Fold(unittest.TestCase):
     def test_sliver_behind_a_fade_is_cut(self):
         r = fold(mock("sliver", BAR_TOP - 7, fade=True))         # 7 px of a card show, under a fade: round 8's defect
         self.assertEqual(r.returncode, 1, r.stdout)
-        self.assertIn("a sliver: 7 px", r.stdout)
+        self.assertIn("7 px of a 72 px row show", r.stdout)
 
-    def test_clear_peek_passes(self):
-        r = fold(mock("peek", BAR_TOP - 35, fade=True))          # 35 px show: the title, and no line crosses the edge
-        self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertIn("peek", r.stdout)
+    def test_a_peek_is_cut_too(self):
+        r = fold(mock("peek", BAR_TOP - 35, fade=True))          # title shows, subtitle hidden: judges call it cut
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("35 px of a 72 px row show", r.stdout)
+
+    def test_one_pixel_of_card_is_cut(self):
+        r = fold(mock("onepx", BAR_TOP - 1))                     # round 9: the rounded top edge of the next card
+        self.assertEqual(r.returncode, 1, r.stdout)
 
     def test_text_through_the_edge_is_cut(self):
         r = fold(mock("text", BAR_TOP - 48))                     # the edge runs through the subtitle

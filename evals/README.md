@@ -32,7 +32,27 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Eight rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+
+### Round 9: every gate in place, evals 1 and 4 (main at `d0aed63`)
+
+This round measured the four changes since round 8: the required mascot kit, `fold.py`, the signature check and the iOS 17 default. It used two briefs, the playful habit home (CMP) and the ferry home (SwiftUI, no preset). Each ran twice per config with Opus 5.5 builds ($5 cap), judged by four blind Opus 5.5 judges ($2 cap) who saw the stills and the filmstrips.
+
+| Eval | With skill (runs) | Mean | Without (runs) | Mean | Judge picked the skill | Grader, with vs without |
+|---|---|---|---|---|---|---|
+| 1 Habit home, CMP | 6.0 · 6.0 | 6.0 | 6.0 · 5.8 | 5.9 | 2 of 2 | 16 / 17 each vs 9 and 12 / 14 |
+| 4 Ferry home, SwiftUI | 7.0 · 7.0 | 7.0 | 6.0 · 6.0 | 6.0 | 2 of 2 | 17 / 17 each vs 6 / 17 and 4 / 16 |
+
+- **4 of 4 pairs, margin +0.55.** Uncapped, the habit screens averaged 7.0 and 7.2. Both were capped at Craft 4 for a row cut at the tab bar (see below). Motion: 7.25 with the skill against 6.0 without.
+- **All four fixes showed up in every skill run that needed them.**
+  - Mascot kit: both habit runs drew an SVG rig, used `mascot.py svg2code --into HabitHomeScreen.kt` and ran `mascot.py check`. In round 8 neither run used the kit.
+  - iOS 17: both ferry runs typechecked at iOS 17.0 ("skill default; no project") and never passed `--ios`.
+  - Signature check: every report points at each move in the resting frame and runs the stock-layout test.
+  - `fold.py`: each run called it 3–5 times.
+- **But `fold.py` passed both cut rows.** One was a 2 px sliver of the next card's rounded top edge, inside its 2 px tolerance. The other was a 38-of-72 px "peek", title intact and subtitle hidden, which its rules allowed. The judges capped both. `fold.py` is now strict, matching the judges: under a pinned bar, a row is fully visible or fully hidden. It also measures the settled frame (reduced motion, fonts loaded, one-off animations finished), the same frame the screenshots show. Rerun on this round, it flags exactly the two capped screens and passes the six others.
+- **Still open: the stock layout.** In ferry run 2 the judge capped the skill's screen at Idea 5 for the stock transit layout. The run's own stock-layout test had passed it, so the self-check is lenient. The baseline it beat had the stronger idea (Idea 9) but around 18 small uppercase labels.
+- Kotlin compiled in both skill runs and one of two baselines. Swift typechecked in both skill runs and one of two baselines.
+- Cost: $19.98 for eight builds (skill $3.34 average, baselines $1.66) plus $1.64 for four judges.
 
 ### Round 8: motion and the mascot kit, eval 1 (branch `mascot-kit` at `5b1fe8b`)
 
@@ -164,13 +184,15 @@ Across the seven rounds the skill won 28 of 34 blind pairs. Round 4's Opus judge
 
 - After round 8: the fold check is measured, not eyeballed. A thin sliver of card above the tab bar cost the skill a Craft cap in rounds 4, 5 and 8, and every time the run's own look at the screenshot missed it (round 8 even had a fade over it). `scripts/fold.py` loads the mock at 390×844, finds the pinned bar (a buy bar stacked on a tab bar counts as one) and the scroller, and classes every row at the bar's edge as whole, peek (at least 40% and 24 px show, no line of text crosses) or cut. A sliver is cut whether or not a fade covers it. It also checks that the last row clears the bar by 8 px and that the mock scrolls at all. Step 5 treats it as a gate, critique pass 13 uses its result, the report's Bottom edge line carries it, and `grade.py` adds it to every eval with a mock and a pinned bar. Rerun on every earlier mock with a pinned bar, it flags 9 of 11 skill mocks from rounds 3–4, 2 of 18 from round 5 on (round 7 budget run 3, and round 8 run 1, the one the judge capped), and 11 of 17 baselines. I checked the flags against the screenshots: each is a sliver, a line of text through the bar, or a mock that can't scroll. `evals/test_fold.py` pins the rules on six generated mocks. Not yet measured in an eval round.
 
+- Round 9: the strict fold rule above. `fold.py` no longer accepts a peek or a sliver of 2 px or less, and it measures the settled frame. The skill text, critique pass 13 and the report's Bottom edge line follow it. Rerun with the strict rule on every earlier mock with a pinned bar, it flags 9 of 11 skill mocks from rounds 3–4, 2 of 16 from round 5 on, and 11 of 17 baselines. Not yet measured in an eval round.
+
 ### Limits
 
 One run per config and one judge per pair, so a single score carries about half a point of noise. Judges are models, not people. The screens are HTML stand-ins for native renders. The briefs were written alongside the skill, so they may favour it.
 
 ## Fold check tests
 
-`python3 evals/test_fold.py` runs `scripts/fold.py` on six generated mocks with known bottom edges. No model calls. A fold in a gap passes, and so does a clear peek. A 7 px sliver of card behind a fade fails, and so does a line of text through the bar's edge. A list with no bottom padding fails the end frame, and a mock that can't scroll fails too. Skipped without a Chromium browser.
+`python3 evals/test_fold.py` runs `scripts/fold.py` on seven generated mocks with known bottom edges. No model calls. A fold in a gap passes. A 7 px sliver of card behind a fade fails, and so do 1 px of a card's top edge, a 35 px peek with its title intact, and a line of text through the bar's edge. A list with no bottom padding fails the end frame, and a mock that can't scroll fails too. Skipped without a Chromium browser.
 
 ## Mascot kit tests
 

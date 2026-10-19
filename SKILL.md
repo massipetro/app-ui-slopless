@@ -236,19 +236,14 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 - Overlaps, content hidden under top or bottom bars, and uneven gaps that break the spacing scale.
 - **Anything cut off by a pinned bottom element** (a CTA bar, tab bar, sheet handle or home indicator): a list row sliced in half behind the button is the commonest defect in generated screens, and it was the one most often penalised in our blind evals. Fix it in two places:
   - **Structure, so the last row can scroll clear.** SwiftUI: pin the bar with `.safeAreaInset(edge: .bottom) { bar }` on the `ScrollView`/`List`, not a `ZStack(alignment: .bottom)` or `.overlay(alignment: .bottom)` over it. Compose: put the bar in `Scaffold(bottomBar = …)` and pass the `innerPadding` bottom into the list's `contentPadding`, not a `Box` with `Alignment.BottomCenter` over it. `lint.py` warns (`pinned-bottom-overlap`) when it sees the overlay pattern.
-  - **The resting frame, which is what people and screenshots see first.** Content that continues under the bar must read as scroll, not as cut: the bar is opaque with a visible top edge (a tone step, or the platform's scroll-edge effect), and the fold either lands in a gap between rows or shows a clear peek of the next row (below). A short fade of the page colour (16–24 pt) above the bar helps a peek read as scroll, but it never excuses a cut: a sliver of card border behind a fade still reads as broken, and our blind judges capped it three rounds running. A row whose text is cut mid-line at rest is a defect even when the code scrolls correctly; shorten or reorder what's above it.
+  - **The resting frame, which is what people and screenshots see first.** Content that continues under the bar must read as scroll, not as cut: the bar is opaque with a visible top edge (a tone step, or the platform's scroll-edge effect), and the fold lands in a gap between rows: every row is either fully above the bar or fully under it. A row half-showing above the bar (a "peek"), even 1 pt of a card's top edge, reads as cut, with or without a fade. Our blind judges capped every one of them in four rounds, including a 38-of-72 pt peek with its title intact. A row whose text is cut mid-line at rest is a defect even when the code scrolls correctly; shorten or reorder what's above it.
   - **Fold check: measured, not eyeballed.** A few pixels of card above a tab bar are easy to miss in a screenshot, so for the HTML mock run the gate:
 
     ```bash
     python3 <skill>/scripts/fold.py mock.html
     ```
 
-    It loads the mock at 390×844, finds the pinned bar (a buy bar stacked on a tab bar counts as one) and the scrolling container. Every row that comes within 24 pt of the bar's top edge is classed as one of:
-    - **whole:** fully above the bar.
-    - **peek:** crosses the edge, but at least 40% of the row and at least 24 pt show, and no line of text crosses.
-    - **cut:** a line of text crosses the edge, or only a sliver of a card shows (its border, a few points of fill), with or without a fade.
-
-    It also scrolls to the end and checks that the last row clears the bar by 8 pt, and that the mock scrolls at all. Treat it like the compile gate: fix every `CUT` and `FAIL` and rerun until it says `fold pass`. To fix, move the fold into a gap or into a clear peek by tightening or reordering what's above, or by changing a row height; never grow the hero to push the list down. Pass `--bar` or `--scroll` if it picks the wrong element. Without an HTML mock (a native render only), apply the same three classes by eye, row by row, and say in the report that the fold was not measured.
+    It loads the mock at 390×844 with motion settled and fonts loaded, finds the pinned bar (a buy bar stacked on a tab bar counts as one) and the scrolling container. Every row that comes within 24 pt of the bar's top edge is either **whole** (fully above the bar, or fully under it) or **cut** (any part of it shows above the bar while the rest is under it: a sliver of card, a row sliced through its icon or text). A plain divider line peeking out is fine. It also scrolls to the end and checks that the last row clears the bar by 8 pt, and that the mock scrolls at all. Treat it like the compile gate: fix every `CUT` and `FAIL` and rerun until it says `fold pass`. To fix, move the fold into a gap by tightening or reordering what's above, or by changing a row height or the gap between rows; never grow the hero to push the list down. Pass `--bar` or `--scroll` if it picks the wrong element. Without an HTML mock (a native render only), apply the same rule by eye, row by row, and say in the report that the fold was not measured.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
 **Signature check: does the screen show the direction?** A dealt direction can come out as the category's stock layout in the direction's colours, and nothing above catches that. Using the resting frame only:
@@ -274,7 +269,7 @@ Built: <files, screens, states; the brief's must-haves visible at rest>
 Signature moves: <each move → where it shows at rest, or "not visible">; stock layout: <the default screen's blocks> → <what this screen does instead>
 Lint: <compile: pass / FAIL / not run and why, at iOS <target> (<from the project / default>); lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
 Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
-Bottom edge: <fold.py: pass / FAIL, or "not measured: no HTML mock">; rest frame <each row at the fold: whole / peek / cut>; end frame <last row clear by n pt>
+Bottom edge: <fold.py: pass / FAIL, or "not measured: no HTML mock">; rest frame <each row at the fold: whole / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
 Sample content to replace: <names, prices, dates, photos>
 Pictures: <each found picture: title, creator, licence, source; the mascot: its .svg and the mascot.py command that made the code; or "none, drawn in code">

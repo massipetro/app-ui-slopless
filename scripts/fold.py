@@ -10,11 +10,11 @@ or sticky at the bottom edge; or --bar) and the scrolling container (or --scroll
 reports every row near the bar's top edge in two frames:
 
   rest  the mock as it opens. Each row whose box comes within 24 px of the bar is
-        whole    : fully above the bar
-        peek     : crosses the bar's top edge, but at least 40% of it (and 24 px) shows and no
-                   line of text crosses: it reads as "the list goes on"
-        cut      : a line of text crosses the edge, or only a sliver shows (a border, a few px
-                   of card). A fade above the bar doesn't excuse either: judges still see them.
+        whole    : fully above the bar (or fully hidden under it)
+        cut      : any part of the row shows above the bar's top edge while the rest is under it:
+                   a sliver of card, a row sliced through its icon or its text. A fade above the
+                   bar doesn't excuse it; blind judges capped every such row in our evals.
+                   (A plain divider line peeking out is fine.)
   end   the container scrolled to the bottom: the last row must clear the bar by 8 px.
 
 A "row" is the outermost painted box (background, border, shadow, image) inside the
@@ -139,16 +139,17 @@ PROBE = r"""<script>/* fold.py probe */(function () {
     boxes.forEach(function (el) {
       var r = el.getBoundingClientRect();
       if (r.bottom < barTop - 24 || r.top >= barTop) return;
-      var crosses = r.top < barTop - 2 && r.bottom > barTop + 0.5;   // 2 px of overlap is invisible
+      var crosses = r.top < barTop - 0.5 && r.bottom > barTop + 0.5;   // even 1 px of a card's top edge shows
       var cutText = textLines(el).filter(function (l) { return l.r.top < barTop - 3 && l.r.bottom > barTop + 3; });
-      // Strict: a row may cross the bar only as a clear peek (enough of it shows to read as "the list goes on")
-      // and never through a line of text. A sliver reads as cut, with or without a fade.
-      var shows = barTop - r.top, need = Math.max(24, 0.4 * r.height), state, why = '';
+      // Strict: under a pinned bar a row is whole or hidden. A sliver, or a row sliced through its icon or
+      // text, reads as cut, with or without a fade (the blind judges capped every one of them).
+      var shows = barTop - r.top, state, why = '';
+      var cutMedia = Array.prototype.some.call(el.querySelectorAll('img, svg, canvas, video'), function (m) {
+        var mr = m.getBoundingClientRect(); return mr.height > 4 && mr.top < barTop - 0.5 && mr.bottom > barTop + 0.5; });
       if (!crosses) state = 'whole';
       else if (cutText.length) { state = 'cut'; why = 'text "' + cutText[0].t + '" crosses the bar'; }
-      else if (shows < need && !cardLike(el)) { state = 'whole'; why = 'only its divider shows'; }
-      else if (shows < need) { state = 'cut'; why = 'a sliver: ' + Math.round(shows) + ' px of a ' + Math.round(r.height) + ' px row shows (needs ' + Math.round(need) + ' px, or none); a fade does not excuse it'; }
-      else { state = 'peek'; why = Math.round(shows) + ' of ' + Math.round(r.height) + ' px show, no text cut'; }
+      else if (!cardLike(el) && !cutMedia) { state = 'whole'; why = 'only its divider shows'; }
+      else { state = 'cut'; why = Math.round(shows) + ' px of a ' + Math.round(r.height) + ' px row show above the bar' + (cutMedia ? ', its icon sliced' : '') + '; land the fold in a gap'; }
       rows.push({ row: label(el), top: Math.round(r.top), bottom: Math.round(r.bottom), gap: Math.round(barTop - r.bottom), state: state, why: why });
     });
     // Plain text outside any painted box
@@ -215,7 +216,16 @@ PROBE = r"""<script>/* fold.py probe */(function () {
       parent.postMessage({ fold: res }, '*');
     }, 60);
   }
-  addEventListener('load', function () { setTimeout(run, 120); });
+  // Measure the settled resting frame, as the screenshot shows it: fonts loaded, one-off animations finished.
+  function settle() {
+    document.getAnimations().forEach(function (a) {
+      var tm = a.effect && a.effect.getComputedTiming(); if (tm && tm.endTime !== Infinity) { try { a.finish(); } catch (e) {} }
+    });
+    setTimeout(run, 80);
+  }
+  addEventListener('load', function () {
+    setTimeout(function () { (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(settle, settle); }, 300);
+  });
 })();</script>"""
 
 WRAP = """<!doctype html><meta charset="utf-8"><body style="margin:0"><pre id="out">no result</pre>
@@ -251,6 +261,7 @@ def main() -> int:
     try:
         dom = subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-first-run", "--hide-scrollbars",
                               "--allow-file-access-from-files", "--blink-settings=preferredColorScheme=1",
+                              "--force-prefers-reduced-motion",
                               "--virtual-time-budget=6000", f"--window-size={vw + 200},{vh + 200}", "--dump-dom",
                               wrap.resolve().as_uri()], capture_output=True, text=True, timeout=120).stdout
     finally:
@@ -291,8 +302,6 @@ def main() -> int:
     elif cl is not None and cl < 8:
         bad += 1
         print(f"  FAIL   the last row needs at least 8 px clear of the bar (has {cl}): pad the list's bottom by the bar's height")
-    if any(r["state"] == "peek" for r in res["rest"]["rows"]) and not res["fade"]:
-        print("  note: a peeking row reads better under a short fade (16-24 px of the page colour) above the bar")
     if not bar["opaque"]:
         print("  note: the bar paints no background, so content shows through it; give it an opaque surface with a visible top edge")
     print(f"fold {'pass' if not bad else 'FAIL'}: {bad} problem(s)")

@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Agent_Skills-compatible-24292f?style=flat" alt="Agent Skills compatible">
   <img src="https://img.shields.io/badge/SwiftUI-iOS_17+-0A6A6C?style=flat" alt="SwiftUI, iOS 17+">
   <img src="https://img.shields.io/badge/Compose-Android_%2B_CMP-0A6A6C?style=flat" alt="Jetpack Compose and Compose Multiplatform">
-  <a href="evals/README.md"><img src="https://img.shields.io/badge/blind_evals-30_of_36_wins-0A6A6C?style=flat" alt="Blind evals: 30 of 36 pairs won"></a>
+  <a href="evals/README.md"><img src="https://img.shields.io/badge/blind_evals-34_of_40_wins-0A6A6C?style=flat" alt="Blind evals: 34 of 40 pairs won"></a>
 </p>
 
 It avoids two failure modes equally:
@@ -173,6 +173,7 @@ Six build briefs. Each was run with and without the skill and judged blind from 
 
 | Round | Setup | Briefs | Blind wins for the skill | Average margin |
 |---|---|---|---|---|
+| 9 | Opus 5.5, every gate in place (mascot kit, fold, signature, iOS 17) | habit home, ferry × 2 runs | 4 of 4 | +0.55 |
 | 8 | Opus 5.5 builds and judge, judges see motion filmstrips | habit home × 2 runs | 2 of 2 | +0.5 |
 | 7 | Opus 5.5, balanced A/B, both compile gates | ferry, flat budget × 3 runs | 5 of 6 | +0.9 |
 | 6 | Opus 5.5, balanced A/B | ferry, flat budget × 3 runs | 5 of 6 | +1.0 |
@@ -182,11 +183,12 @@ Six build briefs. Each was run with and without the skill and judged blind from 
 | 2 | Opus 5.5, Sonnet judge | ferry, flat budget | 2 of 2 | +0.5 |
 | 1 | Sonnet 5 | ferry, flat budget | 2 of 2 | +1.5 |
 
-30 of 36 pairs went to the skill. Each round fixed what the one before found:
+34 of 40 pairs went to the skill. Each round fixed what the one before found:
 - the deal and fit test, after a direction that missed the product;
 - the compile gates, after code that didn't build;
 - the fold check, after rows cut by the tab bar;
-- the filmstrip, because motion was invisible to the judges.
+- the filmstrip, because motion was invisible to the judges;
+- a stricter fold rule, after round 9's judges capped a 2 px sliver and a half-showing row that the first version passed.
 
 The skill runs cost about 1.6–1.9× the baseline. One run per config and one model judge per pair: treat each score as ±0.5.
 
@@ -217,7 +219,7 @@ scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and cod
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator SDK, no Xcode project needed
 scripts/compile_kotlin.py   compiles Compose / CMP files in a throwaway Kotlin 2.2.21 + Compose MP 1.9.0 project (JVM + Android)
 scripts/kotlin-check/       the Gradle template that compile_kotlin.py copies code into
-scripts/fold.py             measures the mock's bottom edge: every row at the pinned bar is whole, a clear peek, or cut
+scripts/fold.py             measures the mock's bottom edge: every row at the pinned bar is whole or cut, and the last row clears it
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times, with measured durations
 scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code, to Lottie JSON, a pausable preview, and the 24 px check sheet
 research/                   the source material behind the rules
