@@ -7,8 +7,8 @@ Copies the files into a throwaway Kotlin Multiplatform project (scripts/kotlin-c
 2.2.21, Compose Multiplatform 1.9.0, JVM + Android targets) and compiles them:
   - files that import Android-only APIs (android.*, androidx.activity, androidx.core, Google Fonts,
     LocalContext, androidx.compose.ui.res) go to androidMain;
-  - everything else goes to commonMain and must compile for both targets, so Android-only
-    APIs in shared CMP code fail here as they would in a real module;
+  - everything else, and anything under shared/ or commonMain/, goes to commonMain and must
+    compile for both targets, so Android-only APIs in shared CMP code fail as in a real module;
   - Compose resources the code references (Res.font.x, Res.drawable.x, Res.string.x) are
     stubbed, so a missing asset file is reported as a note, not a compile error.
 
@@ -27,6 +27,7 @@ Standard library only; works on Python 3.9.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import os
 import re
 import shutil
@@ -101,7 +102,9 @@ def place_sources(files: list[Path]) -> tuple[dict[str, Path], list[str], str | 
     for f in files:
         text = f.read_text(errors="ignore")
         pkg = re.search(r"^\s*package\s+([\w.]+)", text, re.M)
-        src_set = "androidMain" if ANDROID_ONLY.search(text) else "commonMain"
+        # Code under shared/ or commonMain/ is shared CMP code: it must compile without Android APIs.
+        shared = any(part in ("shared", "commonMain") for part in f.resolve().parts)
+        src_set = "androidMain" if ANDROID_ONLY.search(text) and not shared else "commonMain"
         dest = WORK / "src" / src_set / "kotlin" / Path(*(pkg.group(1).split(".") if pkg else [])) / f.name
         if dest.exists():
             dest = dest.with_name(f"{f.stem}_{len(mapping)}.kt")
@@ -181,6 +184,11 @@ def main() -> int:
     if not files:
         print("compile_kotlin: no .kt files given")
         return 2
+
+    # One compile at a time: concurrent runs would share (and wipe) the same project.
+    WORK.mkdir(parents=True, exist_ok=True)
+    lock = open(WORK.parent / "kotlin-check.lock", "w")
+    fcntl.flock(lock, fcntl.LOCK_EX)
 
     jdk = find_jdk()
     if not jdk:
