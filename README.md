@@ -82,11 +82,12 @@ Six build briefs, each run with and without the skill and judged blind from scre
 
 | Round | Builds | Briefs | Blind wins for the skill | Average margin |
 |---|---|---|---|---|
-| 3 | Opus 5.5 | all six | 6 of 6 (one tie on score) | +1.4 |
+| 4 | Opus 5.5, Opus judge | all six | 4 of 6 | +0.6 |
+| 3 | Opus 5.5, Sonnet judge | all six | 6 of 6 (one tie on score) | +1.4 |
 | 2 | Opus 5.5 | ferry, flat budget | 2 of 2 | +0.5 |
 | 1 | Sonnet 5 | ferry, flat budget | 2 of 2 | +1.5 |
 
-In round 3 the skill's outputs had 1 lint FAIL across six screens against 65 without it, and the skill runs cost about 2.1× as much. One run per config and one model judge per pair: treat each score as ±0.5.
+Rounds 1–3 were judged by Sonnet; round 4 by Opus 5.5, which applied the caps more strictly. In round 4 the skill's outputs had 0 lint FAILs across six screens against 51 without it, and the skill runs cost about 1.9× as much. Both losses trace to defects the skill already names (a row cut behind the pinned bar, too many small caps labels). One run per config and one model judge per pair: treat each score as ±0.5.
 
 ## Licence
 
