@@ -76,7 +76,7 @@ def read_png(path: Path) -> tuple[int, int, int, bytes]:
 def changed_fraction(a: Path, b: Path) -> float:
     wa, ha, ca, pa = read_png(a)
     wb, hb, cb, pb = read_png(b)
-    assert (wa, ha) == (wb, hb), "frames differ in size"
+    assert (wa, ha) == (wb, hb), f"frames differ in size: {a.name} is {wa}x{ha}, {b.name} is {wb}x{hb}"
     diff = sum(1 for i in range(0, len(pa), ca) if max(abs(pa[i + k] - pb[i * cb // ca + k]) for k in range(3)) > 24)
     return diff / (wa * ha)
 
@@ -140,6 +140,7 @@ import UniformTypeIdentifiers
 MainActor.assumeIsolated {
     for (name, pose) in [("rest", [PipRig: PipPose]()), ("blink", [.lids: PipPose()])] {
         let r = ImageRenderer(content: PipMascot(pose: pose).frame(width: 120, height: 120).background(Color.white))
+        r.scale = 1
         let url = URL(fileURLWithPath: CommandLine.arguments[1] + "/" + name + ".png")
         let dest = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil)!
         CGImageDestinationAddImage(dest, r.cgImage!, nil)
@@ -218,7 +219,8 @@ class Preview(unittest.TestCase):
 
     def shot(self, page: Path, query: str, out: Path) -> Path:
         subprocess.run([self.chrome, "--headless=new", "--hide-scrollbars", "--no-first-run", "--disable-gpu",
-                        "--virtual-time-budget=6000", "--window-size=240,240", f"--screenshot={out}",
+                        "--virtual-time-budget=6000", "--window-size=240,240", "--force-device-scale-factor=1",
+                        f"--screenshot={out}",
                         page.resolve().as_uri() + query], capture_output=True, text=True, timeout=120)
         self.assertTrue(out.exists(), f"no screenshot for {query}")
         return out
