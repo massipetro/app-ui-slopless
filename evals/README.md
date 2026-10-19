@@ -32,7 +32,22 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Six rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+Seven rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+
+### Round 7: three runs per config, with both compile gates (main at `a5207a0`)
+
+Same setup as round 6, now with `compile_kotlin.py` in the skill as well as the Swift typecheck.
+
+| Eval | With skill (runs) | Mean | Without (runs) | Mean | Margin | Judge picked the skill |
+|---|---|---|---|---|---|---|
+| 4 Ferry home, SwiftUI | 7.4 · 7.0 · 7.6 | 7.33 | 6.0 · 6.0 · 6.0 | 6.00 | +1.33 | 2 of 3 |
+| 5 Flat budget, CMP | 7.2 · 7.6 · 6.6 | 7.13 | 7.0 · 7.2 · 6.0 | 6.73 | +0.40 | 3 of 3 |
+
+- Average margin +0.87; the skill's highest means so far. By score the skill won all six pairs; in ferry run 2 the judge picked the baseline anyway, saying the skill's screen was the stock transit layout (Idea 4) while the baseline was only capped for caps labels.
+- Kotlin: all three skill budget files compile, and every skill run called the gates (7–13 times). The baselines also compiled this round.
+- Swift: two of three skill ferry files typecheck at iOS 17. The third used the iOS 18 `Tab` API and checked itself with `--ios 18.0`, raising the deployment target on its own. Two of three baseline ferry files have real compile errors.
+- Grader: 14 / 14 on five skill runs and 13 / 14 on one; baselines 3–5. 0 lint FAILs on every skill run.
+- Cost: $22.79 for 12 builds (skill $2.34 average, baselines $1.46) plus $1.95 for six judge calls.
 
 ### Round 6: three runs per config, with the fit test and compile gate (main at `5f8b172`)
 
@@ -110,7 +125,7 @@ Builds on `claude-opus-5-5`, judge on `claude-sonnet-5-5`.
 
 Round 1 used a CLI whose `sonnet` alias still pointed at Sonnet 5; later rounds pass the model id explicitly and stop any session that reports a different model.
 
-Across the six rounds the skill won 23 of 28 blind pairs. Round 4's Opus judge applied the caps more strictly than round 3's Sonnet judge. The margin shrinks as the baseline model gets stronger: about 1.5 points on Sonnet 5, about 0.5 on Opus 5.5 for the same two briefs.
+Across the seven rounds the skill won 28 of 34 blind pairs. Round 4's Opus judge applied the caps more strictly than round 3's Sonnet judge. The margin shrinks as the baseline model gets stronger: about 1.5 points on Sonnet 5, about 0.5 on Opus 5.5 for the same two briefs.
 
 ### What the rounds changed in the skill
 
@@ -125,6 +140,8 @@ Across the six rounds the skill won 23 of 28 blind pairs. Round 4's Opus judge a
 - Compilation (checked afterwards, no model calls): typechecking every Swift output from rounds 3–5 against the iOS simulator SDK, 4 of the skill's 10 files failed and 0 of 9 baselines. All four were ferry screens; three created a `@MainActor` model in a default argument, which the skill's own code baseline had encouraged, and one hit a compiler failure on a `keyframeAnimator` with a conditional inside its builder. Step 5 now typechecks before handing over (`scripts/typecheck.py`), the SwiftUI baseline has rules for both causes, `lint.py` warns on the default-argument pattern, and `grade.py` adds "Swift typechecks" to the Swift evals. Kotlin is now compiled too (`scripts/compile_kotlin.py`: a throwaway Kotlin 2.2.21 + Compose Multiplatform 1.9.0 / Material 3 1.4 project, JVM and Android targets). Compiling every Kotlin output from rounds 3–6, 6 of the skill's 13 files failed and 5 of the baselines' 12. The skill's failures were a missing `animateFloat` import on an infinite transition (3), `rememberSaveable` imported from the wrong package (1), and a `BackHandler` API that isn't in Compose Multiplatform 1.9.0 (2). `lint.py` now fails the first two kinds before any compile, the Compose baseline has a rule for them, and `grade.py` adds "Kotlin compiles" to evals 1, 3 and 5. Building the harness also showed the skill's own rule 9 (state-based `TextField`) needs Material 3 1.4, which the `compose.material3` accessor in CMP 1.9.0 doesn't give you; the rule now says so.
 
 - Round 6 (open): a direction that fits on paper can still be built generically (stock cards and pills); the fit test checks the plan, not the execution. Kotlin compiles in evals now (see the compilation note).
+
+- Round 7 (open): a direction can still be executed as the stock layout (nothing checks the built screen against the direction's signature moves), and a run can raise the iOS deployment target to make newer APIs compile instead of keeping the documented iOS 17.
 
 ### Limits
 

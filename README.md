@@ -85,6 +85,7 @@ Six build briefs, each run with and without the skill and judged blind from scre
 
 | Round | Builds | Briefs | Blind wins for the skill | Average margin |
 |---|---|---|---|---|
+| 7 | Opus 5.5, Opus judge (balanced A/B), both compile gates | ferry, flat budget × 3 runs | 5 of 6 | +0.9 |
 | 6 | Opus 5.5, Opus judge (balanced A/B) | ferry, flat budget × 3 runs | 5 of 6 | +1.0 |
 | 5 | Opus 5.5, Opus judge | ferry, flat budget × 3 runs | 4 of 6 | +0.4 |
 | 4 | Opus 5.5, Opus judge | all six | 4 of 6 | +0.6 |
@@ -92,7 +93,7 @@ Six build briefs, each run with and without the skill and judged blind from scre
 | 2 | Opus 5.5 | ferry, flat budget | 2 of 2 | +0.5 |
 | 1 | Sonnet 5 | ferry, flat budget | 2 of 2 | +1.5 |
 
-Rounds 1–3 were judged by Sonnet; rounds 4–6 by Opus 5.5, which applied the caps more strictly. With three runs per config, round 5 averaged +0.4; after the content-shape deal, fit test, brief-at-rest rule and Swift compile gate, round 6 averaged +1.0, with every skill Swift file typechecking. In round 4 the skill's outputs had 0 lint FAILs across six screens against 51 without it, and the skill runs cost about 1.9× as much. Both losses trace to defects the skill already names (a row cut behind the pinned bar, too many small caps labels). One run per config and one model judge per pair: treat each score as ±0.5.
+Rounds 1–3 were judged by Sonnet; rounds 4–7 by Opus 5.5, which applied the caps more strictly. With three runs per config, round 5 averaged +0.4; after the content-shape deal, fit test, brief-at-rest rule and Swift compile gate, round 6 averaged +1.0, with every skill Swift file typechecking; round 7, with the Kotlin compile gate added, averaged +0.9 with every skill Kotlin file compiling. In round 4 the skill's outputs had 0 lint FAILs across six screens against 51 without it, and the skill runs cost about 1.9× as much. Both losses trace to defects the skill already names (a row cut behind the pinned bar, too many small caps labels). One run per config and one model judge per pair: treat each score as ±0.5.
 
 ## Licence
 
