@@ -45,7 +45,7 @@ Stock rounded Material/SF icons look generic here. The style needs its own glyph
 - **Habit/category icons:** each habit owns a **vivid hue + a custom glyph** (water drop, book, shoe, moon) inside a lipped tile. Glyphs are chunky, filled, two-tone (a highlight on the face), and drawn in code as one family. Never emoji.
 - **Streak flame:** a two-tone, layered flame (outer orange, inner yellow) with a subtle flicker loop (scale-y 1 → 1.06, 1.2 s, eased), stopped under Reduce Motion.
 - **Tab icons:** filled when selected, with a little hop (translateY −3 dp spring) on selection.
-- **Mascot:** built from the same primitives as the UI, with a few poses (happy, nervous, cheering) driven by app state. Blink every 3–6 s at random, and breathe (scale 1 → 1.03, 2.4 s).
+- **Mascot:** built from the same primitives as the UI, with a few poses (happy, nervous, cheering) driven by app state. Blink every 3–6 s at random, and breathe (scale 1 → 1.03, 2.4 s). Draw it with the mascot kit (`references/mascot.md`): an SVG rig in the direction's 2–3 colours, `mascot.py svg2code` for the native poses, `mascot.py lottie` for the idle loop and the celebration, then `mascot.py check`, the filmstrip and critique pass 14.
 
 ## Motion: the screen is alive (default `MOTION 8`)
 At this preset's default dial, the motion budget's 7–10 row is the brief, not an upper limit:
@@ -74,7 +74,7 @@ At this preset's default dial, the motion budget's 7–10 row is the brief, not 
 8. **Personality dial:** let the user pick how cheeky the copy is (CARROT).
 
 ## Platform notes
-- Rive has iOS, Android and (via community or wrappers) KMP runtimes. Lottie works everywhere. In CMP, wrap the native views or use a Compose Lottie port.
+- Rive has iOS, Android and (via community or wrappers) KMP runtimes, but a `.riv` file can only be made in Rive's editor; the skill can't generate one. Lottie works everywhere, and `scripts/mascot.py lottie` writes it from the mascot's SVG rig. In CMP, wrap the native views or use a Compose Lottie port.
 - Keep native navigation (tab bar or navigation bar with labels, system back). The fun lives *in* the screens.
 - Haptics: iOS `.sensoryFeedback`; Android `HapticFeedbackConstants.CONFIRM` / `REJECT`.
 

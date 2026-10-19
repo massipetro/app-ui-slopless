@@ -1,0 +1,104 @@
+{
+  "fr": 60,
+  "states": [
+    {
+      "name": "idle",
+      "loop": true,
+      "ms": 2400,
+      "tracks": {
+        "body": {
+          "scale": [
+            {"t": 0, "v": [100, 100], "ease": "inOut"},
+            {"t": 1200, "v": [98, 103], "ease": "inOut"},
+            {"t": 2400, "v": [100, 100]}
+          ]
+        },
+        "leaf": {
+          "rotation": [
+            {"t": 0, "v": 0, "ease": "inOut"},
+            {"t": 600, "v": -6, "ease": "inOut"},
+            {"t": 1800, "v": 6, "ease": "inOut"},
+            {"t": 2400, "v": 0}
+          ]
+        },
+        "lids": {
+          "scale": [
+            {"t": 0, "v": [100, 0], "ease": "hold"},
+            {"t": 1500, "v": [100, 0], "ease": "in"},
+            {"t": 1560, "v": [100, 100], "ease": "out"},
+            {"t": 1660, "v": [100, 0], "ease": "hold"},
+            {"t": 2400, "v": [100, 0]}
+          ]
+        }
+      }
+    },
+    {
+      "name": "celebrate",
+      "ms": 900,
+      "tracks": {
+        "body": {
+          "scale": [
+            {"t": 0, "v": [100, 100], "ease": "out"},
+            {"t": 90, "v": [112, 88], "ease": "out"},
+            {"t": 220, "v": [94, 108], "ease": "inOut"},
+            {"t": 480, "v": [100, 100], "ease": "in"},
+            {"t": 560, "v": [108, 93], "ease": "back"},
+            {"t": 760, "v": [100, 100]}
+          ],
+          "position": [
+            {"t": 0, "v": [0, 0], "ease": "hold"},
+            {"t": 90, "v": [0, 0], "ease": "out"},
+            {"t": 300, "v": [0, -18], "ease": "in"},
+            {"t": 520, "v": [0, 0]}
+          ]
+        },
+        "arm-left": {
+          "rotation": [
+            {"t": 0, "v": 0, "ease": "back"},
+            {"t": 220, "v": 70, "ease": "inOut"},
+            {"t": 560, "v": 70, "ease": "inOut"},
+            {"t": 800, "v": 0}
+          ]
+        },
+        "arm-right": {
+          "rotation": [
+            {"t": 0, "v": 0, "ease": "back"},
+            {"t": 220, "v": -70, "ease": "inOut"},
+            {"t": 560, "v": -70, "ease": "inOut"},
+            {"t": 800, "v": 0}
+          ]
+        },
+        "mouth": {
+          "path": [
+            {"t": 0, "v": "mouth-smile", "ease": "out"},
+            {"t": 160, "v": "mouth-open", "ease": "hold"},
+            {"t": 620, "v": "mouth-open", "ease": "inOut"},
+            {"t": 780, "v": "mouth-smile"}
+          ]
+        },
+        "spark": {
+          "opacity": [
+            {"t": 0, "v": 0, "ease": "hold"},
+            {"t": 220, "v": 100, "ease": "hold"},
+            {"t": 640, "v": 100, "ease": "linear"},
+            {"t": 820, "v": 0}
+          ],
+          "trim": [
+            {"t": 0, "v": [0, 0], "ease": "hold"},
+            {"t": 220, "v": [0, 0], "ease": "out"},
+            {"t": 420, "v": [0, 100], "ease": "inOut"},
+            {"t": 640, "v": [0, 100], "ease": "in"},
+            {"t": 820, "v": [100, 100]}
+          ]
+        },
+        "leaf": {
+          "rotation": [
+            {"t": 0, "v": 0, "ease": "out"},
+            {"t": 300, "v": -14, "ease": "back"},
+            {"t": 700, "v": 0}
+          ]
+        }
+      }
+    }
+  ]
+}

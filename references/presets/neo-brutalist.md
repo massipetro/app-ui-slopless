@@ -39,6 +39,7 @@ Honest note: fully neo-brutalist *native mobile* apps are rare among well-docume
 - Thick-stroke (2.5–3 dp at 24 dp), square-capped, geometric glyphs. Or chunky pixel / dot-matrix glyphs for an industrial take. Draw them in code as one family.
 - Icons sit in **bordered square tiles** in a flat accent, never pastel rounded tiles.
 - The core verb's icon gets a mechanical state change: a stamp, a hard flip, a stepped (2–3 frame) fill. No smooth morphing.
+- A hero glyph or mascot here is squares and hard rectangles with the ink outline and a hard offset shadow (a second, offset copy of the silhouette in ink). Draw it with the mascot kit (`references/mascot.md`). In its Lottie states, use `hold` and `linear` eases: a stamp, a stepped blink, no breathing loop and no overshoot. Then run `mascot.py check`, the filmstrip and critique pass 14.
 
 ## Motion
 - **Snappy, mechanical, low-bounce.** Short durations (100–200 ms), linear-ish or stepped for "printed" effects. No floaty springs.

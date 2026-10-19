@@ -69,15 +69,17 @@ references/
   platform-compose.md       Compose / CMP patterns + code baseline
   presets/*.md              one file per style
   critique.md               the scored taste pass on screenshots
+  mascot.md                 designing a mascot or hero glyph the skill can draw, rig it, ship it, animate it
 library/directions.json     20 dealt directions (5 per preset), with palettes checked for contrast
 scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator SDK, no Xcode project needed
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times (or tiled PNG frames), with measured durations
+scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code (svg2code), to Lottie JSON (lottie), a pausable lottie-web preview (preview), and the 24 px silhouette / squint sheet (check)
 scripts/compile_kotlin.py   compiles Compose / CMP files in a throwaway Kotlin 2.2.21 + Compose MP 1.9.0 project (JVM + Android)
 scripts/kotlin-check/       the Gradle template that compile_kotlin.py copies code into
 research/                   the source material behind the rules
-evals/                      test prompts, input files, grade.py
+evals/                      test prompts, input files, grade.py; test_mascot.py + fixtures/ (a sample mascot and motion spec) test the mascot kit without model calls
 ```
 
 ## Evals
@@ -86,6 +88,7 @@ Six build briefs, each run with and without the skill and judged blind from scre
 
 | Round | Builds | Briefs | Blind wins for the skill | Average margin |
 |---|---|---|---|---|
+| 8 | Opus 5.5, Opus judge with filmstrips, mascot kit available | habit home (playful) × 2 runs | 2 of 2 | +0.5 |
 | 7 | Opus 5.5, Opus judge (balanced A/B), both compile gates | ferry, flat budget × 3 runs | 5 of 6 | +0.9 |
 | 6 | Opus 5.5, Opus judge (balanced A/B) | ferry, flat budget × 3 runs | 5 of 6 | +1.0 |
 | 5 | Opus 5.5, Opus judge | ferry, flat budget × 3 runs | 4 of 6 | +0.4 |
@@ -94,7 +97,7 @@ Six build briefs, each run with and without the skill and judged blind from scre
 | 2 | Opus 5.5 | ferry, flat budget | 2 of 2 | +0.5 |
 | 1 | Sonnet 5 | ferry, flat budget | 2 of 2 | +1.5 |
 
-Rounds 1–3 were judged by Sonnet; rounds 4–7 by Opus 5.5, which applied the caps more strictly. With three runs per config, round 5 averaged +0.4; after the content-shape deal, fit test, brief-at-rest rule and Swift compile gate, round 6 averaged +1.0, with every skill Swift file typechecking; round 7, with the Kotlin compile gate added, averaged +0.9 with every skill Kotlin file compiling. In round 4 the skill's outputs had 0 lint FAILs across six screens against 51 without it, and the skill runs cost about 1.9× as much. Both losses trace to defects the skill already names (a row cut behind the pinned bar, too many small caps labels). One run per config and one model judge per pair: treat each score as ±0.5.
+Rounds 1–3 were judged by Sonnet; rounds 4–7 by Opus 5.5, which applied the caps more strictly. With three runs per config, round 5 averaged +0.4; after the content-shape deal, fit test, brief-at-rest rule and Swift compile gate, round 6 averaged +1.0, with every skill Swift file typechecking; round 7, with the Kotlin compile gate added, averaged +0.9 with every skill Kotlin file compiling. Round 8 gave the judges filmstrips of the motion too: the skill won both habit-home pairs (+0.5) and tied on motion, but neither run used the new mascot kit, which is now required. In round 4 the skill's outputs had 0 lint FAILs across six screens against 51 without it, and the skill runs cost about 1.9× as much. Both losses trace to defects the skill already names (a row cut behind the pinned bar, too many small caps labels). One run per config and one model judge per pair: treat each score as ±0.5.
 
 ## Licence
 

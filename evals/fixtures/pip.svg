@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pip, the sample mascot for scripts/mascot.py. Written the way Illustrator exports
+     (a <style> block of classes, raw cubic paths, a rotate() transform), plus the rig:
+     each animatable <g> has an id and data-pivot="x,y" in viewBox units. Lids rest hidden
+     (data-rest), so a blink scales them in from the top of the eyes.
+     Palette (pl-toy-box "Sky and grass"): accent #58CC02, ink #1B2433, surface #FFFFFF. -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="-12 -24 144 144">
+<style type="text/css">
+	.st0{fill:#58CC02;}
+	.st1{fill:#FFFFFF;}
+	.st2{fill:#1B2433;}
+	.st3{fill:none;stroke:#1B2433;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+</style>
+<defs>
+	<path id="mouth-open" class="st2" d="M47,69 L73,69 C73,80 67,86 60,86 C53,86 47,80 47,69 Z"/>
+</defs>
+<g id="spark" data-pivot="60,48" data-rest="opacity:0">
+	<path class="st3" d="M14,50 L5,47"/>
+	<path class="st3" d="M106,50 L115,47"/>
+	<path class="st3" d="M20,28 L13,20"/>
+	<path class="st3" d="M100,28 L107,20"/>
+</g>
+<g id="body" data-pivot="60,112">
+	<g id="leaf" data-pivot="60,36">
+		<path class="st3" d="M60,38c0-8,2-14,6-19"/>
+		<path class="st0" d="M66,19c4-10,17-13,24-9c-4,10-14,15-24,9z"/>
+		<path class="st0" d="M61,29c-7-9-18-10-24-6c5,8,15,10,24,6z"/>
+	</g>
+	<g id="arm-left" data-pivot="26,76">
+		<ellipse class="st0" transform="matrix(0.866 0.5 -0.5 0.866 43.68 0.986)" cx="20" cy="82" rx="8" ry="13"/>
+	</g>
+	<g id="arm-right" data-pivot="94,76">
+		<ellipse class="st0" transform="rotate(-30 100 82)" cx="100" cy="82" rx="8" ry="13"/>
+	</g>
+	<path id="body-shape" class="st0" d="M60,34C84,34,100,52,100,76S84,112,60,112S20,98,20,76S36,34,60,34z"/>
+	<ellipse class="st1" cx="60" cy="97" rx="21" ry="11"/>
+	<g id="eyes" data-pivot="60,58">
+		<circle class="st1" cx="47" cy="58" r="11"/>
+		<circle class="st1" cx="73" cy="58" r="11"/>
+		<circle class="st2" cx="49.5" cy="60" r="5.5"/>
+		<circle class="st2" cx="75.5" cy="60" r="5.5"/>
+	</g>
+	<g id="lids" data-pivot="60,46" data-rest="scale:100,0">
+		<circle class="st0" cx="47" cy="58" r="12"/>
+		<circle class="st0" cx="73" cy="58" r="12"/>
+	</g>
+	<g id="mouth" data-pivot="60,76">
+		<path id="mouth-smile" class="st2" d="M50,72 L70,72 C70,79 65.5,82 60,82 C54.5,82 50,79 50,72 Z"/>
+	</g>
+</g>
+</svg>

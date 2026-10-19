@@ -32,7 +32,24 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Seven rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+Eight rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+
+### Round 8: motion and the mascot kit, eval 1 (branch `mascot-kit` at `5b1fe8b`)
+
+The playful habit brief ("Duolingo-level fun"), two runs per config, Opus 5.5 builds ($5 cap) and two blind Opus 5.5 judges ($2 cap). The harness asked both configs to put any animation in the mock as CSS and to start tap-triggered motion on `#play`. It then filmed every mock with `filmstrip.py` (0–2400 ms), and the judges saw the filmstrips as well as the stills and scored motion with critique pass 14.
+
+| Run | With skill | Without | Judge picked | Motion, with vs without | Grader, with vs without |
+|---|---|---|---|---|---|
+| 1 | 6.0 (Craft capped at 4: a card border cut by the nav bar) | 6.0 | skill | 7 vs 6 | 14 / 14 vs 12 / 14 |
+| 2 | 7.0 | 6.0 | skill | 7 vs 8 | 14 / 14 vs 11 / 14 |
+
+- Margin +0.5, and the skill won both pairs. Uncapped, run 1's skill screen averaged 6.8 against 6.2. Judge 1 picked it for the deeper content (partial-progress habits, a streak freeze, a countdown to midnight). Judge 2 picked the skill's "worried star" mascot tied to the time left before midnight, and called the baseline "Duolingo's home screen re-skinned".
+- Motion tied (7.0 each on average). Both baselines animated as much as the skill runs (21–26 animations each), and one had the more celebratory check-off. The skill's motion was more honest: a baseline updated its counters before the check landed, which judge 1 caught in the filmstrip. That shows the strip does its job: a still would never have revealed it.
+- **Neither skill run used the mascot kit.** Both read `references/mascot.md`, then drew the mascot freehand in Compose and CSS. The brief asks for the code in one file, and `svg2code` wrote a separate file. The baselines used emoji for habit icons, which judge 1 counted as a tell.
+- The resting-frame fold check missed a card border cut by the nav bar again (run 1), the same defect as rounds 4–5.
+- Both skill runs filmed their own motion (4–11 `filmstrip.py` calls each) and wrote the numbers on the report's Live thing line. Kotlin compiled in all four runs.
+- The harness filmstrips came out in dark mode, because the machine was set to dark, and at full screen with small frames. Both were fixed after the round (below).
+- Cost: $9.37 for four builds (skill $2.98 average, baselines $1.70) plus $0.78 for two judges.
 
 ### Round 7: three runs per config, with both compile gates (main at `a5207a0`)
 
@@ -141,8 +158,14 @@ Across the seven rounds the skill won 28 of 34 blind pairs. Round 4's Opus judge
 
 - Round 6 (open): a direction that fits on paper can still be built generically (stock cards and pills); the fit test checks the plan, not the execution. Kotlin compiles in evals now (see the compilation note).
 
-- Round 7: a direction could still be executed as the stock layout (ferry run 2), and a run raised the iOS deployment target to make an iOS 18 API compile (ferry run 3, `Tab` checked with `--ios 18.0`). Step 5 now has a signature check on the resting frame: point at each signature move (at least two must show) and run a stock-layout test against the category default, with a matching critique cap (Idea ≤ 5) and a report field. `typecheck.py` reads the deployment target from the project (iOS 17 when none is set) and prints a note when `--ios` overrides it; the skill and SwiftUI rule 17 put newer APIs behind `#available` and never raise the target to pass. `grade.py` pins its typecheck to iOS 17 and checks the signature line. After round 7 the render step also records motion: `scripts/filmstrip.py` pauses an HTML mock's animations at set times and tiles the frames into one image with measured durations (or tiles frames from a Compose test clock or a simulator recording), critique pass 14 reads it, and a cap applies when the dial promises motion that the strip doesn't show. Not yet measured: no eval calls since. The eval judges still see only stills; giving them the filmstrip too is the next harness change.
+- Round 7: a direction could still be executed as the stock layout (ferry run 2), and a run raised the iOS deployment target to make an iOS 18 API compile (ferry run 3, `Tab` checked with `--ios 18.0`). Step 5 now has a signature check on the resting frame: point at each signature move (at least two must show) and run a stock-layout test against the category default, with a matching critique cap (Idea ≤ 5) and a report field. `typecheck.py` reads the deployment target from the project (iOS 17 when none is set) and prints a note when `--ios` overrides it; the skill and SwiftUI rule 17 put newer APIs behind `#available` and never raise the target to pass. `grade.py` pins its typecheck to iOS 17 and checks the signature line. After round 7 the render step also records motion: `scripts/filmstrip.py` pauses an HTML mock's animations at set times and tiles the frames into one image with measured durations (or tiles frames from a Compose test clock or a simulator recording), critique pass 14 reads it, and a cap applies when the dial promises motion that the strip doesn't show. Round 8 measured the motion part (above).
+
+- Round 8: the skill runs read the mascot kit and then drew freehand anyway, partly because the brief asks for a single file. The kit is now the required path whenever the screen has a character. `mascot.py svg2code --into <screen file>` adds the generated code to a single-file brief's file, with imports merged, in a marked block that a rerun replaces. The HTML mock embeds the same SVG. The report's Pictures line names the rig and the command. `grade.py` checks for a rig `.svg` with pivots and generated code whenever the reply mentions a mascot. `filmstrip.py` now crops to the area that moves (`--crop auto`, the default: the union of the animated elements' boxes over their run, preferring the triggered motion over loops) and renders in light mode whatever the machine uses (`--scheme`). New headless Chrome's window frame no longer cuts the last row of frames. Not yet measured: no eval calls since.
 
 ### Limits
 
 One run per config and one judge per pair, so a single score carries about half a point of noise. Judges are models, not people. The screens are HTML stand-ins for native renders. The briefs were written alongside the skill, so they may favour it.
+
+## Mascot kit tests
+
+`python3 evals/test_mascot.py` checks `scripts/mascot.py` on a hand-written mascot (`fixtures/pip.svg`, a rig in the pl-toy-box palette, written the way Illustrator exports) and its motion spec (`fixtures/pip.motion.json`: an idle loop with breathing and a blink, and a celebration with a hop, a mouth morph and sparks drawing on). No model calls. It checks that the path parser handles relative commands, S/T curves and compact arc flags; that the SwiftUI output typechecks (`typecheck.py`) and renders on macOS with the eyes open at rest and covered on the blink; that the Compose output compiles (`compile_kotlin.py`); that the Lottie has `v fr ip op w h layers`, is parented and anchored at the pivots, and doesn't leave its canvas; that a morph between shapes with different vertex counts and an unknown part are refused; and that the preview runs through `filmstrip.py`, which measures the reaction at 900 ms and the idle state as looping, and that its frames visibly change and land back on rest, in both clock and `--frames` mode. Steps whose toolchain is missing are skipped, not failed: Xcode, JDK 17 + Gradle, a Chromium browser, and network for lottie-web.
