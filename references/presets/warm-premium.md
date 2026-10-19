@@ -47,7 +47,7 @@
 ## Signature moves (pick 2–3)
 1. **Hero object per screen:** one photo, map or object edge to edge, with the UI floating on top in neutral ink.
 2. **Illustrated category rail:** a horizontally scrolling row of custom icons at 28–32 dp over 11–12 sp labels. The selected one gets a 2 dp underline and full opacity, the rest sit at 60–70%.
-3. **Exaggerated key number:** 48–64 pt tabular figures (price per night, amount, ETA), with everything else small.
+3. **Exaggerated key number:** 48–64 pt tabular figures (price per night, amount, ETA), with everything else small. Big inside its region: the rows it summarises still show at rest.
 4. **Airport-board rows** for dense status: one row per entity, fixed columns, status as colour *and* word, layout stable when data changes.
 5. **Sticky summary + one CTA:** a bottom bar with the total on the left and a single bold accent CTA on the right, always in the thumb zone (the Airbnb reserve bar pattern).
 6. **Owned accent as a signature:** one colour used only for "go" and selection, so users learn it.

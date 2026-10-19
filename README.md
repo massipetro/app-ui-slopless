@@ -29,7 +29,7 @@ You pick the style: **one of four presets, then tune five dials.**
 Dials (1–10): `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR`, `FIDELITY` (how bespoke the components look; platform mechanics stay native).
 
 Every run:
-1. Lists what only this product has, then **deals three researched directions** (`scripts/deal.py`, 20 directions anchored in shipped apps) instead of reaching for the category default, and picks one against that list.
+1. Lists what only this product has, names the screen's content shapes, then **deals three researched directions** that can show them (`scripts/deal.py`, 20 directions anchored in shipped apps) instead of reaching for the category default, and drops any that fail a fit test (content at rest, owned idea, costume test) before picking one.
 2. Writes a short **design brief** around an owned idea that must pass a competitor test: owned idea, live interaction, persona, type, colour, icons, motion, signature moves.
 3. Builds tokens first, then components, then the screen, following a **code baseline** (stable identity, state that survives, transforms not layout).
 4. **Lints the code** (`scripts/lint.py`), then **renders the result and looks at it** twice over: a craft pass (clipped, stretched, off-centre) and a scored taste pass (one-second glance, squint, cover the logo, fullness), at most two fix rounds.

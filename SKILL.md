@@ -45,17 +45,25 @@ The user chooses the style; never silently default to something safe.
 
 **Deal the directions; don't invent them.** Asked to choose a look, a model picks the category default every time (every fintech app gets the same warm premium). So a script deals researched directions, each anchored in shipped apps, and you choose among them:
 
+First name the screen's **content shapes**: what the user came to see or do, primary first. One of `list` (rows to scan: departures, spends, habits), `number` (one figure that answers the screen: a balance, a countdown), `detail` (one item in depth), `collection` (many items to browse), `canvas` (a map, calendar or chart as the screen), `story` (one moment per screen, in sequence), `progression` (a path or levels), `action` (one verb dominates). A ferry home is `list,number`; a room page `detail,canvas`; a habit home `action,list`.
+
 ```bash
-python3 <skill>/scripts/deal.py --options 3 [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography]
+python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography]
 ```
 
+- `--content`: only directions whose composition can show the primary shape are dealt, and within each preset the ones that also hold the secondary shapes come first. A poster of colour blocks can't show a timetable, so it isn't dealt for one.
 - `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets.
 - `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example).
 - `--have photography`: only when the product really has photographs: its own photos in the project, or photos it shows at runtime (listings, products, places, people's uploads). Without it, directions that depend on photographs are not dealt, so a screen never ends up built around grey placeholder boxes. Drawn art never needs `--have`: it is made in code.
 
-Hold each dealt option against the inventory from step 1: which composition can carry something only this product has? Then:
-- **If you can ask,** show the three options in one line each (name, composition, the inventory item it would carry) and let the user pick. They may also name a reference app instead; map it to the nearest direction.
-- **If you can't ask** (non-interactive run), choose, and write one line on why it beats the other two for *this* product. Not the most familiar one: the familiar one is what this step exists to prevent.
+**Fit test: reject options that don't fit.** For each dealt option, answer three questions in one line each:
+1. **Content at rest:** does its composition show the primary shape in the first screen, at the density the brief needs (the next few departures, not one)?
+2. **Owned idea:** can it carry something from the inventory, something only this product has?
+3. **Costume test:** would someone who uses this kind of product every day read the style as belonging to their world, or as a trend put on top of it? Name the reason it belongs (a timetable board for a ferry, a receipt for a shared kitty). "It's bold" or "it's not a bank" is not a reason.
+
+Drop every option that fails any of the three. If none survives, redeal with a new seed (`--seed` any other number) and say so in the report. Then, among the survivors:
+- **If you can ask,** show the surviving options in one line each (name, composition, the inventory item it would carry) and let the user pick. They may also name a reference app instead; map it to the nearest direction.
+- **If you can't ask** (non-interactive run), choose, and write one line on why it beats the others for *this* product. Not the most familiar one: the familiar one is what this step exists to prevent.
 
 Then print the full sheet and adopt it. Don't blend it with the layout you would have made anyway:
 
@@ -162,7 +170,11 @@ Apply the core rules below while building. `references/principles.md` has the fu
 
 Never: stock photos of laughing people, AI images passed off as real, illustration from mixed packs, a decorative blob standing in for a picture.
 
-**Removing slop leaves space. Don't fill it with another ornament.** Fill it with scale (make the main thing bigger), with the full content, or with the owned idea. One deliberate empty moment per screen at most.
+**The brief at rest.** Before styling, list the brief's must-haves for this screen (for a ferry home: next departures, a countdown, buying a ticket) and design so every one is visible in the resting frame, or reachable from a visible control there. Two limits keep the hero honest:
+- When the screen's content shapes include `list`, at least three rows (or the whole list, if shorter) show at rest, and the hero takes no more than about 45% of the screen's height.
+- Make the key number big inside its region (48–72 pt), not by growing the region. A huge hero that pushes what the user came for below the fold loses to a plainer screen that answers the brief at a glance: it's the most common way a stronger idea lost in our blind evals.
+
+**Removing slop leaves space. Don't fill it with another ornament.** Fill it with scale (make the main thing bigger, within the limits above), with the full content, or with the owned idea. One deliberate empty moment per screen at most.
 
 ### 5. Look at it, fix it, then report
 
@@ -191,7 +203,7 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 - **Anything cut off by a pinned bottom element** (a CTA bar, tab bar, sheet handle or home indicator): a list row sliced in half behind the button is the commonest defect in generated screens, and it was the one most often penalised in our blind evals. Fix it in two places:
   - **Structure, so the last row can scroll clear.** SwiftUI: pin the bar with `.safeAreaInset(edge: .bottom) { bar }` on the `ScrollView`/`List`, not a `ZStack(alignment: .bottom)` or `.overlay(alignment: .bottom)` over it. Compose: put the bar in `Scaffold(bottomBar = …)` and pass the `innerPadding` bottom into the list's `contentPadding`, not a `Box` with `Alignment.BottomCenter` over it. `lint.py` warns (`pinned-bottom-overlap`) when it sees the overlay pattern.
   - **The resting frame, which is what people and screenshots see first.** Content that continues under the bar must read as scroll, not as cut: the bar is opaque with a visible top edge (a tone step, or the platform's scroll-edge effect), and either the fold lands in a gap between rows or a short fade of the page colour (16–24 pt) sits above the bar. A row whose text is cut mid-line at rest is a defect even when the code scrolls correctly; shorten or reorder what's above it, or move the fade.
-  - **Fold check, row by row.** In the resting frame, name every row whose box comes within 24 pt of the bar's top edge, and say for each one: whole above the bar, under the fade with no text cut, or cut. "Cut" includes a row's text, avatar or card border sliced by the bar. Any "cut" is a defect: move the fold into a gap (shorten or reorder what's above, change a row height, or start the list lower) and render again. In the end frame, the last row must sit fully above the bar with at least 8 pt clear.
+  - **Fold check, row by row.** In the resting frame, name every row whose box comes within 24 pt of the bar's top edge, and say for each one: whole above the bar, under the fade with no text cut, or cut. "Cut" includes a row's text, avatar or card border sliced by the bar. Any "cut" is a defect: move the fold into a gap (tighten or reorder what's above, or change a row height; never grow the hero to push the list down) and render again. In the end frame, the last row must sit fully above the bar with at least 8 pt clear.
 - Depth signifiers (lips, shadows, strokes) that are invisible at their real colours.
 
 **Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
@@ -207,7 +219,7 @@ Direction: <dealt id, e.g. pl-persona> (seed <n>); redeals: <none, or which and 
 Owned idea: In this app, <inventory item> becomes <device>.
 Competitor test: <competitor> → <why the idea fails for them>
 Live thing: <the interaction and the real state it reacts to>
-Built: <files, screens, states>
+Built: <files, screens, states; the brief's must-haves visible at rest>
 Signature moves: <2–3>
 Lint: <n FAIL, n WARN; each --allow and each kept WARN with its reason>
 Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
@@ -347,7 +359,7 @@ Models produce slop because they sample the statistical average of their trainin
 ## Final checklist
 
 - [ ] Inventory of 8–12 product-only items written in the reply before `deal.py` ran, and repeated as the brief's first line.
-- [ ] Direction dealt (id + seed in the report), chosen against the inventory, sheet adopted; any redeal has a stated reason.
+- [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test), misfits dropped, redeal stated if none survived; direction id and seed in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
@@ -355,6 +367,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
 - [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.
+- [ ] The brief at rest: every must-have visible or reachable in the resting frame; with a `list`, three rows show and the hero stays under about 45% of the height.
 - [ ] No request to an outside service carried the user's email, name or account; found pictures are credited.
 - [ ] Tokens defined once; no stray hex values or magic numbers in the screen.
 - [ ] Every interactive element has a visible signifier and a pressed state.

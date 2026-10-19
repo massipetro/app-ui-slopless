@@ -5,7 +5,7 @@ Asked to invent a look, a model picks the category default every time. This
 script deals directions from library/directions.json instead; the model then
 chooses among them against the product inventory.
 
-  deal.py --options 3 [--preset P] [--sector S] [--have photography] [--seed N]
+  deal.py --options 3 [--content list,number] [--preset P] [--sector S] [--have photography] [--seed N]
   deal.py --direction ID [--seed N] [--keep palette,type]
   deal.py --list
   deal.py --check
@@ -23,7 +23,8 @@ from pathlib import Path
 LIBRARY = Path(__file__).resolve().parent.parent / "library" / "directions.json"
 PRESETS = ("warm-premium", "neo-brutalist", "playful", "editorial")
 ROLES = ("ground", "surface", "ink", "ink2", "accent", "on_accent")
-REQUIRED = ("id", "preset", "name", "anchors", "composition", "device", "dials",
+SHAPES = ("list", "number", "detail", "collection", "canvas", "story", "progression", "action")
+REQUIRED = ("id", "preset", "name", "anchors", "composition", "content", "device", "dials",
             "type", "palettes", "shape", "moves", "motion", "needs", "not_for", "pitfall")
 
 
@@ -60,11 +61,13 @@ def sub_rng(seed: int, direction_id: str, slot: str) -> random.Random:
 
 
 def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
-                 sector: str | None, have: set[str] | None) -> list[dict]:
+                 sector: str | None, have: set[str] | None, content: list[str] | None = None) -> list[dict]:
     pool = [d for d in directions
             if (preset is None or d["preset"] == preset)
             and (sector is None or sector not in d["not_for"])
-            and (have is None or set(d["needs"]) <= have)]
+            and (have is None or set(d["needs"]) <= have)
+            # The first content shape is what the user came for: a direction must be able to show it.
+            and (not content or content[0] in d["content"])]
     rng = random.Random(seed)
     if preset is None:
         # Spread across presets first, so the options are real alternatives.
@@ -73,7 +76,12 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
             by_preset.setdefault(d["preset"], []).append(d)
         presets = list(by_preset)
         rng.shuffle(presets)
-        picked = [rng.choice(by_preset[p]) for p in presets[:n]]
+        # Within each preset, prefer directions that also hold the secondary content shapes.
+        fit = lambda d: len(set(content[1:]) & set(d["content"])) if content else 0
+        picked = []
+        for p in presets[:n]:
+            best = max(fit(d) for d in by_preset[p])
+            picked.append(rng.choice([d for d in by_preset[p] if fit(d) == best]))
         rest = [d for d in pool if d not in picked]
         rng.shuffle(rest)
         return (picked + rest)[:n]
@@ -86,6 +94,7 @@ def print_option(d: dict) -> None:
     print(f"- {d['id']}  ({d['preset']}) {d['name']}  [{dials}]")
     print(f"    anchors: {'; '.join(d['anchors'])}")
     print(f"    composition: {d['composition']}")
+    print(f"    holds: {', '.join(d['content'])}")
     print(f"    idea slot: In this app, <inventory item> becomes {d['device']}.")
     if d["needs"]:
         print(f"    needs: {', '.join(d['needs'])}")
@@ -110,6 +119,7 @@ def print_sheet(d: dict, seed: int, keep: set[str]) -> None:
     print(f"Anchors: {'; '.join(d['anchors'])}")
     print()
     print(f"Composition: {d['composition']}")
+    print(f"Holds (content shapes): {', '.join(d['content'])}")
     print(f"Idea slot: In this app, <inventory item> becomes {d['device']}.")
     print()
     if "type" in keep:
@@ -151,6 +161,9 @@ def check(directions: list[dict]) -> int:
         if d["id"] in ids:
             problems.append(f"{d['id']}: duplicate id")
         ids.add(d["id"])
+        bad = [c for c in d["content"] if c not in SHAPES]
+        if bad or not d["content"]:
+            problems.append(f"{d['id']}: content shapes {bad or 'missing'} not in {SHAPES}")
         if d["preset"] not in PRESETS:
             problems.append(f"{d['id']}: unknown preset {d['preset']}")
         for p in d["palettes"]:
@@ -176,6 +189,7 @@ def main() -> int:
     ap.add_argument("--direction", help="print the full sheet for one direction id")
     ap.add_argument("--preset", choices=PRESETS, help="deal only within this preset (the user named it)")
     ap.add_argument("--sector", help="exclude directions marked not_for this sector, e.g. finance, health, kids")
+    ap.add_argument("--content", help="content shapes the screen must show at rest, primary first, comma-separated: " + ", ".join(SHAPES))
     ap.add_argument("--have", help="assets that really exist, comma-separated: photography (default: none, so photo-dependent directions are skipped)")
     ap.add_argument("--keep", default="", help="brand-fixed slots to leave undealt: palette, type")
     ap.add_argument("--seed", type=int, help="reuse a seed to reproduce a deal")
@@ -202,7 +216,12 @@ def main() -> int:
     if args.options:
         # No --have means no assets: directions that need photographs are not dealt (taste-skill's default).
         have = {h.strip() for h in (args.have or "").split(",") if h.strip()}
-        dealt = deal_options(directions, args.options, seed, args.preset, args.sector, have)
+        content = [c.strip() for c in (args.content or "").split(",") if c.strip()]
+        unknown = [c for c in content if c not in SHAPES]
+        if unknown:
+            print(f"unknown content shape(s) {unknown}; choose from {SHAPES}", file=sys.stderr)
+            return 2
+        dealt = deal_options(directions, args.options, seed, args.preset, args.sector, have, content)
         if not dealt:
             print("no direction matches those filters", file=sys.stderr)
             return 2

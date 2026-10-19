@@ -11,6 +11,10 @@
         "Robinhood (2024 single-object still lifes)"
       ],
       "composition": "One edge-to-edge picture or single object fills the top ~55% of the home screen. Title and the exaggerated key number sit below it, never on it. Supporting rows are dense and small. A sticky bottom bar holds the total and the one accent CTA.",
+      "content": [
+        "detail",
+        "collection"
+      ],
       "device": "the single hero object every screen opens on",
       "dials": {
         "B": 5,
@@ -98,6 +102,10 @@
         "Uber (quiet near-monochrome chrome)"
       ],
       "composition": "The home screen is a board: one row per entity (trip, habit, order, account), fixed columns, status as colour plus word, layout identical when data changes. The one item that matters now is expanded at the top with a live countdown or progress ring.",
+      "content": [
+        "list",
+        "number"
+      ],
       "device": "the board row and its live countdown",
       "dials": {
         "B": 5,
@@ -182,6 +190,10 @@
         "Monzo (2024 'exaggerated UI')"
       ],
       "composition": "The home screen is one number: the balance, amount or time left at 56-72pt across the top third, one direct control under it (slider, keypad, stepper), then a quiet history list. Everything except the number is small.",
+      "content": [
+        "number",
+        "list"
+      ],
       "device": "the one number and the control that moves it",
       "dials": {
         "B": 7,
@@ -264,6 +276,10 @@
         "Things 3 (Magic Plus)"
       ],
       "composition": "A full-bleed canvas (map, calendar, chart, camera, timeline) is the screen. Content lives in a bottom sheet with two detents. Chrome is near-monochrome, so the one accent means 'go'.",
+      "content": [
+        "canvas",
+        "detail"
+      ],
       "device": "the full-bleed canvas the sheet slides over",
       "dials": {
         "B": 4,
@@ -348,6 +364,10 @@
         "Monzo (warm light)"
       ],
       "composition": "A full-screen hour-by-hour (or day-by-day) view of the product's main quantity. The surface tint follows the real time of day or the product's state. The current moment is a marker you can scrub; details sit in a compact list under it.",
+      "content": [
+        "canvas",
+        "number"
+      ],
       "device": "the surface colour that follows real time or state",
       "dials": {
         "B": 5,
@@ -442,6 +462,11 @@
         "neobrutalism.dev conventions"
       ],
       "composition": "Bordered blocks on an off-white sheet, each section owning one flat accent. One hero sticker is rotated 1-2 degrees. Buttons cast hard offset shadows. A bordered tab strip with the selected tab filled.",
+      "content": [
+        "collection",
+        "detail",
+        "list"
+      ],
       "device": "the sticker or label the core object is printed on",
       "dials": {
         "B": 9,
@@ -537,6 +562,10 @@
         "Halide Mark II (tool-honest controls)"
       ],
       "composition": "Lists are tables: rows split by 2dp rules, label left, monospace value right-aligned. Each task opens a full-screen mode with no persistent chrome and a big bordered close button. Colour comes only from content or one signal hue.",
+      "content": [
+        "list",
+        "detail"
+      ],
       "device": "the spec table and the full-screen task mode",
       "dials": {
         "B": 7,
@@ -621,6 +650,10 @@
         "Nothing OS (Ndot type, dot widgets)"
       ],
       "composition": "A monochrome instrument panel: the key number in large dot-matrix figures, controls built from dots (a dot ring for progress, a dot bar for level), a plain grotesque for everything readable, one red signal.",
+      "content": [
+        "number",
+        "action"
+      ],
       "device": "the dot-matrix readout",
       "dials": {
         "B": 7,
@@ -705,6 +738,10 @@
         "Wise (2023, heavy display)"
       ],
       "composition": "Each section is a full-width flat colour block with a giant uppercase header cropped at the screen edge. Blocks butt against each other with no gaps. Content inside is plain and black.",
+      "content": [
+        "story",
+        "detail"
+      ],
       "device": "the colour block each section owns",
       "dials": {
         "B": 9,
@@ -800,6 +837,10 @@
         "Pok Pok Playroom (everything may jitter)"
       ],
       "composition": "Everything drawn by hand and fully committed: wobbly strokes on every control and card, scribble fills for the selected state, a hand-drawn tab bar, a paper ground. The layout stays simple so the drawing carries it.",
+      "content": [
+        "action",
+        "list"
+      ],
       "device": "the hand-drawn object the user marks",
       "dials": {
         "B": 8,
@@ -886,6 +927,11 @@
         "Duolingo (ADA 2023, shape language, lip buttons)"
       ],
       "composition": "Rhythm, not a grid: one big hero card (streak or progress), a pair of medium tiles, then small chips. Every pressable sits on a darker lip; static panels sit on a quieter base. A mascot in the hero reacts to real state.",
+      "content": [
+        "list",
+        "number",
+        "action"
+      ],
       "device": "the toy piece the core verb is pressed on",
       "dials": {
         "B": 8,
@@ -981,6 +1027,9 @@
         "(Not Boring) Habits (66-level journey)"
       ],
       "composition": "The home screen is a winding vertical path of nodes, one per lesson, day or step. The current node is big and invites a tap; done nodes are filled, future ones outlined. Milestones are landmarks on the path.",
+      "content": [
+        "progression"
+      ],
       "device": "the path and its landmarks",
       "dials": {
         "B": 8,
@@ -1073,6 +1122,9 @@
         "(Not Boring) Habits (ADA 2022, explosive check-off)"
       ],
       "composition": "Home is one giant object for today's core verb (a token, a button, a jar), pressed and held with a progress cue. Completion is a layered event. Everything else is stock and calm, a tab away.",
+      "content": [
+        "action"
+      ],
       "device": "the one object you press to do the thing",
       "dials": {
         "B": 8,
@@ -1162,6 +1214,11 @@
         "Pok Pok Playroom (hand-animated)"
       ],
       "composition": "Each screen is built around one illustration from a single system (drawn in code from the inventory, or one commissioned set if it exists). Prompts are flip cards swiped left and right; art fills the top half; UI is minimal and rounded; lines boil gently.",
+      "content": [
+        "story",
+        "action",
+        "detail"
+      ],
       "device": "the illustrated character or object every screen is built around",
       "dials": {
         "B": 6,
@@ -1250,6 +1307,11 @@
         "Gentler Streak (ADA 2024, Yorhart)"
       ],
       "composition": "Serious data shown clearly (charts, numbers, lists), topped on each screen by one line from the app's persona and an abstract mascot shape that reacts. Users choose how cheeky it is.",
+      "content": [
+        "number",
+        "list",
+        "canvas"
+      ],
       "device": "the persona's one-line comment and its mood",
       "dials": {
         "B": 6,
@@ -1341,6 +1403,10 @@
         "Wise (2023, heavy display)"
       ],
       "composition": "A huge condensed headline (64-96pt) cropped at the screen edge is the hero. Chrome is monochrome; full-bleed photography or the product supplies all colour. Below, a strict 4-column grid with one breaker per screen.",
+      "content": [
+        "story",
+        "detail"
+      ],
       "device": "the word or number set so large it becomes the picture",
       "dials": {
         "B": 8,
@@ -1425,6 +1491,9 @@
         "Any Distance (ADA 2023, poster cards, oval mask)"
       ],
       "composition": "Key moments are 9:16 full-bleed cards, one stat or idea per card, tap to advance, each shareable. Photos sit in one distinctive mask (oval or arch) used everywhere. Everyday screens borrow the card proportions.",
+      "content": [
+        "story"
+      ],
       "device": "the shareable card",
       "dials": {
         "B": 8,
@@ -1516,6 +1585,10 @@
         "Robinhood (2024, serif authority)"
       ],
       "composition": "One editorial frame: a serif masthead and serif section heads, thin rules instead of cards, and each section or category owning one colour plus one bold glyph. Cards show progress state.",
+      "content": [
+        "list",
+        "collection"
+      ],
       "device": "the masthead and the per-section colour and glyph",
       "dials": {
         "B": 6,
@@ -1608,6 +1681,9 @@
         "Arc Search ('Browse for Me' pages)"
       ],
       "composition": "Results and details read like an article: a lede in large serif, an image carousel, a short answer, then sections with sticky headers. No card list. Reading comfort first: 17-19pt body, 45-75 characters per line.",
+      "content": [
+        "detail"
+      ],
       "device": "the lede: one sentence that answers before anything else",
       "dials": {
         "B": 5,
@@ -1692,6 +1768,10 @@
         "Spotify Wrapped 2022 (16x16 monogram grid)"
       ],
       "composition": "A strict, visible grid (4 columns on phone) of interlocking flat shapes that are both background and container for data and images. One shape breaks the grid per screen. Type sits inside the shapes.",
+      "content": [
+        "canvas",
+        "number"
+      ],
       "device": "the grid shapes that hold the data",
       "dials": {
         "B": 8,
@@ -1775,5 +1855,15 @@
       ],
       "pitfall": "Decorative shapes with nothing inside; random colour per cell; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
     }
-  ]
+  ],
+  "content_shapes": {
+    "list": "rows the user scans and compares: departures, transactions, habits, messages, settings",
+    "number": "one key figure that answers the screen's question: a balance, a countdown, a streak",
+    "detail": "one item in depth: a room, a product, an article, a profile",
+    "collection": "many items to browse: a grid, a catalogue, a gallery",
+    "canvas": "a map, calendar or chart that is the screen",
+    "story": "one moment or idea per screen, in sequence: onboarding, recaps, drops",
+    "progression": "levels or a path the user moves along",
+    "action": "one core verb that dominates the screen: check off, record, log"
+  }
 }

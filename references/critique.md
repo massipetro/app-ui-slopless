@@ -21,7 +21,7 @@ Look at each screenshot at phone size (not zoomed), light and dark if both were 
 6. **Type.** Is the jump from body text to the display moment decisive (three times or more)? More than six sizes visible? Count the small uppercase labels (under about 20 pt: eyebrows, section labels, metadata, units, badges, button text). More than two is a tell even inside a direction that uses caps (SKILL.md's caps budget), and counts toward the slop-tell cap. `lint.py` warns when the code has more than two, but it can't see labels drawn any other way. A big headline with one orphan word on its last line? Is the key number the biggest thing on the screen, and does it fit at its widest real value?
 7. **Colour.** Name the proportions: what holds most of the surface, what supports, where the accent is. An accent in ten places means nothing; on the one action and one detail it means "here". Does the accent mean the same thing on every screen? Does dark mode hold up, or is it inverted grey?
 8. **Thumb.** Picture the phone in one hand. Is the primary action in the bottom third? Is there one obvious primary action? Do the targets look at least 44 pt / 48 dp, with destructive actions away from frequent ones?
-9. **Fullness and substance.** Is the content at real density (long names, wide numbers, enough rows to scroll)? Could the screen be mistaken for a wireframe: grey shapes, grey text, one small column? Is any region empty by accident (a hole) rather than by decision? Would the user leave knowing what they came to find out?
+9. **Fullness and substance.** Is the content at real density (long names, wide numbers, enough rows to scroll)? Could the screen be mistaken for a wireframe: grey shapes, grey text, one small column? Is any region empty by accident (a hole) rather than by decision? Would the user leave knowing what they came to find out? **The brief at rest:** list the brief's must-haves and check each is visible, or reachable from a visible control, in the resting frame. With a list, do at least three rows show? A hero that takes most of the screen and leaves what the user came for below the fold is a substance failure, however strong the idea.
 10. **Signature.** Could someone pick out the two or three signature moves from this still? Is the live thing visible, or at least hinted at (its current state, its affordance)?
 11. **Platform.** Does it still behave like the platform where it must: a visible back affordance, safe areas and system bars respected, the native sheet and keyboard? At large text, does the layout reflow or does it clip?
 12. **Slop tells.** Any tell from the SKILL.md list that you can't defend in one sentence?
@@ -44,6 +44,7 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 - Cover-the-logo fails: Idea ≤ 4.
 - Any slop tell without a stated reason: overall ≤ 6.
 - The screen reads as a wireframe: Substance ≤ 3.
+- A must-have from the brief is not visible or reachable at rest, or a list shows fewer than three rows at rest: Substance ≤ 5.
 - The only primary action is out of thumb reach, or primary targets are under 44/48: Platform ≤ 5.
 
 The aim is overall ≥ 8 with no criterion below 6.
@@ -75,7 +76,7 @@ Top three fixes: 1. … 2. … 3. …
 
 1. **Broken things.** Any craft defect, because one clipped number makes a bold design look broken (Tuch et al. 2012).
 2. **The idea.** If the cover-the-logo test failed, no amount of polish will save the screen. Go back to the inventory and the direction sheet.
-3. **Hierarchy.** Make the main thing bigger and everything else smaller before adjusting anything else.
+3. **Hierarchy.** Make the main thing bigger and everything else smaller before adjusting anything else, but not past the brief at rest: if growing the hero hides a must-have, shrink something else instead.
 4. **Substance.** Fill the content and the states.
 5. **Polish.** Rhythm, colour proportions, motion details.
 
