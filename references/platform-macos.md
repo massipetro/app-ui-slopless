@@ -4,6 +4,8 @@ How to turn a design brief into a Mac app that looks owned and still behaves lik
 
 A Mac app is used for hours, with a pointer and a keyboard, in a window the user resizes. Everything below follows from that.
 
+The direction comes from `deal.py --platform macos`: its sheet already places the direction in the window (sidebar, content column, inspector, toolbar, menu bar extra) and says which chrome stays system. This file is how to build that; where the sheet and this file differ on the look, the sheet wins, and on mechanics (§4-5, §11) this file wins.
+
 ## Contents
 1. What changes from iOS
 2. Window anatomy: sidebar, content, inspector

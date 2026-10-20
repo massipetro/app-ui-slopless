@@ -5,10 +5,14 @@ Asked to invent a look, a model picks the category default every time. This
 script deals directions from library/directions.json instead; the model then
 chooses among them against the product inventory.
 
-  deal.py --options 3 [--content list,number] [--preset P] [--sector S] [--have photography] [--seed N]
-  deal.py --direction ID [--seed N] [--keep palette,type]
+  deal.py --options 3 [--content list,number] [--preset P] [--sector S] [--have photography] [--platform macos] [--seed N]
+  deal.py --direction ID [--seed N] [--keep palette,type] [--platform macos]
   deal.py --list
   deal.py --check
+
+--platform macos deals for a Mac window: each direction's `mac` block replaces
+the phone composition, moves and shape, adds how it treats system chrome, and
+overrides the dials; directions whose `mac` block says `skip` are not dealt.
 
 Standard library only; works on Python 3.9.
 """
@@ -17,6 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import re
 import sys
 from pathlib import Path
 
@@ -25,11 +30,34 @@ PRESETS = ("warm-premium", "neo-brutalist", "playful", "editorial")
 ROLES = ("ground", "surface", "ink", "ink2", "accent", "on_accent")
 SHAPES = ("list", "number", "detail", "collection", "canvas", "story", "progression", "action")
 REQUIRED = ("id", "preset", "name", "anchors", "composition", "content", "device", "dials",
-            "type", "palettes", "shape", "moves", "motion", "needs", "not_for", "pitfall")
+            "type", "palettes", "shape", "moves", "motion", "needs", "not_for", "pitfall", "mac")
+MAC_REQUIRED = ("composition", "moves", "shape", "chrome", "dials")
+# Phone mechanics that must not leak into a Mac block (the reason the blocks exist).
+PHONE_WORDS = re.compile(r"thumb|tab bar|bottom bar|bottom sheet|sheet springs|selection haptic|notification haptic|firm haptic|\btap\b|\bswip|9:16|home screen|\d\s*dp\b|live activity", re.I)
 
 
 def load() -> list[dict]:
     return json.loads(LIBRARY.read_text())["directions"]
+
+
+def for_platform(d: dict, platform: str | None) -> dict | None:
+    """The direction as dealt on this platform, or None when it has no form there."""
+    if platform != "macos":
+        return d
+    mac = d["mac"]
+    if "skip" in mac:
+        return None
+    view = dict(d)
+    view["composition"] = mac["composition"]
+    view["moves"] = mac["moves"]
+    view["shape"] = mac["shape"]
+    view["motion"] = mac.get("motion", d["motion"])
+    view["pitfall"] = mac.get("pitfall", d["pitfall"])
+    view["chrome"] = mac["chrome"]
+    view["dials"] = {**d["dials"], **mac["dials"]}
+    view["content"] = mac.get("content", d["content"])
+    view["anchors"] = d["anchors"] + mac.get("anchors", [])
+    return view
 
 
 def luminance(hex_colour: str) -> float:
@@ -114,7 +142,8 @@ def print_sheet(d: dict, seed: int, keep: set[str]) -> None:
     type_choice = sub_rng(seed, d["id"], "type").choice(d["type"])
     palette = sub_rng(seed, d["id"], "palette").choice(d["palettes"])
     dials = " ".join(f"{k}{v}" for k, v in d["dials"].items())
-    print(f"DIRECTION {d['id']}: {d['name']}  (preset {d['preset']}, seed {seed})")
+    platform = " on macOS" if "chrome" in d else ""
+    print(f"DIRECTION {d['id']}: {d['name']}  (preset {d['preset']}, seed {seed}){platform}")
     print(f"Dials (defaults, user may override): {dials}")
     print(f"Anchors: {'; '.join(d['anchors'])}")
     print()
@@ -138,6 +167,9 @@ def print_sheet(d: dict, seed: int, keep: set[str]) -> None:
         print_scheme("dark", palette["dark"])
     print()
     print(f"Shape and depth: {d['shape']}")
+    if "chrome" in d:
+        print(f"Window chrome: {d['chrome']}")
+        print("Mac type: keep the dealt faces, set them on the Mac scale (body 13 pt, rows 22-32 pt) with one display moment at 40-96 pt; see platform-macos.md section 6.")
     print("Signature moves (pick 2-3):")
     for m in d["moves"]:
         print(f"  - {m}")
@@ -148,7 +180,31 @@ def print_sheet(d: dict, seed: int, keep: set[str]) -> None:
     print(f"How it goes wrong: {d['pitfall']}")
     print("Caps budget: at most two small uppercase labels per screen; caps belong at display size.")
     print()
-    print(f"Reproduce: deal.py --direction {d['id']} --seed {seed}")
+    flag = " --platform macos" if "chrome" in d else ""
+    print(f"Reproduce: deal.py --direction {d['id']} --seed {seed}{flag}")
+
+
+def check_mac(d: dict) -> list[str]:
+    mac = d["mac"]
+    if "skip" in mac:
+        return [] if mac["skip"].strip() else [f"{d['id']} / mac: skip needs a reason"]
+    problems = [f"{d['id']} / mac: missing {k}" for k in MAC_REQUIRED if k not in mac]
+    if problems:
+        return problems
+    if len(mac["moves"]) < 2:
+        problems.append(f"{d['id']} / mac: needs at least two moves")
+    bad_dials = [k for k in mac["dials"] if k not in d["dials"]]
+    if bad_dials:
+        problems.append(f"{d['id']} / mac: unknown dials {bad_dials}")
+    bad = [c for c in mac.get("content", []) if c not in SHAPES]
+    if bad:
+        problems.append(f"{d['id']} / mac: content shapes {bad} not in {SHAPES}")
+    text = " ".join([mac["composition"], mac["shape"], mac["chrome"], mac.get("motion", d["motion"]),
+                     mac.get("pitfall", d["pitfall"]), *mac["moves"]])
+    leaks = sorted({m.group(0).lower() for m in PHONE_WORDS.finditer(text)})
+    if leaks:
+        problems.append(f"{d['id']} / mac: phone mechanics in the Mac block (or the motion and pitfall it inherits): {leaks}")
+    return problems
 
 
 def check(directions: list[dict]) -> int:
@@ -177,10 +233,12 @@ def check(directions: list[dict]) -> int:
                 for name, ratio, required, hard in contrast_report(scheme):
                     if hard and ratio < required:
                         problems.append(f"{d['id']} / {p['name']} / {mode}: {name} {ratio:.2f}:1 < {required}")
+        problems += check_mac(d)
     counts = {p: sum(1 for d in directions if d["preset"] == p) for p in PRESETS}
+    on_mac = sum(1 for d in directions if "skip" not in d.get("mac", {"skip": ""}))
     for line in problems:
         print(f"FAIL {line}")
-    print(f"{len(directions)} directions {counts}; {len(problems)} problem(s)")
+    print(f"{len(directions)} directions {counts}, {on_mac} with a Mac form; {len(problems)} problem(s)")
     return 1 if problems else 0
 
 
@@ -192,6 +250,8 @@ def main() -> int:
     ap.add_argument("--sector", help="exclude directions marked not_for this sector, e.g. finance, health, kids")
     ap.add_argument("--content", help="content shapes the screen must show at rest, primary first, comma-separated: " + ", ".join(SHAPES))
     ap.add_argument("--have", help="assets that really exist, comma-separated: photography (default: none, so photo-dependent directions are skipped)")
+    ap.add_argument("--platform", choices=("ios", "android", "macos"),
+                    help="macos deals each direction's Mac window form and drops those without one (default: phone)")
     ap.add_argument("--keep", default="", help="brand-fixed slots to leave undealt: palette, type")
     ap.add_argument("--seed", type=int, help="reuse a seed to reproduce a deal")
     ap.add_argument("--list", action="store_true", help="list all direction ids")
@@ -201,6 +261,11 @@ def main() -> int:
     directions = load()
     if args.check:
         return check(directions)
+    if args.platform == "macos":
+        skipped = [d["id"] for d in directions if for_platform(d, "macos") is None]
+        directions = [v for v in (for_platform(d, "macos") for d in directions) if v is not None]
+    else:
+        skipped = []
     if args.list:
         for d in directions:
             print(f"{d['id']:24} {d['preset']:14} {d['name']}")
@@ -210,7 +275,11 @@ def main() -> int:
     if args.direction:
         match = [d for d in directions if d["id"] == args.direction]
         if not match:
-            print(f"unknown direction {args.direction}; see --list", file=sys.stderr)
+            if args.direction in skipped:
+                reason = next(d["mac"]["skip"] for d in load() if d["id"] == args.direction)
+                print(f"{args.direction} has no macOS form: {reason}", file=sys.stderr)
+            else:
+                print(f"unknown direction {args.direction}; see --list", file=sys.stderr)
             return 2
         print_sheet(match[0], seed, {k.strip() for k in args.keep.split(",") if k.strip()})
         return 0
@@ -229,7 +298,8 @@ def main() -> int:
         print(f"Dealt {len(dealt)} direction(s), seed {seed}. Hold each against the inventory; choose the one that can carry something only this product has.")
         for d in dealt:
             print_option(d)
-        print(f"\nThen: deal.py --direction <id> --seed {seed}")
+        flag = " --platform macos" if args.platform == "macos" else ""
+        print(f"\nThen: deal.py --direction <id> --seed {seed}{flag}")
         return 0
     ap.print_help()
     return 2

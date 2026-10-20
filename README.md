@@ -93,7 +93,7 @@ The same prompt ("a habit tracker home in Compose Multiplatform, Duolingo-level 
 ## How it works
 
 1. **Intake and inventory.** For a redesign, read the app's current look first (fonts, colours, mascot, illustrations) and keep its identity assets by default. Then list 8–12 things only this product has: its objects, rituals, places and numbers.
-2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (20 directions, each anchored in shipped apps). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
+2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (20 directions, each anchored in shipped apps; 19 also have a Mac window form, dealt with `--platform macos`). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
 3. **Owned idea.** One sentence: *"In this app, ⟨inventory item⟩ becomes ⟨device⟩."* It has to fail for the nearest competitor. One live interaction reacts to real state.
 4. **Build.** Tokens, then components, then the screen, with real content at real density, following a code baseline: stable identity, state that survives, transforms not layout.
 5. **Check, fix, report.** The gates below. Then a scored critique of the screenshots, at most two fix rounds, and a fixed report block.
@@ -217,7 +217,7 @@ references/
   critique.md               the scored taste pass on screenshots
   mascot.md                 designing a mascot or hero glyph the skill can draw, rig it, ship it, animate it
 library/directions.json     20 dealt directions (5 per preset), with palettes checked for contrast
-scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
+scripts/deal.py             deals directions (--platform macos for their Mac window forms); --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator or macOS SDK, no Xcode project needed
 scripts/compile_kotlin.py   compiles Compose / CMP files in a throwaway Kotlin 2.2.21 + Compose MP 1.9.0 project (JVM + Android)

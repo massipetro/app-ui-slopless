@@ -7,7 +7,7 @@ description: Visual design and UX for native app screens in SwiftUI (iOS and mac
 
 Make native app UI (iPhone, Android, Mac) that people remember, on top of interaction design that holds up to the research.
 
-**Platform first.** Decide which platform(s) the screen ships on before anything else, from the project (`Package.swift` platforms, the `.xcodeproj`'s deployment targets, `import AppKit`) or the request, and state it in your reply. The study-backed bones and the dealt directions are shared; the mechanics are not. On a Mac, read `references/platform-macos.md` and apply the **macOS** variants of the rules marked that way below (pointer and keyboard instead of thumb, windows and sidebars instead of one screen, fixed 13 pt text instead of Dynamic Type). Never ship an iPhone layout in a bigger window.
+**Platform first.** Decide which platform(s) the screen ships on before anything else, from the project (`Package.swift` platforms, the `.xcodeproj`'s deployment targets, `import AppKit`) or the request, and state it in your reply. The study-backed bones and the directions' brand layer are shared; the mechanics and the window composition are not. On a Mac, deal with `--platform macos` (step 2), read `references/platform-macos.md` and apply the **macOS** variants of the rules marked that way below (pointer and keyboard instead of thumb, windows and sidebars instead of one screen, fixed 13 pt text instead of Dynamic Type). Never ship an iPhone layout in a bigger window.
 
 Two failure modes to avoid, equally:
 - **Slop**: the generic look an AI produces by default. Grey-on-white cards with soft shadows, a purple-blue gradient, one sans everywhere at timid sizes, emoji as icons, everything rounded the same. It's forgettable, and the research says it costs you: people judge visual appeal in ~50 ms (Lindgaard 2006), rate attractive interfaces as more usable (Kurosu & Kashimura 1995; Tractinsky 2000), and flat, signifier-poor screens take ~22% longer to use (NN/g, Moran 2017).
@@ -65,12 +65,13 @@ The user chooses the style; never silently default to something safe.
 First name the screen's **content shapes**: what the user came to see or do, primary first. One of `list` (rows to scan: departures, spends, habits), `number` (one figure that answers the screen: a balance, a countdown), `detail` (one item in depth), `collection` (many items to browse), `canvas` (a map, calendar or chart as the screen), `story` (one moment per screen, in sequence), `progression` (a path or levels), `action` (one verb dominates). A ferry home is `list,number`; a room page `detail,canvas`; a habit home `action,list`.
 
 ```bash
-python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography]
+python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography] [--platform macos]
 ```
 
 - `--content`: only directions whose composition can show the primary shape are dealt, and within each preset the ones that also hold the secondary shapes come first. A poster of colour blocks can't show a timetable, so it isn't dealt for one.
 - `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets.
 - `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example).
+- `--platform macos`: for a Mac app. Each direction is dealt in its Mac form: a window composition (sidebar, content, inspector, toolbar, menu bar extra) instead of the phone screen, pointer-and-keyboard signature moves, Mac-scale shape, Mac dial defaults (usually denser), and a **window chrome** line that says what stays system (translucent sidebar, the user's accent colour, the title bar) and what carries the palette. Directions with no Mac form (`ed-story-cards`) are not dealt. Pass the same flag when printing the sheet. The fit test reads the Mac composition: "content at rest" means in a 1280×800 window, not a phone.
 - `--have photography`: only when the product really has photographs: its own photos in the project, or photos it shows at runtime (listings, products, places, people's uploads). Without it, directions that depend on photographs are not dealt, so a screen never ends up built around grey placeholder boxes. Drawn art never needs `--have`: it is made in code.
 
 **Fit test: reject options that don't fit.** For each dealt option, answer four questions in one line each:
@@ -106,7 +107,7 @@ If the user named a preset, deal inside it (`--preset`), even a poor fit: warn t
 Then print the full sheet and adopt it. Don't blend it with the layout you would have made anyway:
 
 ```bash
-python3 <skill>/scripts/deal.py --direction <id> --seed <seed from the deal>
+python3 <skill>/scripts/deal.py --direction <id> --seed <seed from the deal> [--platform macos]
 ```
 
 The sheet gives the composition, the idea slot, a dealt type system and palette (light and dark, with measured contrast), shape, signature moves, motion and the way the direction goes wrong. If the brand already fixes colours or typefaces, pass `--keep palette,type` and map the brand onto the roles. Redeal only for a reason you can state (it contradicts the brand, or needs an asset that doesn't exist), and say so in the report. If the script can't run, read `library/directions.json` and pick by the same rules.
@@ -448,7 +449,7 @@ Models produce slop because they sample the statistical average of their trainin
 
 - [ ] Inventory of 8–12 product-only items written in the reply before `deal.py` ran, and repeated as the brief's first line.
 - [ ] Intake done: existing look and identity assets read (Redesign, or Build inside an existing app); questions asked once, or assumptions stated.
-- [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test, category fit), misfits dropped, redeal stated if none survived; direction id and seed in the report.
+- [ ] Content shapes named and passed to `deal.py --content` (plus `--platform macos` for a Mac app); every dealt option put through the fit test (content at rest, owned idea, costume test, category fit), misfits dropped, redeal stated if none survived; direction id and seed in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, what's kept from the current app, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] Swift typechecked with `scripts/typecheck.py` on the right platform at the project's deployment target (iOS 17 / macOS 14 when the project sets none), newer APIs behind `if #available`, `--ios` / `--macos` never raised to get a pass; Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`; both passing, or the report says why not.

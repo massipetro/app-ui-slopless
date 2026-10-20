@@ -91,7 +91,20 @@
         "kids",
         "games"
       ],
-      "pitfall": "Stock photos of laughing people; text overlaid on photos without a checked scrim; every card the same height."
+      "pitfall": "Stock photos of laughing people; text overlaid on photos without a checked scrim; every card the same height.",
+      "mac": {
+        "composition": "The collection sits in the sidebar or an adaptive grid; the selected item's detail fills the content column, with the hero picture or object across its top (at most ~40% of the window, so the facts start above the fold at 1280x800). Title and the exaggerated number sit under it, never on it, then dense supporting rows. The one accent action and the total live in the toolbar with a shortcut, not in a sticky bar; secondary facts go in the inspector.",
+        "moves": [
+          "Matched-geometry zoom from grid tile to detail; double-click opens the item in its own window",
+          "Exaggerated key number at 48-64 pt beside its label in the detail header",
+          "One accent primary action in the toolbar, with a shortcut and a menu command"
+        ],
+        "shape": "Radii by role at Mac scale: images 12, panels 10, controls the system's. Grid tiles and sidebar separate by tone, not shadow; one low-blur warm shadow only on the floating hero object.",
+        "chrome": "Translucent sidebar kept; the palette's ground is the content column's background. System accent for standard controls, the palette accent only for the primary action and the grid selection. Hero art may run under a transparent title bar with the traffic lights clear.",
+        "dials": {
+          "D": 5
+        }
+      }
     },
     {
       "id": "wp-departure-board",
@@ -179,7 +192,20 @@
       "not_for": [
         "kids"
       ],
-      "pitfall": "A fake dashboard of grey bars; rows that reflow when a value changes; status shown by colour alone."
+      "pitfall": "A fake dashboard of grey bars; rows that reflow when a value changes; status shown by colour alone.",
+      "mac": {
+        "composition": "The content column is the board: a Table or fixed-column list of 15-30 rows (one per trip, habit, order, account), sortable columns, status as colour plus word, fixed row heights so nothing reflows when a value changes. The item that matters now is pinned as an expanded row at the top with the live countdown. The sidebar holds the boards (today, upcoming, archive); the inspector holds the selected row.",
+        "moves": [
+          "Board rows in fixed, sortable columns with tabular figures",
+          "Live countdown in the pinned row, mirrored in a menu bar extra and the Dock badge",
+          "Status as colour plus word, never colour alone"
+        ],
+        "shape": "Rows, not cards: 24-28 pt rows separated by a tone step, radius 4-6 on the selection only. Status pills fully rounded with the word inside, at 11-12 pt.",
+        "chrome": "Standard sidebar and toolbar; the board carries the palette. Keep the Table's system selection behaviour, tinted with the palette accent (say so in the brief). The menu bar extra uses a monochrome template glyph.",
+        "dials": {
+          "D": 8
+        }
+      }
     },
     {
       "id": "wp-exaggerated-number",
@@ -265,7 +291,21 @@
       "motion": "Number roll ~250 ms; selection haptic ticks while dragging; success notification haptic on commit.",
       "needs": [],
       "not_for": [],
-      "pitfall": "A huge number with a tiny label as decoration with nothing to do; the number truncated at its widest real value."
+      "pitfall": "A huge number with a tiny label as decoration with nothing to do; the number truncated at its widest real value.",
+      "mac": {
+        "composition": "The content column leads with the one number at 64-96 pt, the direct control beside or under it (stepper, slider, or the number itself editable in place), then a dense history Table filling the rest of the window. The sidebar lists the accounts, jars or timers that each own a number; the selection's name is the window title.",
+        "moves": [
+          "The number rolls like an odometer when it changes",
+          "The number is editable in place: type to set it, arrow keys step it, Cmd-Z undoes it",
+          "A full-window accent field for the success moment, dismissed with Escape"
+        ],
+        "shape": "One flat colour field behind the number only; controls at system size, full pill on the one direct control; no shadows. The number never sits in a card.",
+        "motion": "Number roll ~250 ms; a trackpad alignment haptic only when a slider snaps to a round value; the success field fades in and out.",
+        "chrome": "Sidebar stays translucent; the number's field carries the brand colour, system accent elsewhere. Trackpad alignment haptic only when a slider snaps to a round value.",
+        "dials": {
+          "D": 4
+        }
+      }
     },
     {
       "id": "wp-quiet-canvas",
@@ -353,7 +393,24 @@
       "not_for": [
         "kids"
       ],
-      "pitfall": "A decorative canvas (a fake map); glass cards stacked over it."
+      "pitfall": "A decorative canvas (a fake map); glass cards stacked over it.",
+      "mac": {
+        "composition": "The canvas (map, calendar, chart, timeline) fills the content column edge to edge. Content lives in a resizable trailing inspector (Opt-Cmd-I) instead of a sheet, and the sidebar holds saved places, calendars or layers. Chrome is near-monochrome, so the one accent means go.",
+        "moves": [
+          "The canvas recentres around the inspector as it opens or resizes",
+          "One creation affordance the user drags onto the canvas, with a toolbar button and shortcut as the fallback (Things' Magic Plus)",
+          "Accent used only for go and selected"
+        ],
+        "shape": "Canvas edge to edge, no card frames. Inspector and popovers use system shapes; buttons radius 6 or full pill, decided once. No shadows beyond the system's on popovers.",
+        "motion": "The inspector slides with a 0.9-damping spring; the canvas recentres as the inspector's width changes.",
+        "chrome": "The canvas runs under a transparent toolbar; sidebar and inspector stay system materials. Scroll and pinch zoom the canvas (the one place scroll may be custom). System accent for controls, palette accent for the go state.",
+        "dials": {
+          "D": 6
+        },
+        "anchors": [
+          "Things 3 for Mac (Magic Plus)"
+        ]
+      }
     },
     {
       "id": "wp-living-palette",
@@ -451,7 +508,21 @@
       "motion": "Tint crossfades over seconds, never snaps; scrubbing ticks with selection haptics.",
       "needs": [],
       "not_for": [],
-      "pitfall": "A decorative gradient sky with no data behind it; a tint stop where text contrast fails."
+      "pitfall": "A decorative gradient sky with no data behind it; a tint stop where text contrast fails.",
+      "mac": {
+        "composition": "The content column is the hour-by-hour (or day-by-day) view at full window width: the tint follows the real time or state, the current moment is a marker you drag or step with the arrow keys, and a compact Table under it lists the details. The sidebar holds places or items; a wider window shows more hours, not bigger ones.",
+        "moves": [
+          "Time- or state-aware palette on the content column",
+          "Scrubbable timeline: drag it, hover to preview a value, arrow keys to step",
+          "The chart is the window, not a card in it"
+        ],
+        "shape": "Soft radii 10-12; content on opaque surfaces one tone step from the tinted field. Hover tooltips give exact values.",
+        "motion": "Tint crossfades over seconds, never snaps; the scrub marker follows the pointer 1:1 and steps with the arrow keys.",
+        "chrome": "The tint stays in the content column; the sidebar stays translucent so the window still reads as a Mac window. Check text contrast at every tint stop and with Reduce Transparency on.",
+        "dials": {
+          "D": 6
+        }
+      }
     },
     {
       "id": "nb-sticker-sheet",
@@ -551,7 +622,21 @@
         "health",
         "government"
       ],
-      "pitfall": "Soft brutalism (big radius, blurred shadow, black border); random colour per card; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "Soft brutalism (big radius, blurred shadow, black border); random colour per card; more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "composition": "Bordered blocks on an off-white sheet fill the content column in an adaptive grid; each section owns one flat accent; one hero sticker per window is rotated 1-2 degrees. The sidebar is a bordered list with the selected row filled solid, and the toolbar keeps its standard place with bordered buttons.",
+        "moves": [
+          "The squash button: hover lifts it 1 pt off its shadow, a click sinks it in",
+          "One rotated hero sticker in the content column",
+          "Colour assigned by section role, carried into the sidebar's selected row"
+        ],
+        "shape": "2 pt black stroke on interactive surfaces, 3-4 pt hard offset shadow with zero blur, radius 0-4: the phone strokes scaled down to sit with 13 pt text.",
+        "motion": "80 ms squash on click, 1 pt lift on hover; stamp (scale 1.15 to 1, no bounce). No haptics.",
+        "chrome": "A noted convention break: an opaque sidebar with a bordered selection, and the system accent ignored (say so in the brief). Keep the traffic lights, the toolbar's place, an equally visible bordered focus ring, and Reduce Transparency.",
+        "dials": {
+          "D": 6
+        }
+      }
     },
     {
       "id": "nb-spec-sheet",
@@ -640,7 +725,20 @@
         "kids",
         "health"
       ],
-      "pitfall": "Monospace for paragraphs; tiny letter-spaced caps labels everywhere; low-contrast greys."
+      "pitfall": "Monospace for paragraphs; tiny letter-spaced caps labels everywhere; low-contrast greys.",
+      "mac": {
+        "composition": "Lists are tables: a sortable Table of 20-30 rows split by 1-2 pt rules, label left, monospace value right-aligned. Each task opens a focused mode in its own window or full screen with no chrome but the traffic lights and a bordered Done (Escape). The inspector is the selection's spec sheet; colour comes only from content or one signal hue.",
+        "moves": [
+          "Table-honest lists with right-aligned monospace values and sortable columns",
+          "A focused task mode in its own window, Escape to leave",
+          "One signal colour for the live value"
+        ],
+        "shape": "Radius 0. 1-2 pt rules. No shadows: borders and rules only. Rows 22-24 pt.",
+        "chrome": "The sidebar may go opaque to match the sheet (state it in the brief); the toolbar and menu bar stay system. Keyboard first: every row action has a shortcut and a menu item.",
+        "dials": {
+          "D": 8
+        }
+      }
     },
     {
       "id": "nb-dot-matrix",
@@ -727,7 +825,18 @@
       "not_for": [
         "kids"
       ],
-      "pitfall": "Dot type for running text (Nothing itself retreated from it); decorative dots with no function; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "Dot type for running text (Nothing itself retreated from it); decorative dots with no function; more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "composition": "A monochrome instrument window: the key number in large dot-matrix figures leads the content column, dot-built controls beside it, readable text in a plain grotesque, one red signal. With few items it is a single window with a toolbar and no sidebar. The same readout, small, is the menu bar extra.",
+        "moves": [
+          "Dot-matrix key number",
+          "A dot-built progress widget that is also a control (drag, scroll or arrow keys set it)",
+          "Menu bar extra showing the live readout"
+        ],
+        "shape": "Circles and pills built from dots, full radius on controls, 1 pt strokes, no shadows. Dot pitch chosen so figures stay crisp at 1x and 2x.",
+        "chrome": "Dark first, light mode still complete. Red reserved for live, record and alert; the system accent is ignored (say so in the brief). The menu bar glyph is a monochrome template.",
+        "dials": {}
+      }
     },
     {
       "id": "nb-poster-blocks",
@@ -826,7 +935,20 @@
         "health",
         "government"
       ],
-      "pitfall": "White text on yellow; a brutalist skin on a generic card layout; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "White text on yellow; a brutalist skin on a generic card layout; more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "composition": "Each section is a full-width flat colour block in the content column with a giant uppercase header cropped at the column edge; blocks butt against each other. A section list in the sidebar jumps to them and marks the one in view. Content inside is plain and black, capped at reading width.",
+        "moves": [
+          "Giant uppercase section headers cropped at the column edge",
+          "A colour block per section, echoed as a swatch in the sidebar",
+          "The squash button: hover lift, click sink"
+        ],
+        "shape": "Radius 0. Blocks touch. Hard shadows only on buttons. Headers 64-120 pt, body 13-15 pt.",
+        "chrome": "The blocks stop at the sidebar and toolbar, which stay system so the window still reads as a Mac window. Transparent title bar over the first block, traffic lights clear.",
+        "dials": {
+          "D": 5
+        }
+      }
     },
     {
       "id": "nb-hand-drawn",
@@ -917,7 +1039,20 @@
         "government",
         "enterprise"
       ],
-      "pitfall": "Half-committed: hand-drawn icons on a stock UI reads unfinished, not raw; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "Half-committed: hand-drawn icons on a stock UI reads unfinished, not raw; more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "composition": "Hand-drawn controls and rows on a paper ground in the content column, scribble-fill selection, hand-drawn sidebar icons. The window frame, the toolbar's place and the menu bar stay system. The layout stays simple: one list and one big drawn action.",
+        "moves": [
+          "Boiling lines (2-3 frames at 8-12 fps) on illustrated elements",
+          "Scribble-fill selection, and a lighter scribble on hover",
+          "A hand-drawn sidebar (a noted convention break: labels, keyboard focus and VoiceOver kept)"
+        ],
+        "shape": "Hand-drawn strokes 1.5-2 pt with about 1 pt of wobble; rows 28-32 pt so the drawing has room.",
+        "chrome": "Opaque paper sidebar with drawn selection, noted in the brief. Keep the traffic lights, the standard menus and a drawn focus ring as visible as the system's. Reduce Motion stops the boil.",
+        "dials": {
+          "D": 4
+        }
+      }
     },
     {
       "id": "pl-toy-box",
@@ -1016,7 +1151,23 @@
         "enterprise",
         "government"
       ],
-      "pitfall": "Too polite: white rows with hairlines and one bouncy moment."
+      "pitfall": "Too polite: white rows with hairlines and one bouncy moment.",
+      "mac": {
+        "composition": "Three columns, as Duolingo's desktop web does: a sidebar of destinations; the content column with the hero card (streak or progress) and the lip check-offs in a dense list; a trailing rail of medium tiles (week, quests) that moves under the content when the window narrows. The mascot sits in the hero and reacts to real state.",
+        "moves": [
+          "Lip buttons and lip check-offs: hover lifts, a click compresses the lip, Space checks the focused row",
+          "Mascot tied to real state",
+          "Streak hero with a week row of chunky day dots"
+        ],
+        "shape": "Three primitives at Mac scale: radius 10-14, 3 pt lips on pressables, 2 pt bases on static panels; rows 36-40 pt so the lips have room.",
+        "chrome": "The sidebar may go opaque in the palette (noted in the brief); the toolbar keeps the primary action with a shortcut. Squish and ambient motion stop under Reduce Motion.",
+        "dials": {
+          "D": 5
+        },
+        "anchors": [
+          "Duolingo (desktop web, three columns)"
+        ]
+      }
     },
     {
       "id": "pl-level-path",
@@ -1112,7 +1263,23 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "A path for a product with no real progression: points for points' sake."
+      "pitfall": "A path for a product with no real progression: points for points' sake.",
+      "mac": {
+        "composition": "The path runs down a centred column (~480 pt wide) with its landmarks; the current node is big and invites a click (Return starts it); a trailing rail shows today's progress and the next landmark. The sidebar holds courses or tracks.",
+        "moves": [
+          "Path map instead of a list, navigable node by node with the arrow keys",
+          "Landmark milestones",
+          "The path draws on to the next node after completion"
+        ],
+        "shape": "Nodes are chunky circles 56-72 pt across on 3 pt lips; the path is a thick rounded stroke; hover shows a node's title as a tooltip.",
+        "chrome": "System sidebar and toolbar; the path column carries the palette. Node hop and draw-on fall back to a fade under Reduce Motion.",
+        "dials": {
+          "D": 4
+        },
+        "anchors": [
+          "Duolingo (desktop web path)"
+        ]
+      }
     },
     {
       "id": "pl-one-ritual",
@@ -1203,7 +1370,21 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "Celebrating every routine tap equally; hold with no tap alternative."
+      "pitfall": "Celebrating every routine tap equally; hold with no tap alternative.",
+      "mac": {
+        "composition": "A compact window (small minimum size) built around one giant object for today's core verb, clicked or held, with Space as the keyboard path; the same object lives in a menu bar extra. Completion is a layered event. History and settings sit in a sidebar or the Settings window, stock and calm.",
+        "moves": [
+          "Click-and-hold (<=500 ms) with a progress ring; a single click and Space as alternatives",
+          "Layered success: scale burst, particles, sound",
+          "The object, small, in the menu bar extra"
+        ],
+        "shape": "The object is dimensional, shaded with tone steps, 160-240 pt across. Everything else uses stock controls.",
+        "chrome": "Stock sidebar, toolbar and accent; the object carries the brand. Sound variants with a toggle in Settings (Cmd-comma).",
+        "pitfall": "Celebrating every routine click equally; a hold with no click or keyboard alternative; a celebration that steals focus from the window the user was working in.",
+        "dials": {
+          "D": 3
+        }
+      }
     },
     {
       "id": "pl-illustration-led",
@@ -1296,7 +1477,20 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "Illustration packs from different artists; stock 3D blobs."
+      "pitfall": "Illustration packs from different artists; stock 3D blobs.",
+      "mac": {
+        "composition": "Each view is built around one illustration from a single system, set beside its prompt in the content column (art on one side, words and action on the other) rather than art on top. Prompts flip with the arrow keys or a click; the sidebar holds the entries. A wider window gives the art more room, never a stretched crop.",
+        "moves": [
+          "Flip-card prompts, stepped with the arrow keys or a click",
+          "Boiling line on the art",
+          "Art that reacts to state, and to the pointer hovering over it"
+        ],
+        "shape": "Rounded primitives taken from the art; radius 12-16; no decorative blobs.",
+        "chrome": "System sidebar and toolbar; the art may run under a transparent title bar with the traffic lights clear.",
+        "dials": {
+          "D": 3
+        }
+      }
     },
     {
       "id": "pl-persona",
@@ -1392,7 +1586,23 @@
       "motion": "Mascot blinks and breathes; chart bars grow once on first load.",
       "needs": [],
       "not_for": [],
-      "pitfall": "Guilt-trip copy; jokes on bad-news screens (calm those surfaces)."
+      "pitfall": "Guilt-trip copy; jokes on bad-news screens (calm those surfaces).",
+      "mac": {
+        "composition": "Serious data shown clearly in the content column (charts, a Table, the key number), topped by one persona line and the abstract mascot in the header. The same line and a mood glyph show in the menu bar extra. Users choose how cheeky it is in Settings.",
+        "moves": [
+          "A persona line per view",
+          "A personality setting in the Settings window (Cmd-comma)",
+          "Mascot mood tied to the data, echoed in the menu bar extra"
+        ],
+        "shape": "Radius 8-12; rounded chart bars with hover values; the mascot built from the same primitives as the UI.",
+        "chrome": "System sidebar, toolbar and accent: the persona carries the brand, so the chrome stays native.",
+        "dials": {
+          "D": 6
+        },
+        "anchors": [
+          "CARROT Weather for Mac"
+        ]
+      }
     },
     {
       "id": "ed-type-as-image",
@@ -1480,7 +1690,20 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "A huge headline with nothing behind it; squashing type with scaleX; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "A huge headline with nothing behind it; squashing type with scaleX; more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "composition": "A huge condensed headline (96-160 pt) cropped at the content column's edge heads the detail view; chrome is monochrome and content or photography supplies colour. Below, a strict 8- to 12-column grid with one breaker, body text capped at reading width. The sidebar lists the drops, issues or items.",
+        "moves": [
+          "Cropped hero headline with tight leading, re-set (not scaled) as the window widens",
+          "Monochrome chrome, content supplies colour",
+          "Grid with one breaker per view"
+        ],
+        "shape": "Radius 0 for editorial blocks; system radius on controls; 1 pt rules.",
+        "chrome": "Translucent sidebar and system toolbar; transparent title bar over the hero. System accent left alone on controls.",
+        "dials": {
+          "D": 6
+        }
+      }
     },
     {
       "id": "ed-story-cards",
@@ -1574,7 +1797,10 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "Squashed type and imagery that doesn't integrate (Wrapped 2021's criticism); more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "Squashed type and imagery that doesn't integrate (Wrapped 2021's criticism); more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "skip": "Tap-to-advance 9:16 cards are a phone form. On a Mac a recap belongs in ed-type-as-image or ed-monogram-grid; share cards can still be exported as images from either."
+      }
     },
     {
       "id": "ed-newspaper-frame",
@@ -1671,7 +1897,23 @@
       "not_for": [
         "kids"
       ],
-      "pitfall": "An italic serif accent word; eyebrow labels; fake 01/02/03 numbering."
+      "pitfall": "An italic serif accent word; eyebrow labels; fake 01/02/03 numbering.",
+      "mac": {
+        "composition": "One editorial frame across the window: a serif masthead in the title area, the sidebar as the section index (each section with its colour and bold glyph), and the content column as a front page of rules, serif heads and a dense list or grid. Rows show progress state; the inspector holds the selected item.",
+        "moves": [
+          "Section colour and glyph identity, from the sidebar index into the content",
+          "Serif for structure (masthead, heads, pull numbers), sans for UI at 13 pt",
+          "Rows or cards that show progress state"
+        ],
+        "shape": "1 pt rules; radius 0-4; no shadows; rows 28-32 pt.",
+        "chrome": "Translucent sidebar with the section glyphs in colour; system toolbar. The palette accent only for the masthead and section colours.",
+        "dials": {
+          "D": 7
+        },
+        "anchors": [
+          "NYT Games (web, one frame per game)"
+        ]
+      }
     },
     {
       "id": "ed-article",
@@ -1758,7 +2000,18 @@
         "kids",
         "games"
       ],
-      "pitfall": "An article layout that breaks at accessibility text sizes; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "An article layout that breaks at accessibility text sizes; more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "composition": "The detail is an article in a centred column capped at 640-720 pt: a lede in large serif, an image strip, the short answer, then sections. An outline in the sidebar tracks the section in view. Actions are words in the toolbar.",
+        "moves": [
+          "Lede-first answers",
+          "An outline in the sidebar that tracks the section in view",
+          "Words instead of icons for actions ('Share', 'Save') in the toolbar"
+        ],
+        "shape": "No cards: type and space separate content. Images radius 8 or 0. Article body 15-17 pt (above the 13 pt UI), with in-app zoom (Cmd-plus / Cmd-minus).",
+        "chrome": "Fully system chrome: the article is the brand.",
+        "dials": {}
+      }
     },
     {
       "id": "ed-monogram-grid",
@@ -1853,7 +2106,20 @@
       "not_for": [
         "enterprise"
       ],
-      "pitfall": "Decorative shapes with nothing inside; random colour per cell; more than two small uppercase labels on a screen (eyebrows, mono caps metadata)."
+      "pitfall": "Decorative shapes with nothing inside; random colour per cell; more than two small uppercase labels on a screen (eyebrows, mono caps metadata).",
+      "mac": {
+        "composition": "A strict, visible grid of interlocking flat shapes (fixed cell size, so a wider window adds columns) fills the content column as background and container for the data. One shape breaks the grid per view. Hover reveals a cell's value; a click selects it into the inspector.",
+        "moves": [
+          "Interlocking grid shapes as data containers",
+          "One breaker per view",
+          "Hover to read a cell, click to inspect it"
+        ],
+        "shape": "Radius 0 or full, dictated by the grid; no shadows; cells 80-120 pt.",
+        "chrome": "System sidebar and toolbar; the grid carries the palette.",
+        "dials": {
+          "D": 6
+        }
+      }
     }
   ],
   "content_shapes": {
