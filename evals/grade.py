@@ -103,9 +103,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 import lint  # noqa: E402  (the skill's own gate, so "no FAIL" means the same thing here)
 
 
-def lint_fails(d):
+def lint_fails(d, platform=None):
     fails = [f"{r}:{n}" for f in sorted(d.rglob("*")) if f.suffix in (".swift", ".kt")
-             for r, n, _ in lint.lint_file(f) if lint.RULES[r][0] == "FAIL"]
+             for r, n, _ in lint.lint_file(f, platform) if lint.RULES[r][0] == "FAIL"]
     return (not fails), ("no FAIL" if not fails else ", ".join(fails[:6]))
 
 
@@ -141,7 +141,7 @@ def report_block(resp):
     return (not missing), ("all 15 labels in order" if not missing else "missing or out of order: " + ", ".join(missing))
 
 
-def swift_typechecks(d):
+def swift_typechecks(d, platform="ios"):
     """Typecheck the run's Swift with scripts/typecheck.py. None when there's no Xcode here (check skipped)."""
     import subprocess
     files = [str(f) for f in sorted(d.rglob("*.swift"))]
@@ -149,7 +149,8 @@ def swift_typechecks(d):
         return None
     tc = Path(__file__).resolve().parent.parent / "scripts" / "typecheck.py"
     # Pinned: a run can't pass by writing its own Package.swift with a newer platform.
-    proc = subprocess.run([sys.executable, str(tc), *files, "--ios", "17.0"], capture_output=True, text=True)
+    target = ["--platform", "macos", "--macos", "14.0"] if platform == "macos" else ["--platform", "ios", "--ios", "17.0"]
+    proc = subprocess.run([sys.executable, str(tc), *files, *target], capture_output=True, text=True)
     if proc.returncode == 3:
         return None
     last = (proc.stdout.strip().splitlines() or ["no output"])[-1]
@@ -187,11 +188,11 @@ def fold_passes(d):
     return proc.returncode == 0, (out[-1] if proc.returncode == 0 else problem[:120] or out[-1])
 
 
-def with_compile(checks, d):
-    tc = swift_typechecks(d)
+def with_compile(checks, d, platform="ios"):
+    tc = swift_typechecks(d, platform)
     kc = kotlin_compiles(d)
-    fo = fold_passes(d)
-    return (checks + ([("Swift typechecks (iOS 17 simulator SDK)", *tc)] if tc is not None else [])
+    fo = None if platform == "macos" else fold_passes(d)  # fold.py measures a 390x844 phone mock
+    return (checks + ([("Swift typechecks (macOS 14 SDK)" if platform == "macos" else "Swift typechecks (iOS 17 simulator SDK)", *tc)] if tc is not None else [])
             + ([("Kotlin compiles (Compose MP 1.9.0, JVM + Android)", *kc)] if kc is not None else [])
             + ([("Bottom edge: no row cut by the pinned bar (fold.py)", *fo)] if fo is not None else []))
 
@@ -251,9 +252,26 @@ def eval6(d):
     ], d)
 
 
+def eval7(d):
+    sw = read(d, "**/*.swift")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py (macOS): no FAIL in the produced Swift", *lint_fails(d, "macos")),
+        ("Root view declares a minimum window size", *check(sw, r"minWidth:|windowResizability|defaultSize\(")),
+        ("Sidebar navigation (NavigationSplitView or .sidebar list), not a bottom tab bar", *check(sw, r"NavigationSplitView|listStyle\(\s*\.sidebar")),
+        ("Toolbar with the primary action", *check(sw, r"\.toolbar\s*\{[\s\S]{0,400}(primaryAction|ToolbarItem)")),
+        ("Menu-bar commands with keyboard shortcuts", *check(sw, r"(CommandGroup|CommandMenu|Commands)[\s\S]{0,800}keyboardShortcut|keyboardShortcut[\s\S]{0,800}(CommandGroup|CommandMenu|\.commands)")),
+        ("Hover state on custom clickable rows or buttons", *check(sw, r"onHover|isHovered|hovering")),
+        ("Context menu on library items", *check(sw, r"contextMenu")),
+        ("No iPhone-sized frame or 44pt target stretched into the window", *absent(sw, r"frame\([^)]*width:\s*(375|390|393|430)\b|UIScreen|height:\s*44\b")),
+        ("No iOS-only text scaling APIs (UIFontMetrics, preferredContentSizeCategory)", *absent(sw, r"UIFontMetrics|preferredContentSizeCategory")),
+    ], d, "macos")
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
-           "guesthouse-photos-no-preset-swiftui": eval6}
+           "guesthouse-photos-no-preset-swiftui": eval6,
+           "library-sidebar-macos-swiftui": eval7}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

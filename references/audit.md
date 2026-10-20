@@ -1,6 +1,6 @@
 # Audit mode
 
-How to critique an existing mobile screen against the studied principles. Read `principles.md` first; every finding cites one of its rule IDs.
+How to critique an existing mobile or Mac screen against the studied principles. For a Mac app also read `platform-macos.md` and use the `R-MAC-*` rules in `principles.md` in place of the touch and reach rules. Read `principles.md` first; every finding cites one of its rule IDs.
 
 ## Process
 1. **Understand the screen.** Who is the primary user, what is their goal here, how often do they come, and what platform(s) is it for? If the code alone doesn't say, infer it and state the assumption.
@@ -21,18 +21,19 @@ How to critique an existing mobile screen against the studied principles. Read `
 ```markdown
 # UX audit: <screen> (<platform>)
 
-**Context assumed:** <user, goal, frequency>
+**Context assumed:** <user, goal, frequency; for macOS also the window sizes it must hold and the input it expects (pointer, keyboard, trackpad)>
 **Verdict:** <2–3 sentences: the biggest problems and the overall impression>
 
 ## Findings
 | # | Sev | Finding | Where | Rule | Fix |
 |---|---|---|---|---|---|
 | 1 | 4 | Card number field has no persistent label; placeholder vanishes on typing | `CheckoutScreen.kt:42` | R-FORM-1 | Top label "Card number", `KeyboardType.Number`, autofill `CreditCardNumber` |
+| 2 | 3 | (macOS) Custom row button has no hover state and no right-click menu | `VoyageRow.swift:31` | R-MAC-3 | `.onHover` fill, `.contextMenu { }`, `.help` on the icon buttons |
 | … | | | | | |
 
 ## Measurements
 - Contrast: <pair> = <ratio> (needs <n>)
-- Targets: <element> = <size> (needs 44 pt / 48 dp)
+- Targets: <element> = <size> (needs 44 pt / 48 dp; macOS: ≥22 pt control, ≥24×24 pt icon button)
 - Type sizes in use: <list> → <count>; display moment: yes/no
 
 ## What's working

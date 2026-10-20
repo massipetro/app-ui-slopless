@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Lint SwiftUI (.swift) and Compose / CMP (.kt) source for slop tells and craft defects.
 
-  lint.py <file or folder> [...] [--allow rule,rule] [--list-rules]
+  lint.py <file or folder> [...] [--platform ios|macos] [--allow rule,rule] [--list-rules]
+
+Swift files are linted as macOS when --platform macos is given, or when the project (Package.swift,
+.xcodeproj) or the file itself (AppKit, MenuBarExtra, NSViewRepresentable ...) says so. On macOS the
+touch and Dynamic Type rules are relaxed (22 pt controls, fixed text styles) and Mac rules apply
+(hover states, menu commands, window sizing, phone-sized frames). Everything else is shared.
 
 Prints FAIL / WARN findings as file:line. Exit code 1 if any FAIL remains.
 A FAIL is a tell or defect with no good default reason; a WARN needs a one-sentence
@@ -52,6 +57,12 @@ RULES = {
     "text-in-remember": ("WARN", "typed text held in remember { mutableStateOf(\"\") }", "rememberTextFieldState(), or rememberSaveable for anything the user typed"),
     "caps-labels": ("WARN", "more than two uppercase labels on one screen", "Caps budget: two small uppercase labels at most; sentence case elsewhere, caps only at display size"),
     "pinned-bottom-overlap": ("WARN", "bottom bar laid over the scrolling content instead of insetting it", "SwiftUI: .safeAreaInset(edge: .bottom) on the ScrollView/List; Compose: Scaffold(bottomBar) with innerPadding in the list's contentPadding"),
+    "mac-no-hover": ("WARN", "clickable custom control with no hover state (macOS)", "Add .onHover / a hovered fill; on a Mac hover is the first signifier that it is live"),
+    "mac-no-commands": ("WARN", "App with no .commands { } (macOS)", "Put every action in the menu bar with a keyboard shortcut for the daily ones"),
+    "mac-window-size": ("WARN", "WindowGroup without a minimum or default size (macOS)", ".frame(minWidth:minHeight:) on the root view, .defaultSize and .windowResizability(.contentMinSize)"),
+    "mac-phone-frame": ("WARN", "iPhone-sized fixed frame in a Mac app", "Let the window size the layout: .frame(maxWidth:) for a reading column, adaptive grids, NavigationSplitView"),
+    "mac-ios-api": ("FAIL", "iOS-only API in a macOS target (doesn't compile)", "AppKit equivalent, or guard with #if os(iOS)"),
+    "mac-haptics": ("WARN", "haptic feedback on a Mac", "Trackpad haptics only for alignment/snapping; use a hover or pressed state and, rarely, a short sound"),
     "no-reduce-motion": ("WARN", "animation with no Reduce Motion / Remove animations handling", "Read accessibilityReduceMotion / animator scale and swap travel for fades"),
 }
 
@@ -138,11 +149,46 @@ def brace_block(text: str, start: int) -> tuple[int, int]:
     return (i, len(text))
 
 
-def lint_file(path: Path) -> list[tuple[str, int, str]]:
+MAC_FILE = re.compile(r"^\s*import\s+AppKit\b|\bNSViewRepresentable\b|\bNSWindow\b|\bNSApp\b|\bNSColor\b|\bNSImage\b|\bMenuBarExtra\b|\.windowStyle\(|\.inspector\(isPresented", re.M)
+IOS_FILE = re.compile(r"^\s*import\s+UIKit\b|\bUIViewRepresentable\b|\bUIColor\b|\bUIImage\b|\bUIApplication\b|\.navigationBarTitleDisplayMode\b", re.M)
+
+
+def project_is_mac(path: Path) -> bool | None:
+    """True/False when the enclosing project declares only macOS / only iOS; None when it says nothing."""
+    for d in [path.resolve().parent, *path.resolve().parents]:
+        pkg = d / "Package.swift"
+        if pkg.exists():
+            t = pkg.read_text(errors="ignore")
+            if (".macOS(" in t) != (".iOS(" in t):
+                return ".macOS(" in t
+        for proj in d.glob("*.xcodeproj/project.pbxproj"):
+            t = proj.read_text(errors="ignore")
+            mac, ios = "MACOSX_DEPLOYMENT_TARGET" in t, "IPHONEOS_DEPLOYMENT_TARGET" in t
+            if mac != ios:
+                return mac
+        if (d / ".git").exists():
+            break
+    return None
+
+
+def is_mac(path: Path, text: str, forced: str | None) -> bool:
+    if path.suffix != ".swift":
+        return False
+    if forced:
+        return forced == "macos"
+    if MAC_FILE.search(text) and not IOS_FILE.search(text):
+        return True
+    if IOS_FILE.search(text):
+        return False
+    return bool(project_is_mac(path))
+
+
+def lint_file(path: Path, platform: str | None = None) -> list[tuple[str, int, str]]:
     raw = path.read_text(errors="ignore")
     lines = [strip_comment(l) for l in raw.splitlines()]
     text = "\n".join(lines)
     swift = path.suffix == ".swift"
+    mac = is_mac(path, raw, platform)
     found: list[tuple[str, int, str]] = []
 
     def add(rule: str, lineno: int, detail: str = "") -> None:
@@ -178,18 +224,20 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
                 and not re.search(r"ambientColor|spotColor", line):
             add("soft-shadow", n)
         if re.search(r"\.(ultraThin|thin|regular|thick)Material\b|Modifier\.blur\(|\.blur\(radius:\s*[1-9]|\.copy\(alpha\s*=\s*0?\.[0-3]\d*f?\)\s*[,)]", line) \
-                and re.search(r"Material|blur|containerColor|background", line):
+                and re.search(r"Material|blur|containerColor|background", line) \
+                and not (mac and re.search(r"(?i)sidebar|inspector|toolbar|titlebar|for:\s*\.window|containerBackground|menu", line)):
             add("glass", n)
 
         # Type
         if swift:
-            if re.search(r"\.system\(size:", line) and "relativeTo" not in line:
-                add("fixed-font-size", n, ".system(size:) does not scale with Dynamic Type")
-            if re.search(r"\.custom\([^)]*size:", line) and "relativeTo" not in line and "fixedSize" not in line:
-                add("fixed-font-size", n, ".custom(_, size:) without relativeTo:")
+            if not mac:  # macOS has no Dynamic Type; fixed sizes are how its text styles work
+                if re.search(r"\.system\(size:", line) and "relativeTo" not in line:
+                    add("fixed-font-size", n, ".system(size:) does not scale with Dynamic Type")
+                if re.search(r"\.custom\([^)]*size:", line) and "relativeTo" not in line and "fixedSize" not in line:
+                    add("fixed-font-size", n, ".custom(_, size:) without relativeTo:")
             for m in re.finditer(r"size:\s*(\d+(?:\.\d+)?)", line):
                 if "font" in line.lower() or ".system(" in line or ".custom(" in line:
-                    if float(m.group(1)) < 12:
+                    if float(m.group(1)) < (10 if mac else 12):
                         add("tiny-text", n, f"{m.group(1)}pt")
         else:
             if re.search(r"fontSize\s*=\s*\d+(\.\d+)?\.dp|TextStyle\([^)]*\d+\.dp", line):
@@ -220,7 +268,7 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
                 add("small-target", n, f"{m.group(2)}dp")
         else:
             m = re.search(r"(Button|onTapGesture|Toggle)[^\n]*\.frame\([^)]*height:\s*(\d+)", line)
-            if m and int(m.group(2)) < 44:
+            if m and int(m.group(2)) < (20 if mac else 44):
                 add("small-target", n, f"{m.group(2)}pt")
 
         if re.search(r"Icons\.\w+\.(Check|Done)\b|systemName:\s*\"checkmark(\.circle)?(\.fill)?\"", line):
@@ -239,8 +287,8 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
     else:
         for m in re.finditer(r"\bTextField\(", text):
             before = "\n".join(lines[max(0, line_of(m.start()) - 3):line_of(m.start()) - 1])
-            if "LabeledContent" not in text and not re.search(r"\bText\(", before):
-                add("placeholder-only-field", line_of(m.start()), "the title is only a placeholder on iOS")
+            if "LabeledContent" not in text and not (mac and re.search(r"\bForm\b", text)) and not re.search(r"\bText\(", before):
+                add("placeholder-only-field", line_of(m.start()), "the title is only a placeholder" + ("" if mac else " on iOS"))
         for m in re.finditer(r"\bButton\s*(\(action:[^)]*\))?\s*\{", text):
             first = brace_block(text, m.end() - 1)
             if m.group(1):
@@ -308,6 +356,23 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
         for m in re.finditer(r"(?<!Saveable)\bremember\s*\{\s*mutableStateOf\(\s*\"\"\s*\)", text):
             add("text-in-remember", line_of(m.start()))
 
+    # macOS: pointer, keyboard and window rules.
+    if mac:
+        for m in re.finditer(r"UIKit|\bUI(Color|Image|Screen|Application|Device|ImpactFeedbackGenerator|NotificationFeedbackGenerator)\b|\.navigationBarTitleDisplayMode|\.fullScreenCover\(|\.navigationViewStyle\(\s*\.stack|\.tabViewStyle\(\s*\.page|\.statusBar", text):
+            add("mac-ios-api", line_of(m.start()), m.group(0)[:30])
+        for m in re.finditer(r"UIScreen|\.frame\([^)]*width:\s*(320|360|375|390|393|402|412|414|428|430|440)\b", text):
+            add("mac-phone-frame", line_of(m.start()), m.group(0)[:40])
+        for m in re.finditer(r"\.sensoryFeedback\(|UIImpactFeedbackGenerator|NSHapticFeedbackManager", text):
+            add("mac-haptics", line_of(m.start()))
+        custom = re.search(r"\bButtonStyle\b|\.onTapGesture\b", text)
+        if custom and not re.search(r"\.onHover\b|\.hoverEffect\b|isHovered|isHovering|\bhovering\b", text):
+            add("mac-no-hover", line_of(custom.start()))
+        if re.search(r"@main\b", text) and re.search(r"\bWindowGroup\b|\bwindow\b", text) and not re.search(r"\.commands\s*\{", text):
+            add("mac-no-commands", line_of(re.search(r"@main\b", text).start()))  # type: ignore[union-attr]
+        wg = re.search(r"\bWindowGroup\b", text)
+        if wg and not re.search(r"minWidth:|\.defaultSize\(|\.windowResizability\(|\.windowMinSize|\.defaultWindowPlacement", text):
+            add("mac-window-size", line_of(wg.start()))
+
     # Caps budget: uppercase transforms plus ALL-CAPS text literals (2+ words or 4+ letters).
     caps_sites = []
     for m in re.finditer(r"\.textCase\(\s*\.uppercase\s*\)|\.uppercased\(\)|\.uppercase\(\)|textTransform\s*=", text):
@@ -351,6 +416,7 @@ def lint_file(path: Path) -> list[tuple[str, int, str]]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("paths", nargs="*")
+    ap.add_argument("--platform", choices=["ios", "macos"], help="lint Swift files as this platform (default: detected from the project and the file)")
     ap.add_argument("--allow", default="", help="comma-separated rules to skip, for deliberate style choices")
     ap.add_argument("--list-rules", action="store_true")
     args = ap.parse_args()
@@ -378,7 +444,7 @@ def main() -> int:
 
     fails = warns = 0
     for f in files:
-        for rule, lineno, detail in lint_file(f):
+        for rule, lineno, detail in lint_file(f, args.platform):
             if rule in allow:
                 continue
             sev, what, fix = RULES[rule]

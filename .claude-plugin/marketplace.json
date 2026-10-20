@@ -1,14 +1,14 @@
 {
   "name": "app-ui-slopless",
-  "description": "Mobile UI design skill for SwiftUI, Compose and Compose Multiplatform",
+  "description": "App UI design skill for SwiftUI (iOS and macOS), Compose and Compose Multiplatform",
   "owner": {
     "name": "massipetro"
   },
   "plugins": [
     {
       "name": "app-ui-slopless",
-      "description": "Bold, distinctive, non-generic mobile UI for SwiftUI, Jetpack Compose and Compose Multiplatform: dealt research-backed directions, an owned-idea procedure, a slop linter and a scored screenshot critique, on top of studied UX rules.",
-      "version": "1.4.1",
+      "description": "Bold, distinctive, non-generic app UI for SwiftUI (iOS and macOS), Jetpack Compose and Compose Multiplatform: dealt research-backed directions, an owned-idea procedure, a slop linter and a scored screenshot critique, on top of studied UX rules.",
+      "version": "1.5.0",
       "source": "./",
       "author": {
         "name": "massipetro"

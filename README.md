@@ -1,11 +1,11 @@
 # app-ui-slopless
 
-**An Agent Skill that makes coding agents design mobile screens with an idea of their own, instead of the average AI app.** For iOS (SwiftUI) and Android (Jetpack Compose / Compose Multiplatform), grounded in studied UX principles rather than vibes.
+**An Agent Skill that makes coding agents design app screens with an idea of their own, instead of the average AI app.** For iOS and macOS (SwiftUI) and Android (Jetpack Compose / Compose Multiplatform), grounded in studied UX principles rather than vibes.
 
 <p>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-24292f?style=flat" alt="MIT licence"></a>
   <img src="https://img.shields.io/badge/Agent_Skills-compatible-24292f?style=flat" alt="Agent Skills compatible">
-  <img src="https://img.shields.io/badge/SwiftUI-iOS_17+-0A6A6C?style=flat" alt="SwiftUI, iOS 17+">
+  <img src="https://img.shields.io/badge/SwiftUI-iOS_17+_%C2%B7_macOS_14+-0A6A6C?style=flat" alt="SwiftUI, iOS 17+ and macOS 14+">
   <img src="https://img.shields.io/badge/Compose-Android_%2B_CMP-0A6A6C?style=flat" alt="Jetpack Compose and Compose Multiplatform">
   <a href="evals/README.md"><img src="https://img.shields.io/badge/blind_evals-34_of_40_wins-0A6A6C?style=flat" alt="Blind evals: 34 of 40 pairs won"></a>
 </p>
@@ -42,6 +42,8 @@ Screens it built, each from one brief, in our blind evals:
     <td><sub><b>Ferry home</b>, SwiftUI<br><code>wp-exaggerated-number</code>: time left on the island</sub></td>
   </tr>
 </table>
+
+<sub>macOS support (v1.5) has a compile-and-lint gate, a reference, rules `R-MAC-1…9` and an eval, but the blind-eval results below are iPhone and Android only.</sub>
 
 <sub>The screens are the HTML mocks each run writes next to its SwiftUI or Compose code, rendered at 390×844. Names, prices and timetables are sample content.</sub>
 
@@ -131,8 +133,8 @@ Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how
 
 | Check | How | Catches |
 |---|---|---|
-| Compiles | `scripts/typecheck.py` (Swift, at the project's deployment target, iOS 17 by default) · Gradle or `scripts/compile_kotlin.py` (Kotlin 2.2 + Compose MP 1.9) | code that only looks right |
-| Lint | `scripts/lint.py` | slop tells (violet accents, stock greys, 5%-black shadows, emoji), sub-44/48 targets, fixed font sizes, code-baseline mistakes |
+| Compiles | `scripts/typecheck.py` (Swift, iOS simulator or macOS SDK, at the project's deployment target; iOS 17 / macOS 14 by default) · Gradle or `scripts/compile_kotlin.py` (Kotlin 2.2 + Compose MP 1.9) | code that only looks right |
+| Lint | `scripts/lint.py` | slop tells (violet accents, stock greys, 5%-black shadows, emoji), sub-44/48 targets, fixed font sizes, code-baseline mistakes; in macOS mode also missing hover states, menu commands and window sizes, and phone-sized frames |
 | Bottom edge | `scripts/fold.py` measures the mock at 390×844 | a row or a sliver of card cut by the tab bar at rest; a last row that can't scroll clear |
 | Signature | the resting frame, against the category's stock layout | a good direction built as the default layout in new paint |
 | Motion | `scripts/filmstrip.py` freezes every animation at set times | a check-off that never lands, counters that change too early, anything clipped mid-animation |
@@ -210,13 +212,14 @@ references/
   audit.md                  audit process + report template
   platform-swiftui.md       SwiftUI patterns + code baseline
   platform-compose.md       Compose / CMP patterns + code baseline
+  platform-macos.md         macOS patterns: windows, sidebar, toolbar, pointer, keyboard, density, vibrancy
   presets/*.md              one file per style
   critique.md               the scored taste pass on screenshots
   mascot.md                 designing a mascot or hero glyph the skill can draw, rig it, ship it, animate it
 library/directions.json     20 dealt directions (5 per preset), with palettes checked for contrast
 scripts/deal.py             deals directions; --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
-scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator SDK, no Xcode project needed
+scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator or macOS SDK, no Xcode project needed
 scripts/compile_kotlin.py   compiles Compose / CMP files in a throwaway Kotlin 2.2.21 + Compose MP 1.9.0 project (JVM + Android)
 scripts/kotlin-check/       the Gradle template that compile_kotlin.py copies code into
 scripts/fold.py             measures the mock's bottom edge: every row at the pinned bar is whole or cut, and the last row clears it

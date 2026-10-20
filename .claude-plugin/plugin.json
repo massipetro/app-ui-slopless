@@ -1,8 +1,8 @@
 {
   "name": "app-ui-slopless",
   "displayName": "App UI Slopless",
-  "version": "1.4.1",
-  "description": "Bold, distinctive, non-generic mobile UI for SwiftUI, Jetpack Compose and Compose Multiplatform: dealt research-backed directions, an owned-idea procedure, a slop linter and a scored screenshot critique, on top of studied UX rules.",
+  "version": "1.5.0",
+  "description": "Bold, distinctive, non-generic app UI for SwiftUI (iOS and macOS), Jetpack Compose and Compose Multiplatform: dealt research-backed directions, an owned-idea procedure, a slop linter and a scored screenshot critique, on top of studied UX rules.",
   "author": {
     "name": "massipetro"
   },
@@ -12,6 +12,7 @@
   "keywords": [
     "skills",
     "mobile",
+    "macos",
     "ui",
     "design",
     "swiftui",

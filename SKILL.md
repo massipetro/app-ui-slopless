@@ -1,11 +1,13 @@
 ---
 name: app-ui-slopless
-description: Visual design and UX for native mobile app screens in SwiftUI, Jetpack Compose and Compose Multiplatform (KMP). Use whenever the user wants to design, build, restyle, redesign, theme or audit how an iOS or Android screen, flow, component or design system looks and feels — e.g. a screen that looks generic, boring, stock Material or "AI-made"; picking a type scale, colour palette or theme code; giving an app a style (warm premium, neo-brutalist, playful, editorial); or a UX critique of a mobile screen or screenshot (hierarchy, tap targets, thumb reach, contrast, error states). Trigger even if "design" is never said ("make it less ugly", "give it personality", "is this memorable or generic?"). Grounded in Apple HIG, Material 3 and UX research (Norman, Nielsen, Fitts, Hoober). Not for web/React/HTML pages, Figma tool how-tos, pixel-identical XML-to-Compose ports, or non-visual mobile work (crashes, scroll performance, navigation/deep links, tests, backend, CI/release).
+description: Visual design and UX for native app screens in SwiftUI (iOS and macOS), Jetpack Compose and Compose Multiplatform (KMP). Use whenever the user wants to design, build, restyle, redesign, theme or audit how an iOS, Android or Mac screen, window, flow, component or design system looks and feels — e.g. a screen that looks generic, boring, stock Material or "AI-made"; picking a type scale, colour palette or theme code; giving an app a style (warm premium, neo-brutalist, playful, editorial); or a UX critique of a mobile or Mac screen or screenshot (hierarchy, tap targets, thumb reach, sidebar and toolbar layout, hover and keyboard use, contrast, error states). Trigger even if "design" is never said ("make it less ugly", "give it personality", "is this memorable or generic?"). Grounded in Apple HIG (iOS and macOS), Material 3 and UX research (Norman, Nielsen, Fitts, Hoober). Not for web/React/HTML pages, Figma tool how-tos, pixel-identical XML-to-Compose ports, or non-visual app work (crashes, scroll performance, navigation/deep links, tests, backend, CI/release, notarization and App Store packaging).
 ---
 
 # app-ui-slopless
 
-Make mobile UI that people remember, on top of interaction design that holds up to the research.
+Make native app UI (iPhone, Android, Mac) that people remember, on top of interaction design that holds up to the research.
+
+**Platform first.** Decide which platform(s) the screen ships on before anything else, from the project (`Package.swift` platforms, the `.xcodeproj`'s deployment targets, `import AppKit`) or the request, and state it in your reply. The study-backed bones and the dealt directions are shared; the mechanics are not. On a Mac, read `references/platform-macos.md` and apply the **macOS** variants of the rules marked that way below (pointer and keyboard instead of thumb, windows and sidebars instead of one screen, fixed 13 pt text instead of Dynamic Type). Never ship an iPhone layout in a bigger window.
 
 Two failure modes to avoid, equally:
 - **Slop**: the generic look an AI produces by default. Grey-on-white cards with soft shadows, a purple-blue gradient, one sans everywhere at timid sizes, emoji as icons, everything rounded the same. It's forgettable, and the research says it costs you: people judge visual appeal in ~50 ms (Lindgaard 2006), rate attractive interfaces as more usable (Kurosu & Kashimura 1995; Tractinsky 2000), and flat, signifier-poor screens take ~22% longer to use (NN/g, Moran 2017).
@@ -153,7 +155,7 @@ The platform files show how to draw and animate custom glyphs.
 
 ### 4. Build
 
-Read `references/platform-swiftui.md` or `references/platform-compose.md` (Compose Multiplatform uses the Compose file plus its CMP section). They show how to implement tokens, custom fonts that still scale, press states, springs, haptics, reduce-motion, and insets idiomatically.
+Read `references/platform-swiftui.md` or `references/platform-compose.md` (Compose Multiplatform uses the Compose file plus its CMP section). **For a Mac app, read `references/platform-macos.md` as well**: it replaces the thumb-zone, 44 pt and Dynamic Type guidance with window anatomy (`NavigationSplitView`, toolbar, inspector), hover and cursor states, menu-bar commands and shortcuts, Mac type density, vibrancy and the accent colour, plus a macOS code baseline. They show how to implement tokens, custom fonts that still scale, press states, springs, haptics, reduce-motion, and insets idiomatically.
 
 Each platform file ends with a **code baseline** (§8b): stable list identity, state that survives, animating transforms rather than layout, and so on. Follow it, because bold UI that janks reads as broken.
 
@@ -188,13 +190,13 @@ Never: stock photos of laughing people, AI images passed off as real, illustrati
 
 **Gate first: compile, then lint.** Code that doesn't build is not a deliverable, however good the render looks.
 
-- **SwiftUI:** typecheck every Swift file you wrote, together, against the iOS simulator SDK:
+- **SwiftUI (iOS or macOS):** typecheck every Swift file you wrote, together, against the iOS simulator SDK, or the macOS SDK for a Mac app (the script detects which from the project and the code; `--platform macos` forces it):
 
   ```bash
   python3 <skill>/scripts/typecheck.py <changed .swift files or folder>
   ```
 
-  Fix every error and run it again until it passes. **Keep the deployment target.** The script reads it from the project (`Package.swift` platforms, or `IPHONEOS_DEPLOYMENT_TARGET` in the `.xcodeproj`) and uses iOS 17 when there's neither. An error like "'Tab' is only available in iOS 18.0 or newer" means the code is wrong for the target, not that the target is wrong: wrap the newer API in `if #available(iOS 18, *)` with an iOS 17 fallback, or use the older API (`references/platform-swiftui.md` rule 17). Never pass `--ios` to get past an availability error. Pass it only when the user or the project states a different target, and then name the target and where it came from on the report's Lint line. It needs no Xcode project, so there's no excuse to skip it on a Mac. If it can't run (exit 3: no Xcode, or files that import third-party packages), say so under "Not verified"; never report Swift as compiled when it wasn't.
+  Fix every error and run it again until it passes. **Keep the deployment target.** The script reads it from the project (`Package.swift` platforms, or `IPHONEOS_DEPLOYMENT_TARGET` / `MACOSX_DEPLOYMENT_TARGET` in the `.xcodeproj`) and uses iOS 17 (macOS 14 for a Mac app) when there's neither. An error like "'Tab' is only available in iOS 18.0 or newer" means the code is wrong for the target, not that the target is wrong: wrap the newer API in `if #available(iOS 18, *)` with an iOS 17 fallback, or use the older API (`references/platform-swiftui.md` rule 17). Never pass `--ios` / `--macos` to get past an availability error. Pass it only when the user or the project states a different target, and then name the target and where it came from on the report's Lint line. It needs no Xcode project, so there's no excuse to skip it on a Mac. If it can't run (exit 3: no Xcode, or files that import third-party packages), say so under "Not verified"; never report Swift as compiled when it wasn't.
 - **Compose / CMP:** if the project has a Gradle build, compile the module you changed there (`./gradlew :<module>:compileKotlin`, or `compileKotlinIosSimulatorArm64` / `compileDebugKotlinAndroid` for a CMP target). Without one, compile in the skill's throwaway project:
 
   ```bash
@@ -206,21 +208,22 @@ Never: stock photos of laughing people, AI images passed off as real, illustrati
 Then lint the files you wrote:
 
 ```bash
-python3 <skill>/scripts/lint.py <changed .swift / .kt files or folder> [--allow <rule>,<rule>]
+python3 <skill>/scripts/lint.py <changed .swift / .kt files or folder> [--platform ios|macos] [--allow <rule>,<rule>]
 ```
 
-It flags the slop tells and craft defects the code itself shows (violet accents, stock greys, 5%-black shadows, fixed font sizes, placeholder-only fields, sub-44/48 targets, unlabelled icon buttons, emoji, placeholder data, animation without Reduce Motion) and the code-baseline patterns from the platform files (index-based list identity, `AnyView`, `DispatchQueue` delays, `ObservableObject`, `@MainActor` models in default arguments, lazy `items` without keys, a `LazyColumn` inside `verticalScroll`, `collectAsState()`, typed text in plain `remember`). `--list-rules` shows them all. Fix every `FAIL`. Treat each `WARN` as wrong unless you can defend it in one sentence. `--allow` is for deliberate style choices only (e.g. `blur-shadow` for a warm premium floating sheet); list each one in the report. It's a regex heuristic, so a clean lint proves nothing about taste: that's what the passes below are for.
+It flags the slop tells and craft defects the code itself shows (violet accents, stock greys, 5%-black shadows, fixed font sizes, placeholder-only fields, sub-44/48 targets, unlabelled icon buttons, emoji, placeholder data, animation without Reduce Motion) and the code-baseline patterns from the platform files (index-based list identity, `AnyView`, `DispatchQueue` delays, `ObservableObject`, `@MainActor` models in default arguments, lazy `items` without keys, a `LazyColumn` inside `verticalScroll`, `collectAsState()`, typed text in plain `remember`). `--list-rules` shows them all. On macOS (detected, or `--platform macos`) it drops the Dynamic Type and 44 pt checks and adds Mac ones: custom controls with no hover state, an `App` with no `.commands`, a `WindowGroup` with no size limits, iPhone-sized fixed frames, iOS-only APIs and haptics. Fix every `FAIL`. Treat each `WARN` as wrong unless you can defend it in one sentence. `--allow` is for deliberate style choices only (e.g. `blur-shadow` for a warm premium floating sheet); list each one in the report. It's a regex heuristic, so a clean lint proves nothing about taste: that's what the passes below are for.
 
 **Render what you built and look at the image before handing over.** Code that reads well often renders badly: a number clipped by a fixed-width box, a token stretched into a pill by its parent, a tick off-centre, a bar covering content. The user sees those first, and one of them makes a bold design look broken (Tuch et al. 2012: poor execution lowers perceived beauty). Use the best render path available:
-1. **Real render:** Compose `@Preview` screenshot tests (Roborazzi/Paparazzi), SwiftUI previews or snapshot tests, or the app on an emulator/simulator (`adb exec-out screencap -p > s.png`, `xcrun simctl io booted screenshot s.png`).
-2. **Faithful mock:** if you can't run the platform, write an HTML/CSS mock with the same tokens, sizes and layout, and screenshot it headless at phone size with motion settled (e.g. Chromium-based `--headless=new --force-prefers-reduced-motion --window-size=390,844 --screenshot=s.png file.html`).
+1. **Real render:** Compose `@Preview` screenshot tests (Roborazzi/Paparazzi), SwiftUI previews or snapshot tests, or the app on an emulator/simulator (`adb exec-out screencap -p > s.png`, `xcrun simctl io booted screenshot s.png`). **A Mac app:** build and launch it, then capture its window only (`screencapture -o -l <windowID> s.png`, with the id from `osascript -e 'tell application "<App>" to get id of window 1'`; if the app isn't scriptable, `screencapture -o -R x,y,w,h s.png`, or a SwiftUI snapshot via `ImageRenderer`). Screen capture needs the Screen Recording permission for the terminal; if it is denied, say so under "Not verified". Render it at its **minimum** window size, at a typical size (about 1280×800), and at full screen, in light and dark; a Mac layout that is only good at one size is not done.
+2. **Faithful mock:** if you can't run the platform, write an HTML/CSS mock with the same tokens, sizes and layout, and screenshot it headless at phone size (a Mac window: 1280×800, plus the minimum size) with motion settled (e.g. Chromium-based `--headless=new --force-prefers-reduced-motion --window-size=390,844 --screenshot=s.png file.html`; `--size 1280x800` for `filmstrip.py`).
 3. **Neither possible:** say clearly in the report that the layout was never seen rendered.
 
-**Render every scrolling screen twice: at rest and scrolled to the end.** The resting frame is what people and screenshots see first; the end frame proves the last row clears the pinned bar. On a simulator, swipe to the bottom and screenshot again; in a Compose screenshot test, render a second preview with the list state scrolled to the last item. In the HTML mock, give the scroll container an id and end the file with one line, `<script>if (location.hash === '#end') { const s = document.getElementById('scroll'); s.scrollTop = s.scrollHeight; }</script>`, then render `mock.html` and `mock.html#end` as two frames.
+**Render every scrolling screen twice: at rest and scrolled to the end** (on a Mac, also check that the last row isn't hidden by a status bar or bottom toolbar, and that a resized window reflows rather than clips). The resting frame is what people and screenshots see first; the end frame proves the last row clears the pinned bar. On a simulator, swipe to the bottom and screenshot again; in a Compose screenshot test, render a second preview with the list state scrolled to the last item. In the HTML mock, give the scroll container an id and end the file with one line, `<script>if (location.hash === '#end') { const s = document.getElementById('scroll'); s.scrollTop = s.scrollHeight; }</script>`, then render `mock.html` and `mock.html#end` as two frames.
 
 **Record the motion whenever there is some to judge.** Stills can't show motion: a stuck, janky or clipped animation passes every check above, and a good one earns nothing. When `MOTION` is 4 or more, or the core verb or the live thing animates, turn the motion into a filmstrip (frames over time in one image) and look at it:
 - **HTML mock:** build the motion with CSS animations or the Web Animations API (motion on `requestAnimationFrame` or timers can't be stepped), and start the motion under test on `#play`, the way `#end` scrolls: `<script>if (location.hash === '#play') document.body.classList.add('play');</script>`. Then run `python3 <skill>/scripts/filmstrip.py mock.html`. It pauses every animation at 0–800 ms (`--times` to change), crops the frames to the area that moves (`--crop x,y,w,h` to choose it yourself), renders them in light mode whatever the machine uses (`--scheme dark` for the dark frames), tiles them into one PNG, and prints how many animations run, the longest finite one in ms and how many loop forever. The two still frames above stay the Reduce Motion view.
 - **Compose:** in a UI or screenshot test, set `composeTestRule.mainClock.autoAdvance = false`, trigger the action, and capture a frame after each `mainClock.advanceTimeBy(40)` (`captureRoboImage` with Roborazzi); then `filmstrip.py frames/*.png`.
+- **SwiftUI on a Mac:** `screencapture -v -V 3 -l <windowID> motion.mov` (or QuickTime), then the same `ffmpeg` and `filmstrip.py` steps as below.
 - **SwiftUI on a simulator:** `xcrun simctl io booted recordVideo motion.mov`, do the action, stop it with Ctrl-C, then `ffmpeg -i motion.mov -vf fps=15 frames/f%03d.png` and `filmstrip.py` on the frames around the action.
 - **Mascot or hero glyph (Lottie):** `mascot.py lottie rig.svg motion.json -o m.json`, then `mascot.py preview m.json` and `filmstrip.py m.preview.html --crop 0,0,240,240` once for the reaction (`#play`) and once with `--hash state=idle` for the loop. The preview drives lottie-web from a Web Animations clock, so the strip's numbers are real. Native mascot code animates like any other view: use the Compose or SwiftUI route above. `references/mascot.md` §7 says what to look for.
 - **None possible:** write "motion not recorded" under "Not verified".
@@ -267,7 +270,7 @@ Competitor test: <competitor> → <why the idea fails for them>
 Live thing: <the interaction and the real state it reacts to>; filmstrip: <n animations, longest n ms, n looping, and what the frames show; or "not recorded" and why>
 Built: <files, screens, states; the brief's must-haves visible at rest>
 Signature moves: <each move → where it shows at rest, or "not visible">; stock layout: <the default screen's blocks> → <what this screen does instead>
-Lint: <compile: pass / FAIL / not run and why, at iOS <target> (<from the project / default>); lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
+Lint: <compile: pass / FAIL / not run and why, at <iOS or macOS> <target> (<from the project / default>); lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
 Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
 Bottom edge: <fold.py: pass / FAIL, or "not measured: no HTML mock">; rest frame <each row at the fold: whole / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
@@ -290,6 +293,7 @@ These hold in every preset. Each one exists because ignoring it measurably hurts
 **Reach and targets**
 - Content goes in the centre. Primary actions go low (bottom bar, bottom-anchored CTA, FAB, sheet). Rare and navigational actions go high. Never put the only primary CTA in a top corner (Hoober; Clark).
 - Targets are ≥44 pt on iOS and ≥48 dp on Android, with ≥8 dp between them. Make the whole row tappable. Keep destructive actions physically apart from frequent ones (Fitts; HIG; M3).
+- **macOS variant (pointer and keyboard):** there is no thumb zone. Primary actions live in the toolbar, in the content, and in the menu bar with a shortcut. A standard control is 22 pt tall (never below 20, and ≥24×24 for icon buttons including padding, WCAG 2.5.8); the whole row is still the click target. Every clickable thing has a hover state, a right-click menu where it has actions, and is reachable by keyboard. Destructive items stay out of the default (Return) action.
 
 **Structure and memory**
 - One obvious primary action per screen. Fewer, more prominent choices beat many equal ones (Hick–Hyman).
@@ -346,6 +350,7 @@ Native per platform (the mechanics):
 - **Text scaling:** iOS Dynamic Type up to the AX sizes. Android `sp` up to 200% with nonlinear scaling.
 - **Sheets, pickers, date/time inputs, haptics, share sheets:** use each platform's own.
 - **Tab bar vs navigation bar:** both bottom, 3–5 labelled destinations, never hidden or disabled.
+- **macOS:** a sidebar (`NavigationSplitView`) for top-level navigation and a toolbar for window actions, not a bottom tab bar; hover, cursor and right-click states; a real menu bar with keyboard shortcuts; resizable windows with a declared minimum; fixed system text styles (body 13 pt) and an in-app zoom for content-heavy views instead of Dynamic Type; light, dark and the user's accent colour; translucent sidebars; Settings in ⌘,; undo instead of confirmation. Details: `references/platform-macos.md`.
 
 In Compose Multiplatform, one shared UI is fine. Branch with `expect/actual` (or a platform flag) for the mechanics above when they differ visibly: back affordance, haptics, sheet style, system font fallbacks.
 
@@ -354,7 +359,7 @@ In Compose Multiplatform, one shared UI is fine. Branch with `expect/actual` (or
 The user is allowed to break platform conventions when the style calls for it, for example a custom bottom bar shaped like a ticket stub, or a bespoke toggle. When you break one:
 1. Say which convention, and why the style needs it, in one line in the brief.
 2. Keep the *function* the convention protected. A custom tab bar still shows labels, stays visible, and has 44/48 targets. A custom toggle still announces its state to VoiceOver and TalkBack.
-3. Never break hard requirements silently: safe areas and insets, system back, text scaling, screen-reader labels. Breaking one of these gets a ⚠️ warning in the report.
+3. Never break hard requirements silently: safe areas and insets, system back, text scaling, screen-reader labels (on macOS: visible traffic lights and a draggable title area, a menu bar with the standard commands, keyboard access, VoiceOver labels, Reduce Motion and Reduce Transparency). Breaking one of these gets a ⚠️ warning in the report.
 
 ## Accessibility stance: warn, don't block
 
@@ -408,7 +413,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test), misfits dropped, redeal stated if none survived; direction id and seed in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
-- [ ] Swift typechecked with `scripts/typecheck.py` at the project's deployment target (iOS 17 when the project sets none), newer APIs behind `if #available`, `--ios` never raised to get a pass; Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`; both passing, or the report says why not.
+- [ ] Swift typechecked with `scripts/typecheck.py` on the right platform at the project's deployment target (iOS 17 / macOS 14 when the project sets none), newer APIs behind `if #available`, `--ios` / `--macos` never raised to get a pass; Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`; both passing, or the report says why not.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Scrolling screens rendered at rest and scrolled to the end; `scripts/fold.py` passes on the mock (no cut row, no sliver behind a fade, the last row clears the bar by 8 pt), or the report says the fold was checked by eye and why.
 - [ ] Signature check done on the resting frame: at least two signature moves pointed at, and the screen is not the category's stock layout in new colours.
@@ -420,13 +425,14 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] No request to an outside service carried the user's email, name or account; found pictures are credited.
 - [ ] Tokens defined once; no stray hex values or magic numbers in the screen.
 - [ ] Every interactive element has a visible signifier and a pressed state.
-- [ ] Primary action is in the thumb zone; targets are 44/48; destructive actions are isolated.
-- [ ] Type scale of 4–6 sizes, a real display moment, and custom fonts that scale with Dynamic Type / `sp`.
+- [ ] Primary action is in the thumb zone; targets are 44/48; destructive actions are isolated. (macOS: primary action in the toolbar and menu bar with a shortcut; controls ≥22 pt; every clickable thing has a hover state and a right-click or keyboard path.)
+- [ ] macOS only: root view has a minimum window size and the layout was rendered at minimum, typical and full-screen sizes; sidebar/toolbar/inspector follow `references/platform-macos.md` §2-3; menu commands and shortcuts exist for the daily actions; light, dark and a non-default accent colour checked; no iPhone layout stretched into a window.
+- [ ] Type scale of 4–6 sizes, a real display moment, and custom fonts that scale with Dynamic Type / `sp` (macOS: the system text styles, body 13 pt, plus in-app zoom where content is dense).
 - [ ] Contrast checked in light and dark (or a warning given); colour never carries meaning alone.
 - [ ] Core-verb icon and hero glyphs are custom-designed and animated; stock icons only for utility chrome.
 - [ ] A mascot, if the screen has one, was drawn as an SVG rig and generated with `mascot.py svg2code` (`--into` for a single-file brief), never freehand; it passed `mascot.py check` (24 px silhouette, squint) and its states were filmstripped and read with pass 14.
 - [ ] Motion matches the `MOTION` dial's row in the motion budget (at 7+: ambient life, press squish everywhere, animated icons); frequent paths ≤300 ms; reduce-motion fallback present.
 - [ ] Depth signifiers (lips, strokes, shadows) visible at ≥3:1 against their surface.
-- [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels), or the break is justified.
+- [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels; on macOS: window chrome, menu bar, keyboard access, VoiceOver), or the break is justified.
 - [ ] None of the slop tells.
 - [ ] The final message ends with the `app-ui-slopless report` block from step 5: all 15 labels verbatim, in order, every field filled (or `n/a` with a reason).

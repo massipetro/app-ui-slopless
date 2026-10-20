@@ -30,3 +30,7 @@ With those fixes (scratch copy of skill-creator's run_eval.py), Sonnet, 1 run pe
 | New (this branch) | 7/9 | 4/4 | 11/13 |
 
 The new description fixed "restyle the order tracking flow". Both still miss the two audit/critique queries: the screenshot or login screen doesn't exist in the eval sandbox, so Claude asks for it first and says it will load the skill once it has it. That is an artifact of the empty sandbox more than a description problem. Single runs, so ±1 query is noise.
+
+## Update (2026-10-20): macOS
+
+The description now names Mac screens and windows. `trigger-eval.json` gained 3 queries (2 should-trigger, 1 near-miss: a notarization/entitlements problem). They have not been run through `run_loop` yet, so the 11/13 figures above predate the macOS wording; rerun the smoke test (Sonnet, `--timeout 120`, 2 workers) before trusting recall.

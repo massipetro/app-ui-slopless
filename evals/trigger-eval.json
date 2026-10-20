@@ -78,5 +78,17 @@
  {
   "query": "what's the best way to do deep links in SwiftUI with NavigationStack? need to open a trip detail from a push notification",
   "should_trigger": false
+ },
+ {
+  "query": "I'm building a Mac app in SwiftUI, a menu-bar timer plus a main window with a sidebar. It looks like a stretched iPhone screen. Can you redesign Sources/App/MainWindow.swift so it has its own look and feels native on macOS?",
+  "should_trigger": true
+ },
+ {
+  "query": "audit this macOS SwiftUI preferences window screenshot for hierarchy, contrast and whether the toolbar and sidebar follow the HIG",
+  "should_trigger": true
+ },
+ {
+  "query": "my macOS app crashes on launch after notarization with a hardened-runtime entitlement error, how do I fix the code signing and entitlements?",
+  "should_trigger": false
  }
 ]

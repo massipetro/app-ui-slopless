@@ -34,6 +34,21 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 10: macOS, eval 7 (v1.5.0, Sonnet 5.5 at medium effort)
+
+First macOS round: the Mac library redesign (`files/LibraryView.swift`), two runs per config, Sonnet 5.5 builds ($3 cap) and two blind Sonnet 5.5 judges ($1 cap), the pairs shuffled as A and B. The brief also asked for a 1280×800 HTML mock, rendered headless.
+
+| Pair | With skill | Without | Judge picked the skill | Grader, with vs without |
+|---|---|---|---|---|
+| 1 | 6 (Craft capped at 4) | 5 (Craft and Substance capped) | yes | 19 / 19 vs 9 / 19 |
+| 2 | 7.4 | 5 (Idea capped at 5 for the stock layout; Craft capped at 4 for an unreadable selected cell) | yes | 19 / 19 vs 8 / 19 |
+
+- **2 of 2 pairs, margin +1.7.** The skill runs built a sidebar, toolbar and inspector Mac window, carried the owned idea (the shipping line's funnel livery) through it, and wrote the full report. The baselines were more native-looking in one pair (sortable column headers) but sparse (five rows) or generic.
+- Both skill runs typechecked on the macOS SDK (macOS 14 default), linted with no FAIL, and wrote "fold.py not measured: a Mac window has no pinned bottom bar" instead of running the phone-sized check.
+- The sample is small (n = 2, one brief, Sonnet, not the Opus used in rounds 1–9), so treat it as a smoke test of the macOS path, not as the strength of the result.
+- Two caveats on the measurement. The grader's menu-commands regex and the `fold.py` check were loosened after the first grading, because both skill runs put `Commands` in a separate struct (the task only asked for one file) and `fold.py` measures a 390×844 phone mock. That moved the skill runs from 18 / 20 to 19 / 19 and did not touch the baselines. Judge 1 also saw a blank band at the bottom of both mocks from the headless screenshot size (800 px minus browser chrome), which both configs share.
+- Cost: $2.82 for four builds (skill about $1.05 each, baselines about $0.37) plus $0.21 for two judges.
+
 ### Round 9: every gate in place, evals 1 and 4 (main at `d0aed63`)
 
 This round measured the four changes since round 8: the required mascot kit, `fold.py`, the signature check and the iOS 17 default. It used two briefs, the playful habit home (CMP) and the ferry home (SwiftUI, no preset). Each ran twice per config with Opus 5.5 builds ($5 cap), judged by four blind Opus 5.5 judges ($2 cap) who saw the stills and the filmstrips.

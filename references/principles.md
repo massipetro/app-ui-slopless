@@ -15,6 +15,7 @@ Cite the **ID** in audits (e.g. "breaks R-TOUCH-2"), so findings trace back to a
 - Motion (R-MOT)
 - Emotion & delight (R-EMO)
 - Platform (R-PLAT)
+- macOS (R-MAC)
 - Accessibility (R-A11Y)
 - Resolving conflicts
 
@@ -101,11 +102,24 @@ Cite the **ID** in audits (e.g. "breaks R-TOUCH-2"), so findings trace back to a
 - **R-PLAT-1 Hard requirements.** Safe areas/insets (edge-to-edge enforced from Android SDK 35), system back and predictive back (default when targeting API 36), Dynamic Type / `sp` to 200%, screen-reader labels.
 - **R-PLAT-2 Conventions you can restyle, not replace.** Bottom tab/navigation bar (3–5 labelled destinations, always visible, never disabled), navigation stack, sheets, system pickers. *Apple HIG Tab bars; M3 Navigation bar.*
 - **R-PLAT-3 Share the brand layer, keep native mechanics.** Colour, type, icons, illustration and motion personality are shared; back, sheets, pickers and haptics are native. *Google M3E research; HIG.*
+- **R-PLAT-4 macOS hard requirements.** Visible, clickable traffic lights and a draggable title area; the standard menu bar (App, File, Edit, View, Window, Help) with the system commands intact; full keyboard access; VoiceOver labels; Reduce Motion and Reduce Transparency honoured. See R-MAC-*.
+
+## macOS
+The R-TOUCH rules are about thumbs. On a Mac the input is a pointer and a keyboard, and the unit of design is a resizable window. Sources: Apple HIG (macOS sections: Windows, Sidebars, Toolbars, Menus, Keyboards, Pointing devices, Typography), Fitts 1954 (pointer targets), Nielsen heuristics #6 and #7 (recognition, accelerators).
+- **R-MAC-1 Windows, not screens.** Declare a minimum window size, compose at minimum, typical and full-screen sizes, and reflow (adaptive grids, a capped reading column) rather than scale. A stretched phone layout fails. *HIG Windows; Cooper on posture (sovereign apps).*
+- **R-MAC-2 Sidebar for navigation, toolbar for actions, inspector for properties.** Sidebars hold many destinations, so the R-NAV-1 limit of five is relaxed; keep labels visible. Primary action in the toolbar with a menu twin and a shortcut. *HIG Sidebars, Toolbars.*
+- **R-MAC-3 Hover and right-click are signifiers.** Every clickable custom control shows hover, pressed, focus and disabled states; rows and cards with actions have a context menu; icon-only controls have a tooltip. Hover can't be the *only* signifier: keyboard and VoiceOver users never see it, and a still can't show it. *Norman R-COG-1; HIG Pointing devices.*
+- **R-MAC-4 Keyboard and menu bar are the accelerators.** Every command is in the menu bar; daily actions have shortcuts that never reuse system ones (⌘N/O/S/W/Q/,/Z/X/C/V/A/F/H/M); everything is reachable by keyboard; Return and Escape are the default and cancel actions. *Nielsen #7; HIG Keyboards.*
+- **R-MAC-5 Control size and density.** A regular control is 22 pt (small 18, large 28); lists run 22-44 pt rows. Stay ≥24×24 pt for icon buttons including padding (WCAG 2.5.8). Dense is correct on a Mac; sparse phone spacing is a tell. *HIG Layout; Fitts.*
+- **R-MAC-6 Fixed type, real scale.** No Dynamic Type: body is 13 pt, smallest 10 pt, secondary 11-12. Keep a decisive display moment (R-VIS-1) and offer in-app zoom where content is dense. *HIG Typography.*
+- **R-MAC-7 Appearance is the user's.** Light, dark, accent colour, Increase Contrast and Reduce Transparency are honoured; the sidebar's vibrancy is chrome, and replacing it is a stated convention break. Inactive windows dim. *HIG Dark Mode, Materials.*
+- **R-MAC-8 Undo, not confirm.** Reversible actions register with `UndoManager`; only irreversible ones prompt, and the prompt names the object and the verb. *Norman; HIG Managing windows; R-FORM-4.*
+- **R-MAC-9 Windows keep their promise.** Window frame and per-window state are restored; settings live in ⌘, with immediate effect; a menu-bar extra shows one glanceable live state. *HIG Settings, Menu bar extras.*
 
 ## Accessibility (WCAG 2.2, mobile-relevant)
 - **R-A11Y-1 Contrast.** Text 4.5:1, large text 3:1 (1.4.3). UI components and icons 3:1 (1.4.11). Use APCA as the dark-mode sanity check (Lc 75 body, Lc 60 other text, Lc 45 large text).
 - **R-A11Y-2 Resize.** 200% text with no loss (1.4.4); reflow at large sizes (1.4.10); no fixed-height text boxes (1.4.12).
-- **R-A11Y-3 Targets.** Minimum 24×24 CSS px (2.5.8 AA); use the platform 44/48 instead.
+- **R-A11Y-3 Targets.** Minimum 24×24 CSS px (2.5.8 AA); use the platform 44/48 instead (macOS: 22 pt controls with ≥24×24 pt hit areas for icon buttons, R-MAC-5).
 - **R-A11Y-4 Motion.** Auto-moving content can be paused (2.2.2); interaction motion can be disabled (2.3.3).
 - **R-A11Y-5 Gestures.** Path or multi-point gestures have single-pointer alternatives (2.5.1). Drag has an alternative (2.5.7).
 - **R-A11Y-6 Orientation.** Don't lock orientation unless it's essential (1.3.4).
