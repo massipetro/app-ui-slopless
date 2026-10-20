@@ -272,7 +272,7 @@ def eval8(d):
     sw = read(d, "**/*.swift")
     resp = read(d, "response.md")
     return with_compile(process_checks(resp) + [
-        ("Dealt for the Mac (deal.py --platform macos)", *check(resp, r"--platform macos")),
+        ("Dealt for the Mac (--platform macos, or a Mac-only direction)", *check(resp, r"--platform macos|\b(nc|pi|df)-[a-z-]+")),
         ("lint.py (macOS): no FAIL in the produced Swift", *lint_fails(d, "macos")),
         ("Root view declares a minimum window size", *check(sw, r"minWidth:|windowResizability|defaultSize\(")),
         ("Subtitle lines in a Table or selectable List with timecodes", *check(sw, r"(Table\(|List\([^)]*selection)[\s\S]{0,4000}(timecode|start|\d\d:\d\d:\d\d)")),

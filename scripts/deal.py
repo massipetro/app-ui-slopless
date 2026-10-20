@@ -275,6 +275,18 @@ def check(directions: list[dict]) -> int:
     return 1 if problems else 0
 
 
+def detect_mac_project(root: Path) -> str | None:
+    """Why the project in `root` is a Mac app, or None. Uses typecheck.py's detection (project first, then code)."""
+    skip = {".build", "Pods", "node_modules", "DerivedData", ".git"}
+    files = [f for f in sorted(root.rglob("*.swift"))[:400] if not skip & set(f.parts)][:200]
+    if not files and not (root / "Package.swift").exists():
+        return None
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from typecheck import detect_platform
+    platform, why = detect_platform(files or [root / "Package.swift"])
+    return why if platform == "macos" else None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--options", type=int, help="deal N direction summaries to choose from")
@@ -294,6 +306,11 @@ def main() -> int:
     directions = load()
     if args.check:
         return check(directions)
+    if args.platform is None and (args.options or args.direction):
+        why = detect_mac_project(Path.cwd())
+        if why:
+            args.platform = "macos"
+            print(f"Dealing for macOS: {why}. Pass --platform ios to override.")
     if args.platform == "macos":
         skipped = [d["id"] for d in directions if for_platform(d, "macos") is None]
         directions = [v for v in (for_platform(d, "macos") for d in directions) if v is not None]

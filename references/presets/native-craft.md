@@ -5,7 +5,7 @@
 **Fits:** almost every Mac app, and especially utilities, productivity, readers, file and developer tools, and any app used for hours next to other apps.
 **Doesn't fit:** kids' apps and games (they want Playful), a brand whose whole value is spectacle.
 
-**Default dials:** `BOLDNESS 3–5 · MOTION 3–4 · DENSITY 5–8 · COLOR 3–5 · FIDELITY 2–6` (the direction decides: *quiet native* sits at F2, *owned chrome* at F6).
+**Default dials:** `BOLDNESS 3–5 · MOTION 3–4 · DENSITY 5–8 · COLOR 3–5 · FIDELITY 2–6` (the direction decides: *native chrome, owned content* sits at F3, *owned chrome* at F6).
 
 Sources and evidence: `research/macos-references.md` §1–2.
 
@@ -16,7 +16,7 @@ Sources and evidence: `research/macos-references.md` §1–2.
 - **Ivory for Mac.** System fonts throughout, with the brand carried by mascot art, sound and accent themes; up to six user-arranged columns. [MacStories](https://www.macstories.net/reviews/ivory-for-mac-review-tapbots-superb-mastodon-client-comes-to-apple-desktops-and-laptops/)
 
 ## Two honest kinds of native
-- **Quiet native:** the system's controls and materials, with the brand in **one custom control** where the core verb happens, plus first run, empty states, icon and sound. Restraint is the style, not a lack of one.
+- **Native chrome, owned content:** the system's chrome, controls and materials, with the identity drawn **into the content column**: a custom column, glyph or mini-visual in every row that only this product has, and one display moment heading the column. Restraint in the chrome, not in the content. Brand only in the inspector, Settings or first run is invisible in the resting window, and blind judges cap it as a stock layout (round 11).
 - **Owned chrome:** the app draws its own window (an opaque sidebar, its own toolbar), but every Mac *behaviour* stays. Simmons' 2026 argument is that stock UI is no longer the safe choice under Liquid Glass; Things is the proof that custom can be Mac-like.
 
 Either way, the tell of a fake is the same: Mac *looks* without Mac *behaviour*.
@@ -46,7 +46,7 @@ Either way, the tell of a fake is the same: Mac *looks* without Mac *behaviour*.
 - Rows that reorder slide; selection never animates.
 
 ## Signature moves (pick 2–3)
-1. **One custom control for the core verb**; everything else stock.
+1. **A custom-drawn column in every row** carrying the owned idea; the chrome stays stock.
 2. **A designed first run and empty state** that carry the owned idea, then convention (Panic's welcome).
 3. **A full menu bar** with shortcuts for daily actions, and a real Settings window (⌘,) of native controls that apply immediately.
 4. **Area colour and glyph** carried from the sidebar into the list and the item (Things).
@@ -58,7 +58,7 @@ Either way, the tell of a fake is the same: Mac *looks* without Mac *behaviour*.
 - Keep the traffic lights, a draggable title area, focus rings (or an equally visible drawn one), VoiceOver labels and full keyboard access. With owned chrome these are where it most often breaks.
 
 ## How cheap imitations go wrong
-- Correct and forgettable: stock everything with no owned idea at all. The signature must show in the resting frame.
+- Correct and forgettable: a stock table with the idea only in the inspector. Cover the inspector: if the content column alone could be Finder, it's a costume. Also: empty striped rows filling the window under a short list.
 - Custom chrome that drops Mac behaviour: no right-click, no menu commands, a title bar you can't drag, no keyboard focus.
 - An iPad layout scaled up: 44 pt rows, 20 pt radii, a bottom tab bar.
 - An icon on every menu item, and translucent panels stacked on translucent panels.

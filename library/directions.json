@@ -2134,7 +2134,7 @@
     {
       "id": "nc-quiet-native",
       "preset": "native-craft",
-      "name": "Quiet native, one signature",
+      "name": "Native chrome, owned content",
       "platforms": [
         "macos"
       ],
@@ -2143,20 +2143,20 @@
         "NetNewsWire (Simmons' 'Mac-assed Mac app')",
         "Ivory for Mac (system fonts; brand in mascot art, sound and accent themes)"
       ],
-      "composition": "A stock Mac window: an edge-to-edge sidebar, a Table or List content column at system density (24-28 pt rows, 15-30 visible), an inspector, the standard toolbar and a full menu bar. The brand is concentrated in three places only: one custom-drawn control where the core verb happens, the first-run and empty states, and the icon and sound. Everything else is the system's, and that restraint is the style.",
+      "composition": "A stock Mac window (edge-to-edge sidebar, toolbar, inspector, full menu bar, system controls) whose content column is where the identity lives. The owned idea is drawn into every row or cell of the content at rest: a custom-drawn column, glyph or mini-visual that only this product has (a strip of the years owned, a reading-speed bar, a condition stamp), plus one display moment heading the content column (a 22-34 pt title or number). Cover the inspector and the content column alone must still say which app this is; a plain Finder-style table with the idea only in the inspector fails.",
       "content": [
         "list",
         "table",
         "detail",
         "collection"
       ],
-      "device": "the one custom control where the core verb happens",
+      "device": "the custom-drawn column every row carries",
       "dials": {
-        "B": 3,
+        "B": 4,
         "M": 3,
         "D": 7,
-        "C": 3,
-        "F": 2
+        "C": 4,
+        "F": 3
       },
       "type": [
         {
@@ -2215,17 +2215,17 @@
       "shape": "System radii and controls everywhere; no custom cards. Separation by the system's dividers and tone steps. Only the one custom control has its own shape language, drawn from the inventory.",
       "chrome": "All system: translucent edge-to-edge sidebar, NSToolbar with Labels, the user's accent on standard controls, menu icons only where the metaphor is clear (not on every item). The brand accent appears on the owned control only.",
       "moves": [
-        "Stock everything, except one custom-drawn control for the core verb, visible in the resting window",
-        "A designed first-run and empty state that carry the owned idea (Panic's welcome is the model), then convention",
+        "A custom-drawn column or row visual carrying the owned idea in every row of the content, visible at rest",
+        "One display moment heading the content column (22-34 pt), with system controls everywhere else",
         "A full menu bar with shortcuts on the daily actions, and a Settings window (Cmd-comma) of native controls that apply immediately"
       ],
-      "motion": "System motion, plus one crisp animation on the core verb's control (<=250 ms) and one on first run. Selection never animates.",
+      "motion": "System motion, plus one crisp animation when the owned column changes (<=250 ms). Selection never animates.",
       "needs": [],
       "not_for": [
         "kids",
         "games"
       ],
-      "pitfall": "Correct and forgettable: stock with no owned idea, or the signature hidden in Settings. An icon on every menu item (the Tahoe mistake)."
+      "pitfall": "Correct and forgettable: a stock table with the idea only in the inspector or in Settings (our round 11 runs did exactly this and were capped at Idea 5 for a stock layout). Empty striped rows filling the window below a short list. An icon on every menu item (the Tahoe mistake)."
     },
     {
       "id": "nc-owned-chrome",
