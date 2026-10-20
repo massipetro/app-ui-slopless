@@ -1,6 +1,6 @@
 {
-  "about": "Researched directions for app-ui-slopless, 5 per preset. Each is anchored in shipped apps from research/real-ui-references.md. Dealt by scripts/deal.py; do not read the whole file into context. Hex values are starting points checked for contrast by `deal.py --check`, not measured from the anchor apps. Fonts are OFL on Google Fonts unless marked.",
-  "dated": "2026-10-18",
+  "about": "Researched directions for app-ui-slopless, 5 per preset for phone and Mac, plus 8 Mac-only directions in three Mac presets (research/macos-references.md). Each is anchored in shipped apps from research/real-ui-references.md. Dealt by scripts/deal.py; do not read the whole file into context. Hex values are starting points checked for contrast by `deal.py --check`, not measured from the anchor apps. Fonts are OFL on Google Fonts unless marked.",
+  "dated": "2026-10-21",
   "directions": [
     {
       "id": "wp-hero-object",
@@ -204,7 +204,12 @@
         "chrome": "Standard sidebar and toolbar; the board carries the palette. Keep the Table's system selection behaviour, tinted with the palette accent (say so in the brief). The menu bar extra uses a monochrome template glyph.",
         "dials": {
           "D": 8
-        }
+        },
+        "content": [
+          "list",
+          "number",
+          "table"
+        ]
       }
     },
     {
@@ -737,7 +742,12 @@
         "chrome": "The sidebar may go opaque to match the sheet (state it in the brief); the toolbar and menu bar stay system. Keyboard first: every row action has a shortcut and a menu item.",
         "dials": {
           "D": 8
-        }
+        },
+        "content": [
+          "list",
+          "detail",
+          "table"
+        ]
       }
     },
     {
@@ -2120,6 +2130,638 @@
           "D": 6
         }
       }
+    },
+    {
+      "id": "nc-quiet-native",
+      "preset": "native-craft",
+      "name": "Quiet native, one signature",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "Panic Nova and Transmit (stock controls, a real Settings window, one animated welcome)",
+        "NetNewsWire (Simmons' 'Mac-assed Mac app')",
+        "Ivory for Mac (system fonts; brand in mascot art, sound and accent themes)"
+      ],
+      "composition": "A stock Mac window: an edge-to-edge sidebar, a Table or List content column at system density (24-28 pt rows, 15-30 visible), an inspector, the standard toolbar and a full menu bar. The brand is concentrated in three places only: one custom-drawn control where the core verb happens, the first-run and empty states, and the icon and sound. Everything else is the system's, and that restraint is the style.",
+      "content": [
+        "list",
+        "table",
+        "detail",
+        "collection"
+      ],
+      "device": "the one custom control where the core verb happens",
+      "dials": {
+        "B": 3,
+        "M": 3,
+        "D": 7,
+        "C": 3,
+        "F": 2
+      },
+      "type": [
+        {
+          "display": "SF Pro Display (system) 600, once per window",
+          "text": "SF Pro Text (system), body 13 pt",
+          "data": "SF Mono / .monospacedDigit()"
+        },
+        {
+          "display": "New York (system serif) 600 for the one display moment",
+          "text": "SF Pro Text (system), body 13 pt",
+          "data": "SF Pro tabular figures"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "System neutrals + a deep green brand accent",
+          "proportions": "System window and sidebar colours ~90%, ink, one brand accent <=5% (the owned control, perhaps the selection tint). The user's accent colour drives every standard control.",
+          "light": {
+            "ground": "#F6F6F6",
+            "surface": "#FFFFFF",
+            "ink": "#1D1D1F",
+            "ink2": "#5E5E63",
+            "accent": "#0A6E5C",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#1E1E20",
+            "surface": "#2A2A2D",
+            "ink": "#F2F2F4",
+            "ink2": "#A8A8AE",
+            "accent": "#4FD1B5",
+            "on_accent": "#0E1F1B"
+          }
+        },
+        {
+          "name": "System neutrals + signal orange",
+          "proportions": "As above; the orange belongs to the owned control and live state only.",
+          "light": {
+            "ground": "#F6F6F6",
+            "surface": "#FFFFFF",
+            "ink": "#1D1D1F",
+            "ink2": "#5E5E63",
+            "accent": "#B4460F",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#1E1E20",
+            "surface": "#2A2A2D",
+            "ink": "#F2F2F4",
+            "ink2": "#A8A8AE",
+            "accent": "#FF9A5C",
+            "on_accent": "#1E1E20"
+          }
+        }
+      ],
+      "shape": "System radii and controls everywhere; no custom cards. Separation by the system's dividers and tone steps. Only the one custom control has its own shape language, drawn from the inventory.",
+      "chrome": "All system: translucent edge-to-edge sidebar, NSToolbar with Labels, the user's accent on standard controls, menu icons only where the metaphor is clear (not on every item). The brand accent appears on the owned control only.",
+      "moves": [
+        "Stock everything, except one custom-drawn control for the core verb, visible in the resting window",
+        "A designed first-run and empty state that carry the owned idea (Panic's welcome is the model), then convention",
+        "A full menu bar with shortcuts on the daily actions, and a Settings window (Cmd-comma) of native controls that apply immediately"
+      ],
+      "motion": "System motion, plus one crisp animation on the core verb's control (<=250 ms) and one on first run. Selection never animates.",
+      "needs": [],
+      "not_for": [
+        "kids",
+        "games"
+      ],
+      "pitfall": "Correct and forgettable: stock with no owned idea, or the signature hidden in Settings. An icon on every menu item (the Tahoe mistake)."
+    },
+    {
+      "id": "nc-owned-chrome",
+      "preset": "native-craft",
+      "name": "Owned chrome, Mac manners",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "Things 3 for Mac (custom chrome, no translucency under the content, a toolbar that isn't at the top)",
+        "Brent Simmons, 'stock Mac UI' (2026): colour and spacing back in the toolbar, no full-height sidebar"
+      ],
+      "composition": "A window the app draws itself but that behaves like a Mac app: an opaque sidebar that stops under the title area, a content column where bold type and white space carry the hierarchy, and the list's actions in a compact toolbar at the foot of the list instead of the title bar. Colour comes in role-bound splashes: area glyphs, the selected area's colour, the core verb. Menus, shortcuts, selection, drag and drop and keyboard focus are all standard.",
+      "content": [
+        "list",
+        "detail"
+      ],
+      "device": "the area colour and glyph that follows you from sidebar to list to item",
+      "dials": {
+        "B": 5,
+        "M": 4,
+        "D": 5,
+        "C": 5,
+        "F": 6
+      },
+      "type": [
+        {
+          "display": "SF Pro Rounded (system) 700 for area titles at 22-28 pt",
+          "text": "SF Pro Text (system), body 13 pt",
+          "data": "SF Pro tabular figures"
+        },
+        {
+          "display": "Figtree 700 for area titles",
+          "text": "Figtree 400-500 at 13 pt",
+          "data": "Figtree tabular figures"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Paper white with area colours",
+          "proportions": "White content, a one-step-darker opaque sidebar, ink, a blue core-verb accent; each area owns one support colour for its glyph and title, never as a wash.",
+          "light": {
+            "ground": "#FFFFFF",
+            "surface": "#F4F4F2",
+            "ink": "#1B1B1D",
+            "ink2": "#5B5B60",
+            "accent": "#1F6FEB",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#1C1C1E",
+            "surface": "#252527",
+            "ink": "#F2F2F3",
+            "ink2": "#A3A3A8",
+            "accent": "#6AA8FF",
+            "on_accent": "#0D1B2E"
+          },
+          "support": [
+            "#D93F3F area red",
+            "#23894E area green",
+            "#C77A12 area amber",
+            "#1D8BA6 area teal"
+          ]
+        }
+      ],
+      "shape": "Radius 6-8 on rows and controls; custom-drawn checkboxes and glyphs at 14-16 pt; no shadows inside the window; the sidebar separated by a tone step, not a material.",
+      "chrome": "A noted convention break: opaque sidebar, no NSToolbar, the brand accent instead of the user's accent on the core verb. Kept: traffic lights, a draggable title area, focus rings, menus mirroring every toolbar item, Reduce Transparency.",
+      "moves": [
+        "Area colour and glyph identity carried from the sidebar to the list title to the item",
+        "A compact toolbar at the foot of the list, its icons coloured and spaced, each mirrored in a menu with a shortcut",
+        "A custom-drawn check-off with a crisp 150 ms state change and undo"
+      ],
+      "motion": "Crisp: 120-200 ms ease-out, a short spring on the check-off, rows slide when reordered.",
+      "needs": [],
+      "not_for": [
+        "games"
+      ],
+      "pitfall": "Custom chrome that drops Mac behaviour: no keyboard focus, no right-click, no menu commands, a title bar you can't drag. Or an iPad layout scaled up."
+    },
+    {
+      "id": "nc-columns",
+      "preset": "native-craft",
+      "name": "Columns workspace",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "Ivory for Mac (up to six user-arranged columns)",
+        "NetNewsWire (three-pane reader)"
+      ],
+      "composition": "The window is a row of columns the user adds, closes, reorders and resizes, each a live list (a feed, a filter, a project, a person). A wider window shows more columns, never wider ones. Selecting an item opens its detail in the next column or its own window. Column headers carry the owned glyph and a live count.",
+      "content": [
+        "list",
+        "collection",
+        "table"
+      ],
+      "device": "the column header and what it watches",
+      "dials": {
+        "B": 4,
+        "M": 3,
+        "D": 8,
+        "C": 4,
+        "F": 4
+      },
+      "type": [
+        {
+          "display": "SF Pro Text (system) 600 at 15 pt for column heads",
+          "text": "SF Pro Text (system), body 13 pt",
+          "data": "SF Mono for counts and times"
+        },
+        {
+          "display": "Source Serif 4 600 for column heads",
+          "text": "Source Sans 3 at 13 pt",
+          "data": "Source Sans 3 tabular figures"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Ink columns on warm grey",
+          "proportions": "Warm grey window ground between white columns, ink, one burnt-orange accent for unread and the active column.",
+          "light": {
+            "ground": "#EFEEEA",
+            "surface": "#FFFFFF",
+            "ink": "#1A1A18",
+            "ink2": "#595851",
+            "accent": "#B23B0A",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#161614",
+            "surface": "#22221F",
+            "ink": "#F1F0EC",
+            "ink2": "#A7A59D",
+            "accent": "#FB8A4C",
+            "on_accent": "#1A1A18"
+          }
+        }
+      ],
+      "shape": "Columns 300-420 pt wide with 1 pt separators; rows 28-48 pt by content; radius 6 on media only; no cards.",
+      "chrome": "System toolbar and menu bar; no sidebar, or a slim one listing saved column sets. The user's accent on standard controls, the brand accent for unread state.",
+      "moves": [
+        "User-arranged columns: Cmd-T adds, Cmd-W closes, drag to reorder, saved per window",
+        "A column header with the owned glyph and a live count",
+        "Keyboard column travel: left and right arrows move between columns, up and down within"
+      ],
+      "motion": "New items arrive at the top of a column without moving the reading position; columns ease to new widths in 200 ms.",
+      "needs": [],
+      "not_for": [
+        "kids"
+      ],
+      "pitfall": "Columns that are the same feed in different colours; a fixed column count that wastes a wide display; losing the reading position when new items arrive."
+    },
+    {
+      "id": "pi-command-surface",
+      "preset": "pro-instrument",
+      "name": "Command surface",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "Raycast (fast, simple, delightful; compact rows, an action bar, a keycap icon)",
+        "Linear desktop app (keyboard-first, Cmd-K everywhere)"
+      ],
+      "composition": "Every action is a command. Cmd-K opens a palette that searches items and verbs alike, and each result shows its shortcut. The main view is a compact list (22-26 pt rows) with keycap hints, and an action bar at the foot of the window lists what the selection can do. The menu bar mirrors the palette, so the menus teach the shortcuts.",
+      "content": [
+        "list",
+        "action",
+        "table"
+      ],
+      "device": "the command palette and the keycap on every row",
+      "dials": {
+        "B": 4,
+        "M": 3,
+        "D": 9,
+        "C": 3,
+        "F": 6
+      },
+      "type": [
+        {
+          "display": "SF Pro Display (system) 600, rarely",
+          "text": "SF Pro Text (system) at 13 pt",
+          "data": "SF Mono for shortcuts and IDs"
+        },
+        {
+          "display": "IBM Plex Sans 600",
+          "text": "IBM Plex Sans 400-500 at 13 pt",
+          "data": "IBM Plex Mono for shortcuts and IDs"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Graphite with one key colour",
+          "proportions": "Graphite neutrals ~95%; one key colour for the palette highlight and the active command. No gradients, no glow.",
+          "light": {
+            "ground": "#F4F4F5",
+            "surface": "#FFFFFF",
+            "ink": "#18181B",
+            "ink2": "#52525B",
+            "accent": "#C2271A",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#151517",
+            "surface": "#1F1F23",
+            "ink": "#EDEDF0",
+            "ink2": "#A1A1AA",
+            "accent": "#FF6B5B",
+            "on_accent": "#151517"
+          }
+        },
+        {
+          "name": "Graphite with signal yellow",
+          "proportions": "Graphite neutrals; yellow marks the focused command and live state only.",
+          "light": {
+            "ground": "#F4F4F5",
+            "surface": "#FFFFFF",
+            "ink": "#18181B",
+            "ink2": "#52525B",
+            "accent": "#F5C518",
+            "on_accent": "#18181B"
+          },
+          "dark": {
+            "ground": "#151517",
+            "surface": "#1F1F23",
+            "ink": "#EDEDF0",
+            "ink2": "#A1A1AA",
+            "accent": "#F5C518",
+            "on_accent": "#151517"
+          }
+        }
+      ],
+      "shape": "Radius 6 on rows, 10 on the palette's frame; keycaps drawn as 18 pt rounded rects with a 1 pt stroke; no shadows except the palette's.",
+      "chrome": "System menu bar and window chrome; a slim custom toolbar is fine. The palette is an accelerator, never the only way in: every command also lives in a menu. Standard shortcuts keep their meanings.",
+      "moves": [
+        "Cmd-K command palette that finds items and verbs, with the shortcut on every result",
+        "Keycap hints beside each row and in the action bar (showing the shortcut where the click happens speeds learning: Grossman et al. 2007)",
+        "An action bar at the foot of the window for the selection"
+      ],
+      "motion": "Instant: the palette opens in <=100 ms with a short fade and 2% scale; no springs; list selection never animates.",
+      "needs": [],
+      "not_for": [
+        "kids",
+        "games"
+      ],
+      "pitfall": "The 'Linear style' tell: dark gradient backgrounds, glowing accents, purple light leaks. A palette that hides commands the menus don't show. Shortcuts that clash with the standard ones."
+    },
+    {
+      "id": "pi-instrument-panel",
+      "preset": "pro-instrument",
+      "name": "Instrument panel",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "Logic Pro and Final Cut Pro (neutral grey chrome, inspectors, tabular readouts)",
+        "Pixelmator Pro (tools and inspector around the canvas)"
+      ],
+      "composition": "The content is the canvas in the centre (timeline, image, map, graph, score); tools on one edge, a dense tabbed inspector on the other, readouts and transport in a slim bar. Panels resize, collapse and remember their arrangement, and the canvas keeps at least 60% of a 13-inch window. Chrome is neutral grey so the content's colours are judged correctly; colour in the chrome means state.",
+      "content": [
+        "canvas",
+        "detail",
+        "table"
+      ],
+      "device": "the readout and the control that sets it",
+      "dials": {
+        "B": 4,
+        "M": 3,
+        "D": 9,
+        "C": 2,
+        "F": 5
+      },
+      "type": [
+        {
+          "display": "SF Pro Display (system) 500 for the main readout at 28-40 pt",
+          "text": "SF Pro Text (system) at 11-13 pt",
+          "data": "SF Mono tabular figures"
+        },
+        {
+          "display": "JetBrains Mono 600 for readouts",
+          "text": "IBM Plex Sans at 11-13 pt",
+          "data": "JetBrains Mono"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Neutral studio grey",
+          "proportions": "Grey chrome ~95%; blue for selection; state colours (record, warning, ok) each paired with a word or shape.",
+          "light": {
+            "ground": "#E8E8E8",
+            "surface": "#F5F5F5",
+            "ink": "#1C1C1C",
+            "ink2": "#4D4D4D",
+            "accent": "#0B63CE",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#1B1B1B",
+            "surface": "#262626",
+            "ink": "#ECECEC",
+            "ink2": "#A3A3A3",
+            "accent": "#4D9BFF",
+            "on_accent": "#0B0B0B"
+          },
+          "support": [
+            "#E5484D record",
+            "#F5A524 warning",
+            "#30A46C ok"
+          ]
+        }
+      ],
+      "shape": "Radius 4-6; 1 pt panel dividers; inspector controls at .small with a typed value field beside every slider; no shadows inside the window.",
+      "chrome": "Dark-first with a complete light mode. Toolbar and menu bar are system; inspector and tool panels are the app's, collapsible from the View menu with shortcuts. The user's accent is replaced by selection blue, said in the brief.",
+      "moves": [
+        "Every value scrubs on drag over its label, takes a typed value, nudges with the arrow keys and undoes with Cmd-Z",
+        "Inspector tabs that remember their scroll position per selection type",
+        "State colour only in the chrome: record red, selection blue, warning amber, each with a word or shape"
+      ],
+      "motion": "Functional only: playheads and meters move in real time; panels collapse in 150 ms; nothing decorative.",
+      "needs": [],
+      "not_for": [
+        "kids",
+        "games"
+      ],
+      "pitfall": "Dark for its own sake on an app whose content is light; 10 pt grey-on-grey labels below contrast; panels that can't be hidden on a 13-inch screen."
+    },
+    {
+      "id": "pi-menu-bar",
+      "preset": "pro-instrument",
+      "name": "Menu bar instrument",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "iStat Menus (live figures in the menu bar)",
+        "Fantastical (a full mini window from the menu bar)"
+      ],
+      "composition": "The app lives in the menu bar: a template glyph with the one live value (a countdown, a total, a status), and a click opens a window of at most 360 pt with the next few items, one primary action, and links to the full window and Settings. The full window, if there is one, is secondary. The menu bar edge is the cheapest target on the screen (Tognazzini's 'mile-high menu bar'), so the glance costs a flick, not a search.",
+      "content": [
+        "number",
+        "list"
+      ],
+      "device": "the live value in the menu bar",
+      "dials": {
+        "B": 4,
+        "M": 3,
+        "D": 6,
+        "C": 3,
+        "F": 4
+      },
+      "type": [
+        {
+          "display": "SF Pro Display (system) 600 at 28-34 pt for the value in the popover",
+          "text": "SF Pro Text (system) at 13 pt",
+          "data": ".monospacedDigit() in the menu bar"
+        },
+        {
+          "display": "SF Pro Rounded (system) 700 for the value",
+          "text": "SF Pro Text (system) at 13 pt",
+          "data": "SF Mono"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "System, one status colour",
+          "proportions": "System popover materials; one status colour for 'on time / ok', with amber and red support for the other states, always with a word.",
+          "light": {
+            "ground": "#F2F2F2",
+            "surface": "#FFFFFF",
+            "ink": "#1D1D1F",
+            "ink2": "#5E5E63",
+            "accent": "#0F7B3F",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#1F1F21",
+            "surface": "#2B2B2E",
+            "ink": "#F2F2F4",
+            "ink2": "#A6A6AC",
+            "accent": "#4ADE80",
+            "on_accent": "#0B1F12"
+          },
+          "support": [
+            "#B7791F late",
+            "#C53030 cancelled"
+          ]
+        }
+      ],
+      "shape": "The system popover's radius; rows 28-32 pt; the menu bar glyph a 16-18 pt monochrome template that stays legible on light, dark and tinted menu bars.",
+      "chrome": "MenuBarExtra with .window style, template glyph, no colour in the menu bar. A global shortcut opens the popover; Escape closes it; Settings is a real Settings scene.",
+      "moves": [
+        "A live value in the menu bar, at most 6 characters so the notch doesn't hide it",
+        "A popover with the next few items and one primary action, all reachable from the keyboard",
+        "Open the full window and Settings from the popover footer, plus a global shortcut that opens the popover"
+      ],
+      "motion": "The value changes without animation in the menu bar; the popover uses the system's.",
+      "needs": [],
+      "not_for": [],
+      "pitfall": "A wide menu bar item that the notch hides (MacStories, macOS 27); colour in the menu bar glyph; a popover that is the whole app with no keyboard path; polling that drains the battery."
+    },
+    {
+      "id": "df-typewriter",
+      "preset": "document-first",
+      "name": "Typewriter",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "iA Writer (almost no settings, Focus Mode, a top bar that disappears while you type)"
+      ],
+      "composition": "One column of text at a 64-72-character measure, set in the app's own face at 15-18 pt. All chrome (toolbar, sidebar, counts) fades while you type and returns when the pointer moves. Focus mode dims everything but the current sentence or paragraph. A library sidebar slides in on demand (Cmd-1).",
+      "content": [
+        "document"
+      ],
+      "device": "the line being written and how the app sets it",
+      "dials": {
+        "B": 3,
+        "M": 2,
+        "D": 3,
+        "C": 1,
+        "F": 5
+      },
+      "type": [
+        {
+          "display": "iA Writer Quattro 700",
+          "text": "iA Writer Quattro 400 at 16-18 pt (UI in SF Pro 13 pt)",
+          "data": "iA Writer Mono"
+        },
+        {
+          "display": "Newsreader 600",
+          "text": "Newsreader 400 at 17 pt (UI in SF Pro 13 pt)",
+          "data": "IBM Plex Mono"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Paper and ink, one caret colour",
+          "proportions": "Paper ground, ink text; the marker colour is for the caret, selection and links only.",
+          "light": {
+            "ground": "#F8F8F6",
+            "surface": "#FFFFFF",
+            "ink": "#1A1A1A",
+            "ink2": "#5C5B57",
+            "accent": "#0A6FBF",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#161616",
+            "surface": "#1F1F1F",
+            "ink": "#E8E6E1",
+            "ink2": "#9E9C96",
+            "accent": "#3FA9F5",
+            "on_accent": "#0A0A0A"
+          }
+        }
+      ],
+      "shape": "No shapes in the editor: type, margins and the caret. Controls appear only when called, at system size.",
+      "chrome": "Hidden title bar and toolbar while typing, back on pointer move; traffic lights always reachable. The system text stack (spelling, dictation, Writing Tools, find, undo) is kept.",
+      "moves": [
+        "Chrome that disappears while typing and returns on pointer move",
+        "Focus mode: only the current sentence at full ink",
+        "The document's own number (reading time, word target) as the one readout"
+      ],
+      "motion": "Chrome fades over 300 ms when typing starts; focus dimming crossfades in 200 ms; under Reduce Motion both are instant.",
+      "needs": [],
+      "not_for": [],
+      "pitfall": "Minimal as an excuse for missing features (no search, no export); a fixed editor size with no zoom; a typewriter skeuomorph."
+    },
+    {
+      "id": "df-library",
+      "preset": "document-first",
+      "name": "Library and sheet",
+      "platforms": [
+        "macos"
+      ],
+      "anchors": [
+        "Ulysses (groups, sheets and editor in three panes)",
+        "Bear (tags in the sidebar, markup shown and styled)"
+      ],
+      "composition": "Three panes: groups or tags in the sidebar, a sheet list showing each document's first lines, and the editor, where markup is shown and styled rather than hidden. The editor's typography is the brand. The panes collapse one by one as the window narrows or the user focuses (Cmd-1, Cmd-2, Cmd-3).",
+      "content": [
+        "document",
+        "list"
+      ],
+      "device": "the way the editor sets the markup",
+      "dials": {
+        "B": 4,
+        "M": 3,
+        "D": 6,
+        "C": 3,
+        "F": 5
+      },
+      "type": [
+        {
+          "display": "Literata 600",
+          "text": "Literata 400 at 15-17 pt in the editor; SF Pro 13 pt in the lists",
+          "data": "JetBrains Mono for code"
+        },
+        {
+          "display": "Source Serif 4 600",
+          "text": "Source Serif 4 at 16 pt in the editor; SF Pro 13 pt in the lists",
+          "data": "Source Code Pro"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Cool paper with an ink-blue marker",
+          "proportions": "Cool paper editor, white lists, ink; ink-blue for the caret, selection and links.",
+          "light": {
+            "ground": "#F6F7F8",
+            "surface": "#FFFFFF",
+            "ink": "#16181D",
+            "ink2": "#555A63",
+            "accent": "#2552C7",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#15171B",
+            "surface": "#1E2127",
+            "ink": "#E9ECF1",
+            "ink2": "#A0A6B1",
+            "accent": "#7EA2FF",
+            "on_accent": "#0E1220"
+          }
+        }
+      ],
+      "shape": "Radius 4-6 on list selection only; 1 pt dividers between panes; the editor has margins, not boxes.",
+      "chrome": "System sidebar (translucent, edge to edge) and toolbar; the editor pane is opaque paper. The system text stack is kept.",
+      "moves": [
+        "Markup shown and styled (dimmed syntax, real headings) instead of hidden",
+        "Panes that collapse one by one with Cmd-1, Cmd-2, Cmd-3",
+        "A sheet list that shows each document's first lines, not just titles"
+      ],
+      "motion": "Panes slide in 200 ms; nothing else moves.",
+      "needs": [],
+      "not_for": [],
+      "pitfall": "A web-style rich-text toolbar over the editor; panes that can't be hidden; the editor at the 13 pt UI size."
     }
   ],
   "content_shapes": {
@@ -2130,6 +2772,8 @@
     "canvas": "a map, calendar or chart that is the screen",
     "story": "one moment or idea per screen, in sequence: onboarding, recaps, drops",
     "progression": "levels or a path the user moves along",
-    "action": "one core verb that dominates the screen: check off, record, log"
+    "action": "one core verb that dominates the screen: check off, record, log",
+    "table": "macOS: sortable columns of records the user compares and acts on: files, orders, cues, logs",
+    "document": "macOS: text the user writes or edits at length: a draft, a script, a subtitle file"
   }
 }

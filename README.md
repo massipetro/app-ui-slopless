@@ -93,7 +93,7 @@ The same prompt ("a habit tracker home in Compose Multiplatform, Duolingo-level 
 ## How it works
 
 1. **Intake and inventory.** For a redesign, read the app's current look first (fonts, colours, mascot, illustrations) and keep its identity assets by default. Then list 8–12 things only this product has: its objects, rituals, places and numbers.
-2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (20 directions, each anchored in shipped apps; 19 also have a Mac window form, dealt with `--platform macos`). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
+2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (20 directions, each anchored in shipped apps; 19 also have a Mac window form, and 8 more are Mac-only, dealt with `--platform macos`). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
 3. **Owned idea.** One sentence: *"In this app, ⟨inventory item⟩ becomes ⟨device⟩."* It has to fail for the nearest competitor. One live interaction reacts to real state.
 4. **Build.** Tokens, then components, then the screen, with real content at real density, following a code baseline: stable identity, state that survives, transforms not layout.
 5. **Check, fix, report.** The gates below. Then a scored critique of the screenshots, at most two fix rounds, and a fixed report block.
@@ -118,7 +118,7 @@ $ python3 scripts/deal.py --options 2 --content list,number --preset playful
 `--direction <id> --seed <n>` then prints the full sheet: two type systems, two palettes with measured contrast in light and dark, shape, signature moves, motion and how the direction goes wrong.
 </details>
 
-### Styles: four presets, five dials
+### Styles: four presets (plus three for the Mac), five dials
 
 | Preset | Feel | Real-world anchors |
 |---|---|---|
@@ -126,6 +126,9 @@ $ python3 scripts/deal.py --options 2 --content list,number --preset playful
 | Neo-brutalist | thick strokes, hard offset shadows, flat clashing colour | Gumroad, Figma, Nothing, Teenage Engineering |
 | Playful / toy | chunky lipped pieces, custom glyphs, a mascot, springy motion | Duolingo, (Not Boring) Habits, Headspace |
 | Editorial | huge display type, magazine grids, stark contrast | Spotify Mix/Wrapped, NYT Games, Nike SNKRS |
+| Native craft (Mac) | Mac behaviour everywhere, identity in one control or owned chrome | Panic Nova, NetNewsWire, Things 3, Ivory |
+| Pro instrument (Mac) | dense, keyboard-first, exact readouts, a menu bar instrument | Raycast, Linear app, Logic Pro, iStat Menus |
+| Document first (Mac) | the document's typography is the design | iA Writer, Ulysses, Bear |
 
 Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how bespoke the components look; platform mechanics stay native). Name a preset or let the deal pick one.
 
@@ -196,7 +199,7 @@ The skill runs cost about 1.6–1.9× the baseline. One run per config and one m
 
 ## Grounded in
 
-Norman, Nielsen, Shneiderman, Fitts, Hick–Hyman, Cowan, Hoober, Clark, Budiu/NN/g, Cooper, Wroblewski, Bringhurst, Lupton, Albers, Tufte, Chang & Ungar, Willenskomer, Saffer, Walter, Kurosu & Kashimura, Tractinsky, Lindgaard, Tuch, Hassenzahl, Apple HIG, Material 3, and WCAG 2.2. See [`research/literature.md`](research/literature.md); every claim is tagged by how well it's verified. The visual references are real shipped apps (Apple Design Award winners, design-team case studies), not AI concept shots: [`research/real-ui-references.md`](research/real-ui-references.md).
+Norman, Nielsen, Shneiderman, Fitts, Hick–Hyman, Cowan, Hoober, Clark, Budiu/NN/g, Cooper, Wroblewski, Bringhurst, Lupton, Albers, Tufte, Chang & Ungar, Willenskomer, Saffer, Walter, Kurosu & Kashimura, Tractinsky, Lindgaard, Tuch, Hassenzahl, Apple HIG, Material 3, and WCAG 2.2. See [`research/literature.md`](research/literature.md); every claim is tagged by how well it's verified. The visual references are real shipped apps (Apple Design Award winners, design-team case studies), not AI concept shots: [`research/real-ui-references.md`](research/real-ui-references.md). The Mac presets rest on Mac practice and its critics (Simmons, Gruber, Panic, MacStories, the macOS 26–27 Liquid Glass reviews, Tonsky on menu icons) and on hotkey and novice-to-expert research: [`research/macos-references.md`](research/macos-references.md).
 
 **Companion skills** for deeper code correctness (optional): [twostraws/swiftui-agent-skill](https://github.com/twostraws/swiftui-agent-skill) for SwiftUI, and [aldefy/compose-skill](https://github.com/aldefy/compose-skill) for Compose/CMP. See [`research/code-baseline.md`](research/code-baseline.md).
 

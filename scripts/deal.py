@@ -26,11 +26,15 @@ import sys
 from pathlib import Path
 
 LIBRARY = Path(__file__).resolve().parent.parent / "library" / "directions.json"
-PRESETS = ("warm-premium", "neo-brutalist", "playful", "editorial")
+PRESETS = ("warm-premium", "neo-brutalist", "playful", "editorial",
+           "native-craft", "pro-instrument", "document-first")
+# Mac-only presets: dealt only with --platform macos, where one option always comes from them.
+MAC_PRESETS = ("native-craft", "pro-instrument", "document-first")
 ROLES = ("ground", "surface", "ink", "ink2", "accent", "on_accent")
-SHAPES = ("list", "number", "detail", "collection", "canvas", "story", "progression", "action")
+SHAPES = ("list", "number", "detail", "collection", "canvas", "story", "progression", "action",
+          "table", "document")  # the last two only occur on a Mac
 REQUIRED = ("id", "preset", "name", "anchors", "composition", "content", "device", "dials",
-            "type", "palettes", "shape", "moves", "motion", "needs", "not_for", "pitfall", "mac")
+            "type", "palettes", "shape", "moves", "motion", "needs", "not_for", "pitfall")
 MAC_REQUIRED = ("composition", "moves", "shape", "chrome", "dials")
 # Phone mechanics that must not leak into a Mac block (the reason the blocks exist).
 PHONE_WORDS = re.compile(r"thumb|tab bar|bottom bar|bottom sheet|sheet springs|selection haptic|notification haptic|firm haptic|\btap\b|\bswip|9:16|home screen|\d\s*dp\b|live activity", re.I)
@@ -40,10 +44,16 @@ def load() -> list[dict]:
     return json.loads(LIBRARY.read_text())["directions"]
 
 
+def mac_only(d: dict) -> bool:
+    return d.get("platforms") == ["macos"]
+
+
 def for_platform(d: dict, platform: str | None) -> dict | None:
     """The direction as dealt on this platform, or None when it has no form there."""
     if platform != "macos":
-        return d
+        return None if mac_only(d) else d
+    if mac_only(d):
+        return d  # written for a Mac window already
     mac = d["mac"]
     if "skip" in mac:
         return None
@@ -89,7 +99,8 @@ def sub_rng(seed: int, direction_id: str, slot: str) -> random.Random:
 
 
 def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
-                 sector: str | None, have: set[str] | None, content: list[str] | None = None) -> list[dict]:
+                 sector: str | None, have: set[str] | None, content: list[str] | None = None,
+                 platform: str | None = None) -> list[dict]:
     pool = [d for d in directions
             if (preset is None or d["preset"] == preset)
             and (sector is None or sector not in d["not_for"])
@@ -107,6 +118,13 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
         # Within each preset, prefer directions that also hold the secondary content shapes.
         fit = lambda d: len(set(content[1:]) & set(d["content"])) if content else 0
         picked = []
+        if platform == "macos":
+            # Mac users reward Mac-native craft, so one option always comes from a Mac preset
+            # (research/macos-references.md); the others stay a spread across all presets.
+            native = [p for p in presets if p in MAC_PRESETS]
+            if native and not any(p in MAC_PRESETS for p in presets[:n]):
+                presets.remove(native[0])
+                presets.insert(n - 1 if n > 0 else 0, native[0])
         for p in presets[:n]:
             best = max(fit(d) for d in by_preset[p])
             picked.append(rng.choice([d for d in by_preset[p] if fit(d) == best]))
@@ -185,6 +203,21 @@ def print_sheet(d: dict, seed: int, keep: set[str]) -> None:
 
 
 def check_mac(d: dict) -> list[str]:
+    if mac_only(d):
+        problems = [] if d.get("chrome") else [f"{d['id']}: a Mac-only direction needs a chrome line"]
+        if "mac" in d:
+            problems.append(f"{d['id']}: a Mac-only direction is written for the Mac already; drop its mac block")
+        if d["preset"] not in MAC_PRESETS:
+            problems.append(f"{d['id']}: Mac-only directions belong to a Mac preset {MAC_PRESETS}")
+        text = " ".join([d["composition"], d["shape"], d["chrome"], d["motion"], d["pitfall"], *d["moves"]])
+        leaks = sorted({m.group(0).lower() for m in PHONE_WORDS.finditer(text)})
+        if leaks:
+            problems.append(f"{d['id']}: phone mechanics in a Mac-only direction: {leaks}")
+        return problems
+    if d["preset"] in MAC_PRESETS:
+        return [f"{d['id']}: a {d['preset']} direction must be Mac-only (platforms: [\"macos\"])"]
+    if "mac" not in d:
+        return [f"{d['id']}: missing mac block (or mark it platforms: [\"macos\"])"]
     mac = d["mac"]
     if "skip" in mac:
         return [] if mac["skip"].strip() else [f"{d['id']} / mac: skip needs a reason"]
@@ -235,7 +268,7 @@ def check(directions: list[dict]) -> int:
                         problems.append(f"{d['id']} / {p['name']} / {mode}: {name} {ratio:.2f}:1 < {required}")
         problems += check_mac(d)
     counts = {p: sum(1 for d in directions if d["preset"] == p) for p in PRESETS}
-    on_mac = sum(1 for d in directions if "skip" not in d.get("mac", {"skip": ""}))
+    on_mac = sum(1 for d in directions if for_platform(d, "macos") is not None)
     for line in problems:
         print(f"FAIL {line}")
     print(f"{len(directions)} directions {counts}, {on_mac} with a Mac form; {len(problems)} problem(s)")
@@ -265,7 +298,9 @@ def main() -> int:
         skipped = [d["id"] for d in directions if for_platform(d, "macos") is None]
         directions = [v for v in (for_platform(d, "macos") for d in directions) if v is not None]
     else:
-        skipped = []
+        # Phone (or unspecified): Mac-only directions are not dealt.
+        skipped = [d["id"] for d in directions if mac_only(d)]
+        directions = [d for d in directions if not mac_only(d)]
     if args.list:
         for d in directions:
             print(f"{d['id']:24} {d['preset']:14} {d['name']}")
@@ -276,8 +311,11 @@ def main() -> int:
         match = [d for d in directions if d["id"] == args.direction]
         if not match:
             if args.direction in skipped:
-                reason = next(d["mac"]["skip"] for d in load() if d["id"] == args.direction)
-                print(f"{args.direction} has no macOS form: {reason}", file=sys.stderr)
+                d = next(d for d in load() if d["id"] == args.direction)
+                if mac_only(d):
+                    print(f"{args.direction} is Mac-only; pass --platform macos", file=sys.stderr)
+                else:
+                    print(f"{args.direction} has no macOS form: {d['mac']['skip']}", file=sys.stderr)
             else:
                 print(f"unknown direction {args.direction}; see --list", file=sys.stderr)
             return 2
@@ -291,7 +329,7 @@ def main() -> int:
         if unknown:
             print(f"unknown content shape(s) {unknown}; choose from {SHAPES}", file=sys.stderr)
             return 2
-        dealt = deal_options(directions, args.options, seed, args.preset, args.sector, have, content)
+        dealt = deal_options(directions, args.options, seed, args.preset, args.sector, have, content, args.platform)
         if not dealt:
             print("no direction matches those filters", file=sys.stderr)
             return 2

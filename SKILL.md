@@ -62,7 +62,7 @@ The user chooses the style; never silently default to something safe.
 
 **Deal the directions; don't invent them.** Asked to choose a look, a model picks the category default every time (every fintech app gets the same warm premium). So a script deals researched directions, each anchored in shipped apps, and you choose among them:
 
-First name the screen's **content shapes**: what the user came to see or do, primary first. One of `list` (rows to scan: departures, spends, habits), `number` (one figure that answers the screen: a balance, a countdown), `detail` (one item in depth), `collection` (many items to browse), `canvas` (a map, calendar or chart as the screen), `story` (one moment per screen, in sequence), `progression` (a path or levels), `action` (one verb dominates). A ferry home is `list,number`; a room page `detail,canvas`; a habit home `action,list`.
+First name the screen's **content shapes**: what the user came to see or do, primary first. One of `list` (rows to scan: departures, spends, habits), `number` (one figure that answers the screen: a balance, a countdown), `detail` (one item in depth), `collection` (many items to browse), `canvas` (a map, calendar or chart as the screen), `story` (one moment per screen, in sequence), `progression` (a path or levels), `action` (one verb dominates); on a Mac also `table` (sortable columns of records: files, orders, cues) and `document` (text the user writes or edits at length). A ferry home is `list,number`; a room page `detail,canvas`; a habit home `action,list`.
 
 ```bash
 python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [--preset <name>] [--sector <e.g. finance, health, kids>] [--have photography] [--platform macos]
@@ -71,7 +71,7 @@ python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [-
 - `--content`: only directions whose composition can show the primary shape are dealt, and within each preset the ones that also hold the secondary shapes come first. A poster of colour blocks can't show a timetable, so it isn't dealt for one.
 - `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets.
 - `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example).
-- `--platform macos`: for a Mac app. Each direction is dealt in its Mac form: a window composition (sidebar, content, inspector, toolbar, menu bar extra) instead of the phone screen, pointer-and-keyboard signature moves, Mac-scale shape, Mac dial defaults (usually denser), and a **window chrome** line that says what stays system (translucent sidebar, the user's accent colour, the title bar) and what carries the palette. Directions with no Mac form (`ed-story-cards`) are not dealt. Pass the same flag when printing the sheet. The fit test reads the Mac composition: "content at rest" means in a 1280×800 window, not a phone.
+- `--platform macos`: for a Mac app. Each direction is dealt in its Mac form: a window composition (sidebar, content, inspector, toolbar, menu bar extra) instead of the phone screen, pointer-and-keyboard signature moves, Mac-scale shape, Mac dial defaults (usually denser), and a **window chrome** line that says what stays system (translucent sidebar, the user's accent colour, the title bar) and what carries the palette. Directions with no Mac form (`ed-story-cards`) are not dealt. Three **Mac-only presets** (native craft, pro instrument, document first) join the deal, and one of the three options always comes from them, because Mac users reward Mac-native craft (`research/macos-references.md`). Without the flag they are never dealt. Pass the same flag when printing the sheet. The fit test reads the Mac composition: "content at rest" means in a 1280×800 window, not a phone.
 - `--have photography`: only when the product really has photographs: its own photos in the project, or photos it shows at runtime (listings, products, places, people's uploads). Without it, directions that depend on photographs are not dealt, so a screen never ends up built around grey placeholder boxes. Drawn art never needs `--have`: it is made in code.
 
 **Fit test: reject options that don't fit.** For each dealt option, answer four questions in one line each:
@@ -93,6 +93,8 @@ python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [-
 | Creator tools, dev tools, events, portfolios | Neo-brutalist, Editorial | none strong |
 | Productivity, enterprise, form-heavy flows | Warm premium at low `BOLDNESS` | Editorial, Playful |
 
+**On a Mac** the three Mac presets join the table. *Native craft* fits every category except kids and games. *Pro instrument* fits creator, developer and pro tools, finance trading and monitoring, data and admin; it is a poor fit for casual consumer apps. *Document first* fits writing, notes, reading, translation and scripts; it is a poor fit wherever the content isn't text people make or read at length.
+
 The table says which *presets* can belong; it doesn't pick the direction. Good fit is the floor, and the owned idea still decides among the survivors. Each preset file's "Fits / Doesn't fit" lines go into more detail.
 
 Drop every option that fails any of the first three. A category misfit (question 4) is dropped in a non-interactive run; when you can ask, it may stay on the menu with its warning from the table. If none survives, redeal with a new seed (`--seed` any other number) and say so in the report. Then, among the survivors, recommend one: the option that carries an owned idea from the inventory and keeps the identity assets found in 1a. When 1a and the table point to the same preset, prefer its survivor; when they disagree, recommend the category fit and say which existing assets carry over into it, unless the user asked for a rethink. The app's own identity is not the "familiar default" this step guards against; the category's stock look is.
@@ -112,7 +114,7 @@ python3 <skill>/scripts/deal.py --direction <id> --seed <seed from the deal> [--
 
 The sheet gives the composition, the idea slot, a dealt type system and palette (light and dark, with measured contrast), shape, signature moves, motion and the way the direction goes wrong. If the brand already fixes colours or typefaces, pass `--keep palette,type` and map the brand onto the roles. Redeal only for a reason you can state (it contradicts the brand, or needs an asset that doesn't exist), and say so in the report. If the script can't run, read `library/directions.json` and pick by the same rules.
 
-The four presets behind the directions:
+The presets behind the directions (the last three are Mac-only):
 
 | Preset | One-liner | Real-world anchors | File |
 |---|---|---|---|
@@ -120,6 +122,9 @@ The four presets behind the directions:
 | **Neo-brutalist** | Thick strokes, hard offset shadows, flat clashing colour, raw type | Gumroad, Figma, Nothing, Teenage Engineering | `references/presets/neo-brutalist.md` |
 | **Playful / toy** | Chunky pressable shapes, springy motion, characters, rewards | Duolingo, Headspace, Finch | `references/presets/playful.md` |
 | **Editorial** | Huge display type, magazine grids, stark contrast | Arc, Spotify Wrapped, Nike, NYT | `references/presets/editorial.md` |
+| **Native craft** (Mac) | Mac-assed: Mac behaviour everywhere, identity concentrated in one control or owned chrome | Panic Nova/Transmit, NetNewsWire, Things 3, Ivory | `references/presets/native-craft.md` |
+| **Pro instrument** (Mac) | Dense, keyboard-first, content centre and controls at the edges, exact readouts | Raycast, Linear app, Logic Pro, iStat Menus | `references/presets/pro-instrument.md` |
+| **Document first** (Mac) | The document's typography is the design; chrome disappears while you work | iA Writer, Ulysses, Bear | `references/presets/document-first.md` |
 
 Then read **only** the chosen direction's preset file. It holds the wider rules for that style: palette strategy, type, shape, depth, motion, more signature moves, real examples, and how cheap imitations go wrong. Where the sheet and the preset file differ, the sheet wins for this build.
 
@@ -170,7 +175,7 @@ Signature moves: <2–3 things someone would recognise in a screenshot>
 
 The **owned idea** and **signature moves** are the antidote to slop. Carry the idea into every surface you build, including the empty state, settings, errors and the paywall: the commonest failure is a distinctive home screen followed by stock screens. Pick signature moves as concrete, transferable mechanics from the direction sheet or preset file (e.g. "every pressable has a 4dp bottom lip that compresses on press"), not adjectives.
 
-Want more real examples than the preset file has? See `research/real-ui-references.md`: award winners, design-team case studies, font alternatives, all from shipped apps.
+Want more real examples than the preset file has? See `research/real-ui-references.md`: award winners, design-team case studies, font alternatives, all from shipped apps. For a Mac app, `research/macos-references.md`.
 
 **Commit to the direction.** The dials are a promise to the user. A playful screen at `BOLDNESS 8` should look unmistakably playful in a screenshot. If a principle seems to argue for toning it down, look for a way to satisfy the principle *inside* the style (e.g. make a signifier louder, not the style quieter). Restraint is a dial setting, not a default.
 

@@ -5,7 +5,8 @@
 - a macOS deal never deals a direction whose Mac block says skip, over many seeds;
 - a macOS sheet carries the Mac composition, the window chrome line and the Mac dials,
   and none of the phone mechanics;
-- the phone deal and sheet are unchanged by the Mac blocks.
+- the phone deal and sheet are unchanged by the Mac blocks, and never deal a Mac-only direction;
+- every macOS deal includes at least one Mac-native preset option when one can show the content.
 """
 from __future__ import annotations
 
@@ -27,7 +28,9 @@ def run(*args: str) -> tuple[int, str]:
 def main() -> int:
     failures: list[str] = []
     directions = deal.load()
-    skipped = {d["id"] for d in directions if "skip" in d["mac"]}
+    skipped = {d["id"] for d in directions if deal.for_platform(d, "macos") is None}
+    mac_only = {d["id"] for d in directions if deal.mac_only(d)}
+    native_shapes = {c for d in directions if deal.mac_only(d) for c in d["content"]}
 
     code, out = run("--check")
     if code != 0:
@@ -39,8 +42,22 @@ def main() -> int:
             dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
             if dealt & skipped:
                 failures.append(f"seed {seed} content {content}: dealt {dealt & skipped} on macOS")
+            if content.split(",")[0] in native_shapes and not dealt & mac_only:
+                failures.append(f"seed {seed} content {content}: no Mac-native option in {sorted(dealt)}")
+            code, out = run("--options", "3", "--content", content, "--seed", str(seed))
+            dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+            if dealt & mac_only:
+                failures.append(f"seed {seed} content {content}: phone deal dealt Mac-only {dealt & mac_only}")
 
     for d in directions:
+        if d["id"] in mac_only:
+            code, out = run("--direction", d["id"], "--seed", "1", "--platform", "macos")
+            if code != 0 or "Window chrome: " + d["chrome"] not in out or deal.PHONE_WORDS.search(out):
+                failures.append(f"{d['id']}: Mac-only sheet missing its chrome line or mentions phone mechanics")
+            code, out = run("--direction", d["id"], "--seed", "1")
+            if code == 0:
+                failures.append(f"{d['id']}: Mac-only sheet printed without --platform macos")
+            continue
         if d["id"] in skipped:
             code, out = run("--direction", d["id"], "--platform", "macos")
             if code == 0 or "no macOS form" not in out:
