@@ -21,14 +21,29 @@ Work out which mode the user wants. A request can combine several (e.g. audit �
 
 | Mode | Trigger | Output |
 |---|---|---|
-| **Build** | "make me a … screen" | Brief → code |
-| **Redesign** | existing screen + "make it better/bolder" | Brief → code + short "what changed and why" |
+| **Build** | "make me a … screen" | Intake → brief → code |
+| **Redesign** | existing screen + "make it better/bolder" | Intake (read what exists, then ask) → brief → code + short "what changed and why" |
 | **Audit** | "review / critique / what's wrong" | Findings report (see `references/audit.md`) |
-| **Spec** | "design system", "tokens", "style guide" | Brief expanded into a token file |
+| **Spec** | "design system", "tokens", "style guide" | Intake → brief expanded into a token file |
 
-### 1. Inventory the product
+### 1. Intake: read what exists, then inventory the product
 
-Before any style decision, write **8–12 things that belong to this product and to no competitor** as a short bulleted list in your reply, not only in your head: the user should see what the design is built from, and can correct a wrong assumption before it shapes every screen. This list is where the owned idea comes from in step 3, and it's what you hold the dealt directions against in step 2. Look for:
+A direction that ignores the product, or throws away a brand people already recognise, is the most expensive mistake this skill can make, because everything after it is built on top. So look before you deal.
+
+#### 1a. Read what exists (Redesign, Audit, and Build inside an existing app)
+
+Before proposing anything, take stock of the current visual language from the theme/token files, font and drawable resources, and a screenshot if you can get one:
+- **Type:** which faces, and how they feel (rounded and friendly, geometric, serif, condensed).
+- **Colour:** brand colour, surfaces, how status colours are used.
+- **Shape and depth:** radius language, cards vs rules, shadows.
+- **Identity assets:** mascot or characters, illustrations, photography, a custom logo or font. These carry recognition. **Keep them by default**; dropping one is the user's call, asked in step 2.
+- **Closest preset:** name the family the app already sits in (e.g. "rounded faces + mascot + illustrated heroes = already near Playful / Warm premium").
+
+Write it in your reply in a few lines; the identity assets also go into the inventory below.
+
+#### 1b. Inventory the product
+
+After 1a and before any style decision, write **8–12 things that belong to this product and to no competitor** as a short bulleted list in your reply, not only in your head: the user should see what the design is built from, and can correct a wrong assumption before it shapes every screen. This list is where the owned idea comes from in step 3, and it's what you hold the dealt directions against in step 2. Look for:
 - **Its name** and what the name means or sounds like.
 - **Its numbers:** the streak, the price, the minutes, the seat count, the 66 levels, the 21:00 deadline.
 - **Its constraint:** one ferry a day, a weekly budget that resets on Monday, a habit that only counts before noon.
@@ -58,14 +73,35 @@ python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [-
 - `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example).
 - `--have photography`: only when the product really has photographs: its own photos in the project, or photos it shows at runtime (listings, products, places, people's uploads). Without it, directions that depend on photographs are not dealt, so a screen never ends up built around grey placeholder boxes. Drawn art never needs `--have`: it is made in code.
 
-**Fit test: reject options that don't fit.** For each dealt option, answer three questions in one line each:
+**Fit test: reject options that don't fit.** For each dealt option, answer four questions in one line each:
 1. **Content at rest:** does its composition show the primary shape in the first screen, at the density the brief needs (the next few departures, not one)?
 2. **Owned idea:** can it carry something from the inventory, something only this product has?
 3. **Costume test:** would someone who uses this kind of product every day read the style as belonging to their world, or as a trend put on top of it? Name the reason it belongs (a timetable board for a ferry, a receipt for a shared kitty). "It's bold" or "it's not a bank" is not a reason.
+4. **Category fit:** find the product's row in the table below. An option from a poor-fit preset fails, unless the app already sits in that preset (1a) or the user named it.
 
-Drop every option that fails any of the three. If none survives, redeal with a new seed (`--seed` any other number) and say so in the report. Then, among the survivors:
-- **If you can ask,** show the surviving options in one line each (name, composition, the inventory item it would carry) and let the user pick. They may also name a reference app instead; map it to the nearest direction.
-- **If you can't ask** (non-interactive run), choose, and write one line on why it beats the others for *this* product. Not the most familiar one: the familiar one is what this step exists to prevent.
+| Product category | Good fit | Poor fit (offer only with the warning) |
+|---|---|---|
+| Navigation, transit, mobility, maps, travel | Warm premium; Playful if the app already has a mascot or illustrations | Editorial (utility screens have little content to set), Neo-brutalist (reads unreliable when people depend on it) |
+| Utilities (weather, scanners, calculators, settings-heavy tools) | Warm premium at low `BOLDNESS`; Neo-brutalist for indie or dev tools | Editorial |
+| Finance, banking, insurance | Warm premium; Playful only for beginner/teen finance | Neo-brutalist (reads untrustworthy) |
+| Health, medical | Warm premium, calm dials | Neo-brutalist, loud Playful |
+| Wellbeing, habits, fitness, learning, kids, games | Playful | Editorial, Neo-brutalist (except indie games) |
+| Social, messaging, dating | Playful; Neo-brutalist for Gen-Z or creator-led | Editorial for chat-heavy screens |
+| Media, news, reading, music, podcasts, sports stats | Editorial | Playful on news (bad-news surfaces) |
+| Commerce, marketplaces, food, hospitality | Warm premium; Editorial for drops and fashion | Neo-brutalist for mass-market retail |
+| Creator tools, dev tools, events, portfolios | Neo-brutalist, Editorial | none strong |
+| Productivity, enterprise, form-heavy flows | Warm premium at low `BOLDNESS` | Editorial, Playful |
+
+The table says which *presets* can belong; it doesn't pick the direction. Good fit is the floor, and the owned idea still decides among the survivors. Each preset file's "Fits / Doesn't fit" lines go into more detail.
+
+Drop every option that fails any of the first three. A category misfit (question 4) is dropped in a non-interactive run; when you can ask, it may stay on the menu with its warning from the table. If none survives, redeal with a new seed (`--seed` any other number) and say so in the report. Then, among the survivors, recommend one: the option that carries an owned idea from the inventory and keeps the identity assets found in 1a. When 1a and the table point to the same preset, prefer its survivor; when they disagree, recommend the category fit and say which existing assets carry over into it, unless the user asked for a rethink. The app's own identity is not the "familiar default" this step guards against; the category's stock look is.
+- **If you can ask,** ask once, at most four questions. Put the recommended option first, labelled "(Recommended)", with its one-line reason; every option says, in one line, its composition, the inventory item it would carry, and how it treats the app's existing assets ("keeps the rabbit and the city art", "replaces the rounded faces"). Skip any question the request or the code already answers.
+  - **Redesign:** 1. **Direction:** the survivors, recommended first; a poor fit carries its warning. 2. **Keep** (multi-select): the identity assets found in 1a, plus the current layout order. 3. **Scope:** *reskin* (same layout and flow, new skin) · *restructure* (rethink this screen's hierarchy and layout) · *rethink* (question what the screen is for and what belongs on it). 4. **Focus:** what bothers them today, which state matters most (the key alert or error state, empty, loading), or dial overrides next to the sheet's defaults; pick whichever the code leaves least clear.
+  - **Build:** 1. **Direction**, recommended first. 2. **Reference app:** "an app whose look you like" instead; map it to the nearest direction. 3. **Dials:** the sheet's defaults, or "louder / calmer / denser / airier". 4. **Audience,** only if the request doesn't say: who it's for, how often they use it, and where (on the move, at a desk).
+  - **Spec:** the Build questions, plus which platforms the tokens are for.
+- **If you can't ask** (non-interactive run), take the recommendation, keep every identity asset, use *restructure* scope for a Redesign, and state each assumption in one line before the brief, with one line on why the chosen direction beats the others for *this* product. Not the most familiar one: the category default is what this step exists to prevent.
+
+If the user named a preset, deal inside it (`--preset`), even a poor fit: warn them once, in one line, then commit to it.
 
 Then print the full sheet and adopt it. Don't blend it with the layout you would have made anyway:
 
@@ -115,8 +151,9 @@ For example: "In this app, the 21:00 last-ferry constraint becomes the departure
 Then write the brief. A short brief keeps the style coherent across every screen, and it's what turns "make it fun" into decisions. Keep it under ~30 lines, and put it in your reply (or in `DESIGN.md` for Spec mode or multi-screen work).
 
 ```
-Inventory: <the 8–12 items from step 1, comma-separated; mark assumptions with (assumed)>
+Inventory: <the 8–12 items from step 1b, comma-separated; mark assumptions with (assumed)>
 Direction: <dealt id verbatim, e.g. pl-persona, then its name> (seed <n>, or "user-picked preset")   Dials: B<n> M<n> D<n> C<n> F<n>
+Kept from the current app: <identity assets carried over and the scope (reskin / restructure / rethink) for a Redesign, or "new app">
 Owned idea: In this app, <one item from the Inventory line> becomes <device>. Competitor test: <competitor> → fails/passes
 Live thing: <the one interaction made from the idea, and the real state it reacts to>
 Persona: <one sentence: who the app is, as a character>
@@ -263,7 +300,7 @@ Then run the checks at the end of this file. For each failed check, fix it or, i
 
 ```
 app-ui-slopless report
-Inventory: <the 8–12 items from step 1, comma-separated; (assumed) where inferred>
+Inventory: <the 8–12 items from step 1b, comma-separated; (assumed) where inferred>
 Direction: <dealt id, e.g. pl-persona> (seed <n>); redeals: <none, or which and why>
 Owned idea: In this app, <inventory item> becomes <device>.
 Competitor test: <competitor> → <why the idea fails for them>
@@ -410,9 +447,10 @@ Models produce slop because they sample the statistical average of their trainin
 ## Final checklist
 
 - [ ] Inventory of 8–12 product-only items written in the reply before `deal.py` ran, and repeated as the brief's first line.
-- [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test), misfits dropped, redeal stated if none survived; direction id and seed in the report.
+- [ ] Intake done: existing look and identity assets read (Redesign, or Build inside an existing app); questions asked once, or assumptions stated.
+- [ ] Content shapes named and passed to `deal.py --content`; every dealt option put through the fit test (content at rest, owned idea, costume test, category fit), misfits dropped, redeal stated if none survived; direction id and seed in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
-- [ ] Brief written: direction, dials, owned idea, live thing, persona, 2–3 signature moves.
+- [ ] Brief written: direction, dials, what's kept from the current app, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] Swift typechecked with `scripts/typecheck.py` on the right platform at the project's deployment target (iOS 17 / macOS 14 when the project sets none), newer APIs behind `if #available`, `--ios` / `--macos` never raised to get a pass; Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`; both passing, or the report says why not.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
 - [ ] Scrolling screens rendered at rest and scrolled to the end; `scripts/fold.py` passes on the mock (no cut row, no sliver behind a fade, the last row clears the bar by 8 pt), or the report says the fold was checked by eye and why.

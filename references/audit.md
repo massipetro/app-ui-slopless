@@ -14,7 +14,7 @@ How to critique an existing mobile or Mac screen against the studied principles.
    - **1 Cosmetic:** polish; fix if time allows.
    - Slop and blandness findings are usually 1–2, but say so explicitly. Blandness has a measured cost (R-COG-1, evidence table).
 6. **Taste, from the screenshot.** If you have a screenshot or can render the screen, run the passes in `critique.md` and include its scores. Cover-the-logo and fullness findings are often the real reason a screen "feels meh".
-7. **Then the redesign direction.** Inventory the product (SKILL.md step 1), deal directions with `scripts/deal.py --options 3`, and recommend the one that carries something only this product has, or use the user's choice.
+7. **Then the redesign direction.** Read the existing look and identity assets, inventory the product (SKILL.md step 1), deal directions with `scripts/deal.py --options 3`, put them through the fit test including category fit, and recommend the one that carries something only this product has and keeps its identity assets. If the user already chose a preset, use it, and warn once if the fit table lists it as a poor fit.
 
 ## Report template
 
@@ -40,7 +40,7 @@ How to critique an existing mobile or Mac screen against the studied principles.
 <1–3 bullets: keep these>
 
 ## Redesign direction
-Direction: <id> (seed <n>), dials: B<n> M<n> D<n> C<n> F<n>, and why it beats the other two dealt. Owned idea: In this app, <inventory item> becomes <device>. Signature moves: <2–3>.
+Current look: <closest preset + identity assets>. Direction: <id> (seed <n>), dials: B<n> M<n> D<n> C<n> F<n>, and why it beats the other two dealt (product category + existing look). Keeps: <assets>. Owned idea: In this app, <inventory item> becomes <device>. Signature moves: <2–3>.
 ```
 
 Order the findings by severity, then by frequency of use. Keep each finding to one line. The fix should be concrete enough to implement.
