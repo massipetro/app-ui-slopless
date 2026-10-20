@@ -48,6 +48,12 @@
       "files": [
         "evals/files/LibraryView.swift"
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "I'm building a Mac app in SwiftUI for freelance subtitle translators. Build the main window: the video clip being subtitled, the list of subtitle lines with their timecodes, and the line being translated (source text above, translation below) with its reading speed. Translators spend whole afternoons in it. Pick the style yourself. Write the SwiftUI code to SubtitleWindow.swift.",
+      "expected_output": "A macOS SwiftUI window dealt with --platform macos: the subtitle lines as a dense table with timecodes and reading speed (CPS), the video as the canvas, the line being edited as a document-like editor with the system text stack, keyboard-first navigation (next/previous line, play/pause, commit) in menu commands with shortcuts, a declared minimum window size, Mac density (13 pt UI, 22-28 pt rows), and an owned idea from the translator's world. Not a phone layout, not the dark-gradient 'Linear style'.",
+      "files": []
     }
   ],
   "how_to_run": "See evals/README.md. Each eval is a full build session: run it with the skill and without it (baseline), grade both with grade.py, then judge screenshots blind with references/critique.md. Ask the user before running: 6 evals x 2 configs = 12 sessions per iteration."

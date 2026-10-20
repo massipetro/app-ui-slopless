@@ -268,10 +268,28 @@ def eval7(d):
     ], d, "macos")
 
 
+def eval8(d):
+    sw = read(d, "**/*.swift")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("Dealt for the Mac (deal.py --platform macos)", *check(resp, r"--platform macos")),
+        ("lint.py (macOS): no FAIL in the produced Swift", *lint_fails(d, "macos")),
+        ("Root view declares a minimum window size", *check(sw, r"minWidth:|windowResizability|defaultSize\(")),
+        ("Subtitle lines in a Table or selectable List with timecodes", *check(sw, r"(Table\(|List\([^)]*selection)[\s\S]{0,4000}(timecode|start|\d\d:\d\d:\d\d)")),
+        ("Reading speed shown (characters per second)", *check(sw, r"cps|charactersPerSecond|reading ?speed")),
+        ("Text editing on the system text stack (TextEditor, TextField or NSTextView)", *check(sw, r"TextEditor|TextField|NSTextView")),
+        ("Menu-bar commands with keyboard shortcuts", *check(sw, r"(CommandGroup|CommandMenu|Commands)[\s\S]{0,800}keyboardShortcut|keyboardShortcut[\s\S]{0,800}(CommandGroup|CommandMenu|\.commands)")),
+        ("Keyboard navigation between lines (onKeyPress / shortcuts for next and previous)", *check(sw, r"onKeyPress|keyboardShortcut\(\s*\.(downArrow|upArrow|return)|Next Line|Previous Line")),
+        ("Video area present (AVKit VideoPlayer or a drawn player)", *check(sw, r"VideoPlayer|AVPlayer|player|playhead")),
+        ("No iPhone-sized frame or 44pt target stretched into the window", *absent(sw, r"frame\([^)]*width:\s*(375|390|393|430)\b|UIScreen|height:\s*44\b")),
+        ("No dark-gradient 'Linear style' background", *absent(sw, r"(Linear|Radial|Angular)Gradient\([\s\S]{0,200}(purple|indigo|violet|0x6|#6|#7C3AED|#8B5CF6)")),
+    ], d, "macos")
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
            "guesthouse-photos-no-preset-swiftui": eval6,
-           "library-sidebar-macos-swiftui": eval7}
+           "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])
