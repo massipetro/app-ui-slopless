@@ -34,6 +34,28 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 12: quiet native out of collection briefs, Opus judges, evals 7 and 8 (HEAD vs v1.5.0 vs none)
+
+This round measured `de50768`: v1.6.0 with nc-quiet-native no longer dealt for collection or hobby briefs (`not_for_content: [collection]`, `not_for: hobby`). Round 11's judges rejected the stronger-move alternative: after `42f7fa3` put the idea in every row, quiet native still lost as "a competent table with a decorative timeline strip". Builds were the same as round 11: the same two prompts, Sonnet 5.5 at medium effort ($3 cap), v1.5.0 from the `d2593d9` worktree, and 1280×800 mocks shot with `evals/shot.mjs`. This round used three runs per config on both evals. The judges changed to two independent blind Opus 5.5 judges per pair ($2 cap each), 12 pairs with A and B shuffled. Each score below is the mean of the two judges.
+
+| Eval | Run | HEAD direction | vs v1.5.0 | vs none |
+|---|---|---|---|---|
+| 7 | 1 | ed-newspaper-frame (Mac form) | **7.1** vs 6.2 | **7.2** vs 4.7 |
+| 7 | 2 | ed-newspaper-frame (Mac form) | **7.5** vs 6.0 | **7.6** vs 5.9 |
+| 7 | 3 | ed-newspaper-frame (Mac form) | **6.6** vs 6.0 | **6.7** vs 4.7 |
+| 8 | 1 | pi-instrument-panel | **7.2** vs 6.7 | **7.5** vs 6.6 |
+| 8 | 2 | pi-instrument-panel | **7.1** vs 6.0 | **7.0** vs 6.0 |
+| 8 | 3 | nc-quiet-native | **7.4** vs 7.2 | **7.7** vs 5.8 |
+
+- **Against v1.5.0: 6 of 6 pairs, 12 of 12 judge votes, mean 7.1 vs 6.4.** By eval: eval 7 7.1 vs 6.1, eval 8 7.2 vs 6.6.
+- **Against no skill: 6 of 6 pairs, 12 of 12 judge votes, mean 7.3 vs 5.6.** By eval: eval 7 7.2 vs 5.1, eval 8 7.4 vs 6.1.
+- Grader: HEAD scored 18–19 of 19 on eval 7 and 20 of 21 on eval 8; v1.5.0 scored 18–19 of 19 and 18–19 of 21; no skill scored 9 of 19 and 7–9 of 21. The two judges agreed on the winner of every pair, and HEAD sat in position A in 5 of the 12.
+- **Eval 7.** Quiet native wasn't dealt on any run. Two runs list nc-columns as the native-craft option they dropped. Every HEAD run and every v1.5.0 run built ed-newspaper-frame, so the eval-7 margin is that direction's Mac form against v1.5.0's phone form. The judges marked v1.5.0 down for a magazine masthead in the content area, tall rows (about 8 visible), an empty inspector and Platform 6. HEAD kept Mac density (15–18 rows, sortable columns) and drew the collecting into the content: a season grid ("17 of 38 seasons held") and a year strip with gaps for wanted editions. So this round shows the fix leaves eval 7 with a direction that wins. It doesn't isolate the fix's own effect, since v1.5.0 didn't deal quiet native here either.
+- **Eval 8.** Quiet native was still dealt for the table brief, as intended, and won narrowly: 7.4 vs 7.2 against v1.5.0's ed-newspaper-frame, with its per-row speed meters and a 16-row list; both judges picked it. pi-instrument-panel won its two pairs by 0.5 and 1.1.
+- **Not comparable to round 11's numbers.** Opus judges score lower than round 11's single Sonnet judge did. v1.5.0's ed-newspaper-frame got 6.0–6.2 here against 7.6–8.0 there, so compare the win counts and margins, not the levels.
+- Setup: every config ran with `--setting-sources project,local`, so the account's user-level skills and plugins stayed out of all three; the user's global CLAUDE.md still loaded for all of them. Models are pinned by id (`claude-sonnet-5-5`, `claude-opus-5-5`) on Claude Code 2.1.304. A first batch on 2.1.277 didn't know Sonnet 5.5: it priced it about 2.3× too high and capped it at 200k context, which would have tightened the $3 cap. That batch was stopped and isn't counted.
+- Cost: $16.26 for 18 builds (HEAD $7.59, v1.5.0 $6.06, none $2.61) and $4.39 for 24 Opus judges.
+
 ### Round 11: the Mac deal and the Mac presets, evals 7 and 8 (v1.6.0 vs v1.5.0 vs none)
 
 This round measured `deal.py --platform macos` (each direction's Mac window form) and the three Mac-only presets. It used two briefs: the library redesign (eval 7) and a new build, a subtitle translator's main window (eval 8: `table` + `document` + `canvas`). Builds ran on Sonnet 5.5 at medium effort ($3 cap) in three configs: v1.6.0, v1.5.0 (a worktree at `d2593d9`) and no skill. Each build wrote a 1280×800 mock, rendered through the DevTools protocol at an exact 1280×800 viewport, which fixes round 10's blank band. One blind Sonnet 5.5 judge per pair ($1 cap) saw two screenshots, with A and B shuffled.
