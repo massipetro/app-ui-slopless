@@ -32,7 +32,7 @@ Sources and evidence: `research/retro-references.md`.
 ## Colour
 - **Every text tier at 4.5:1.** Full phosphor passes easily (#33FF33 on black is 15.5:1); the "dim" secondary greens and ambers that feel authentic fail (#1F7A1F on black is 3.9:1, #7A5400 is 3.1:1). Make the secondary tier a lighter tint, not a darker one.
 - **Polarity.** Light text on black is less legible for most readers, more so at small sizes, and blooms for people with astigmatism (NN/g, Piepenbrock et al. 2013). So the terminal keeps body text at 16–17 pt and offers a light mode that isn't a dimmed terminal: listing paper (green-bar or amber continuous-form paper). The bitmap desktop is dark on light by nature.
-- **Limited palettes are a system, not a mood.** A 16-colour set or four greens, every sprite drawn only from it; colour carries state (thirsty, done, alert).
+- **Limited palettes are a system, not a mood.** A 16-colour set or four tones, every sprite drawn only from it; colour carries state (thirsty, done, alert). Not the original handheld's four greens: judges read them as a borrowed Game Boy (round 14).
 - The hue can be a user setting (green or amber), as in Fallout 4.
 
 ## Shape and depth
@@ -42,9 +42,16 @@ Sources and evidence: `research/retro-references.md`.
 - **Touch targets stay 44 pt / 48 dp** even when the sprite is 16×16 at 2× (32 pt): pad the hit area with `.contentShape` or `Modifier.minimumInteractiveComponentSize()`.
 - Keep pixel frames inside the safe area; let the ground colour or pattern bleed to the edges. Never align a bitmap border to the rounded display corners.
 
+## How much pixel art a screen carries
+The round-14 judges split between a legible screen with retro as seasoning and a baseline that wore a fuller RPG costume. Resolve it by committing the *content*, not the chrome:
+- **All in:** every item's state is pixel art (its sprite, its meter), the key number is in the pixel face, and every content block sits in a pixel frame on the grid. Section titles may use the pixel face at an integer size.
+- **Readable:** names, body text, numbers inside sentences, the system bars and the text on controls stay in the readable face.
+- **Two tests on the resting frame.** Cover the sprites, meters and frames: if what's left reads as a stock list with pixel icons, it's under-committed. Cover the readable text: if pixel type carries more than the key number, the section titles and two short labels, it's over-committed.
+- **Meters show their value.** A thirst bar, battery or progress pip row must look different for different values at rest (segments lit, fill, colour step). Three urgencies drawn as the same empty bar is decoration.
+
 ## Motion
 - Stepped, not tweened: sprite loops at 8–12 fps, 2–4 frame state changes, type-on text, inverse-video presses.
-- **CRT effects are seasoning.** A static scanline overlay on chrome and hero areas only, one soft glow on the key number. No curvature, chromatic aberration, jitter, rolling bars or flicker over content.
+- **CRT effects are seasoning.** A static scanline overlay on chrome and frames only. **No glow on type**, the key number included: in round 14 a glow smeared the hero digits and lost the pair. A faint glow may sit on rules and frames. No curvature, chromatic aberration, jitter, rolling bars or flicker over content.
 - **No flashing:** at most three flashes a second (WCAG 2.3.1); a 60 Hz flicker loop fails outright. Reduce Motion turns every animated effect off (lines appear whole, the cursor holds, sprites hold their idle frame), and the screen offers a setting to switch effects off, as Balatro does.
 
 ## Signature moves (pick 2–3)

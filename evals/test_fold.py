@@ -50,6 +50,33 @@ def mock(name: str, card_top: int, fade: bool = False, bottom_pad: int = 120, sc
     return p
 
 
+def sections_mock(name: str, heading_bottom: int, plain: bool = False) -> Path:
+    """Two sections, each a 24 px heading over 72 px cards. The second heading ends at heading_bottom;
+    its first card starts 8 px lower. plain: the 'heading' is styled like the rows, so it isn't one."""
+    head = '<div class="t">Habit 9</div>' if plain else '<h2>Evening</h2>'
+    card = '<div class="card"><div class="t">Habit {i}</div><div class="s">Done at 08:15</div></div>'
+    first = "".join(card.format(i=i) for i in range(4))
+    pad_top = heading_bottom - 24 - (32 + 4 * STEP)
+    page = f"""<!doctype html><html><head><meta charset="utf-8"><style>
+  body {{ margin: 0; width: 390px; height: 844px; position: relative; overflow: hidden; background: #f4efe6; font-family: sans-serif; }}
+  #scroll {{ position: absolute; inset: 0; overflow-y: auto; padding: {pad_top}px 16px 120px; box-sizing: border-box; }}
+  h2, section > .t {{ font-size: {16 if plain else 20}px; line-height: 24px; height: 24px; margin: 0 0 8px; font-weight: {400 if plain else 700}; }}
+  section {{ margin-bottom: 0; }}
+  section:first-child {{ padding-top: 0; }}
+  .card {{ box-sizing: border-box; height: 72px; margin-bottom: 12px; padding: 8px 12px; background: #fff; border: 2px solid #111; border-radius: 12px; }}
+  .t {{ font-size: 16px; line-height: 20px; }}
+  .s {{ font-size: 13px; line-height: 16px; margin-top: 10px; }}
+  .bar {{ position: absolute; left: 0; right: 0; bottom: 0; height: 100px; box-sizing: border-box; background: #fff; border-top: 2px solid #111; display: flex; }}
+  .bar div {{ flex: 1; text-align: center; padding-top: 14px; }}
+</style></head><body>
+<div id="scroll"><section style="height: {32 + 4 * STEP}px"><h2>Morning</h2>{first}</section><section>{head}{"".join(card.format(i=i) for i in range(4, 8))}</section></div>
+<div class="bar"><div>Today</div><div>Stats</div><div>Me</div></div>
+</body></html>"""
+    p = TMP / f"{name}.html"
+    p.write_text(page)
+    return p
+
+
 def fold(path: Path) -> subprocess.CompletedProcess:
     return subprocess.run([sys.executable, str(SCRIPTS / "fold.py"), str(path)], capture_output=True, text=True, timeout=180)
 
@@ -90,6 +117,19 @@ class Fold(unittest.TestCase):
         self.assertEqual(r.returncode, 1, r.stdout)
         self.assertIn("doesn't scroll", r.stdout)
 
+
+    def test_an_orphaned_heading_is_cut(self):
+        r = fold(sections_mock("orphan", BAR_TOP - 4))           # round 14: the heading shows, its rows are all under the bar
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("orphaned", r.stdout)
+
+    def test_a_heading_with_its_first_row_passes(self):
+        r = fold(sections_mock("headed", BAR_TOP - 72 - 8 - 12))  # heading and its first card both show above the bar
+        self.assertNotIn("orphaned", r.stdout)
+
+    def test_a_plain_first_row_is_not_a_heading(self):
+        r = fold(sections_mock("plain", BAR_TOP - 4, plain=True))  # styled like the rows: whole-or-hidden still holds
+        self.assertNotIn("orphaned", r.stdout)
 
 if __name__ == "__main__":
     try:

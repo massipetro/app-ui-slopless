@@ -301,6 +301,7 @@ def eval9(d):
         ("Dealt inside the retro preset (deal.py --preset retro)", *check(resp, r"--preset retro")),
         ("A terminal or bitmap face for readouts", *check(sw + html, RETRO_FACES)),
         ("No Fallout names or art in the product (Pip-Boy, Vault-Tec, Vault Boy, RobCo)", *absent(sw + html, FALLOUT_IP)),
+        ("No glow on type in the mock (text-shadow with a blur)", *absent(html, r"text-shadow:\s*(?!none)[^;]*?-?[\d.]+(?:px)?\s+-?[\d.]+(?:px)?\s+[1-9][\d.]*px")),
         ("Live sunset countdown driven by time (TimelineView / Timer / Date math)", *check(sw, r"TimelineView|Timer\.publish|\.timeIntervalSince|Date\.now|sunset")),
         ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)|@ScaledMetric")),
         ("Reduce Motion turns off CRT effects (flicker, scanline drift, cursor blink)", *check(sw, r"accessibilityReduceMotion")),
@@ -324,11 +325,29 @@ def eval10(d):
     ], d)
 
 
+
+def eval11(d):
+    sw = read(d, "**/*.swift")
+    html = read(d, "**/*.html")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py (macOS): no FAIL in the produced Swift", *lint_fails(d, "macos")),
+        ("Dealt inside the retro preset for the Mac (--preset retro, --platform macos)", *check(resp, r"--preset retro[^\n]*--platform macos|--platform macos[^\n]*--preset retro")),
+        ("A retro face for titles or readouts", *check(sw + html, RETRO_FACES)),
+        ("No Apple or Microsoft marks (rainbow apple, Happy Mac, Chicago, Windows)", *absent(sw + html, r"\uf8ff|Happy Mac|Chicago|Windows 9[58]|Microsoft")),
+        ("No glow on type in the mock (text-shadow with a blur)", *absent(html, r"text-shadow:\s*(?!none)[^;]*?-?[\d.]+(?:px)?\s+-?[\d.]+(?:px)?\s+[1-9][\d.]*px")),
+        ("Root view declares a minimum window size", *check(sw, r"minWidth:|windowResizability|defaultSize\(")),
+        ("Sidebar navigation (NavigationSplitView or .sidebar list)", *check(sw, r"NavigationSplitView|listStyle\(\s*\.sidebar")),
+        ("Menu-bar commands with keyboard shortcuts", *check(sw, r"(CommandGroup|CommandMenu|Commands)[\s\S]{0,800}keyboardShortcut|keyboardShortcut[\s\S]{0,800}(CommandGroup|CommandMenu|\.commands)")),
+    ], d, "macos")
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
            "guesthouse-photos-no-preset-swiftui": eval6,
            "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8,
-           "retro-terminal-trail-swiftui": eval9, "retro-pixel-plants-compose": eval10}
+           "retro-terminal-trail-swiftui": eval9, "retro-pixel-plants-compose": eval10,
+           "retro-film-log-macos-swiftui": eval11}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

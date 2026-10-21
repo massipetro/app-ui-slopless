@@ -15,6 +15,7 @@ reports every row near the bar's top edge in two frames:
                    a sliver of card, a row sliced through its icon or its text. A fade above the
                    bar doesn't excuse it; blind judges capped every such row in our evals.
                    (A plain divider line peeking out is fine.)
+        orphaned : a section heading shows above the bar while its rows start under it (round 14).
   end   the container scrolled to the bottom: the last row must clear the bar by 8 px.
 
 A "row" is the outermost painted box (background, border, shadow, image) inside the
@@ -120,6 +121,16 @@ PROBE = r"""<script>/* fold.py probe */(function () {
     }
     return out;
   }
+  function textStyle(el) {   // the computed style of the first visible text inside el
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (var n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) return getComputedStyle(n.parentElement);
+    return getComputedStyle(el);
+  }
+  function headingLike(h, next) {   // a title over its section, not just the first of equal rows
+    if (/^H[1-6]$/.test(h.tagName) || h.getAttribute('role') === 'heading' || /head|title|label|caption|eyebrow|rule/i.test(String(h.className))) return true;
+    var a = textStyle(h), b = textStyle(next);
+    return Math.abs(px(a.fontSize) - px(b.fontSize)) >= 1 || Math.abs(px(a.fontWeight) - px(b.fontWeight)) >= 200 || a.textTransform !== b.textTransform;
+  }
   function label(el) {
     var t = (el.innerText || el.getAttribute('aria-label') || el.tagName).replace(/\s+/g, ' ').trim();
     return t.slice(0, 48) || el.tagName.toLowerCase();
@@ -157,6 +168,24 @@ PROBE = r"""<script>/* fold.py probe */(function () {
       if (l.r.top < barTop - 3 && l.r.bottom > barTop + 3 && !boxes.some(function (b) { var r = b.getBoundingClientRect(); return r.top <= l.r.top && r.bottom >= l.r.bottom && r.left <= l.r.left && r.right >= l.r.right; }))
         rows.push({ row: 'text "' + l.t + '"', top: Math.round(l.r.top), bottom: Math.round(l.r.bottom), gap: Math.round(barTop - l.r.bottom), state: 'cut', why: 'a line of text crosses the bar' });
     });
+    // An orphaned heading: a section's title shows above the bar while everything under it starts below the
+    // bar's top edge. Nothing crosses the edge, yet the judges read the section as cut (round 14).
+    (function sections(el) {
+      Array.prototype.forEach.call(el.children, function (c) {
+        if (pinned(c)) return;
+        var kids = Array.prototype.filter.call(c.children, function (k) { return k.getBoundingClientRect().height > 0; });
+        if (kids.length >= 2) {
+          var h = kids[0], hr = h.getBoundingClientRect(), nr = kids[1].getBoundingClientRect();
+          var lines = textLines(h), textBottom = lines.reduce(function (m, l) { return Math.max(m, l.r.bottom); }, -1);
+          // Judge by the heading's text, not its box: padding may run under the bar while every word shows.
+          if (lines.length && hr.height <= 48 && textBottom <= barTop + 1 && textBottom > barTop - 64 &&
+              nr.top >= barTop - 1 && headingLike(h, kids[1]))
+            rows.push({ row: 'heading "' + label(h) + '"', top: Math.round(hr.top), bottom: Math.round(hr.bottom), gap: Math.round(barTop - hr.bottom),
+                        state: 'cut', why: 'its section starts under the bar, so the heading is orphaned above it; land the fold above the heading' });
+        }
+        sections(c);
+      });
+    })(scroller === document.scrollingElement ? document.body : scroller);
     var last = boxes.reduce(function (m, el) {   // rows only: a full-height backdrop isn't the last row
       var r = el.getBoundingClientRect(); if (r.height > innerHeight * 0.35) return m;
       return !m || r.bottom > m.bottom ? { bottom: r.bottom, row: label(el) } : m; }, null);

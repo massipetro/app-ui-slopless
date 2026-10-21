@@ -2844,7 +2844,7 @@
           }
         }
       ],
-      "shape": "Box-drawing rules one art pixel thick, square corners, no cards and no shadows. One soft glow on the key number only. Everything on a 2 pt art-pixel grid.",
+      "shape": "Box-drawing rules one art pixel thick, square corners, no cards and no shadows. No glow on type: the key number stays crisp (a glow smeared it in round 14); a faint glow may sit on rules and frames only. Everything on a 2 pt art-pixel grid.",
       "moves": [
         "Readout lines: label, dot leader, value and unit in one bitmap face at an integer size",
         "A live line with a block cursor that blinks at 1 Hz and holds steady under Reduce Motion",
@@ -2858,7 +2858,7 @@
         "finance",
         "government"
       ],
-      "pitfall": "Fallout cosplay: Pip-Boy, Vault-Tec, Vault Boy or RobCo names and art, or the Monofonto face. Dim green secondary text under 4.5:1. Scanlines, bloom or flicker over running text. Every label in uppercase. VT323 at a non-integer size, or for paragraphs.",
+      "pitfall": "Fallout cosplay: Pip-Boy, Vault-Tec, Vault Boy or RobCo names and art, or the Monofonto face. Dim green secondary text under 4.5:1. Scanlines, bloom or flicker over running text. Every label in uppercase. VT323 at a non-integer size, or for paragraphs. A glow or blur on any text, the key number included. A meter that looks the same whatever its value.",
       "mac": {
         "composition": "A terminal-like window: a text menu of sections in the sidebar (Status, Log, Map), readout lines and a scrolling log in the bitmap face in the content column, and a command field at the foot that takes typed commands (Return runs, Up recalls the last). The menu bar mirrors every command with a shortcut.",
         "moves": [
@@ -2883,7 +2883,7 @@
         "Playdate (Panic: text floors as cap-height pixels, 2 px strokes)",
         "Stardew Valley (pixel art with its own UI scale)"
       ],
-      "composition": "A screen built on one art-pixel grid (2 or 3 pt). Content sits in 9-slice pixel frames like RPG dialogue boxes; each item is a sprite drawn in code from a limited palette, and its frames show the item's state. The key number is in a pixel face; names and body text are in a readable text face. One primary action is a chunky pixel button.",
+      "composition": "A screen built on one art-pixel grid (2 or 3 pt). Content sits in 9-slice pixel frames like RPG dialogue boxes; each item is a sprite drawn in code from a limited palette, and its frames show the item's state. The key number is in a pixel face; names and body text are in a readable text face. One primary action is a chunky pixel button. Pixel budget: the content carries the art (every item's sprite and meter, the key number, the frames), while names, body text and system bars stay in the readable face.",
       "content": [
         "action",
         "list",
@@ -2940,27 +2940,27 @@
           }
         },
         {
-          "name": "Four-green handheld",
-          "proportions": "Four greens only, like an early handheld LCD: ink, two mids for sprites and frames, and the screen ground.",
+          "name": "Four tones at dusk",
+          "proportions": "Four tones only, like an early four-shade LCD, but in dusk violet and peach rather than the original handheld's greens: ink, two mids for sprites and frames, and the ground.",
           "support": [
-            "#88C070",
-            "#346856"
+            "#8E5C8A",
+            "#E39A7A"
           ],
           "light": {
-            "ground": "#E0F8D0",
-            "surface": "#F0FCE8",
-            "ink": "#081820",
-            "ink2": "#2A5446",
-            "accent": "#346856",
+            "ground": "#F8EBDD",
+            "surface": "#FFF6EC",
+            "ink": "#2A1B3D",
+            "ink2": "#5E3F68",
+            "accent": "#5E3F68",
             "on_accent": "#FFFFFF"
           },
           "dark": {
-            "ground": "#081820",
-            "surface": "#10282A",
-            "ink": "#E0F8D0",
-            "ink2": "#9CC98A",
-            "accent": "#88C070",
-            "on_accent": "#081820"
+            "ground": "#2A1B3D",
+            "surface": "#382652",
+            "ink": "#F8EBDD",
+            "ink2": "#D9B8C8",
+            "accent": "#E39A7A",
+            "on_accent": "#2A1B3D"
           }
         }
       ],
@@ -2978,7 +2978,7 @@
         "government",
         "enterprise"
       ],
-      "pitfall": "A pixel face for names and body text. Pixel fonts at non-integer sizes or anti-aliased. Sprites scaled with smoothing. A generic RPG skin (hearts, swords, gold coins) with no product idea. Minecraft or Nintendo look-alikes. 1-pixel strokes and type under 8 px caps.",
+      "pitfall": "A pixel face for names and body text. Pixel fonts at non-integer sizes or anti-aliased. Sprites scaled with smoothing. A generic RPG skin (hearts, swords, gold coins) with no product idea. Minecraft or Nintendo look-alikes. 1-pixel strokes and type under 8 px caps. Under-committed: a flat list with pixel icons, where covering the sprites leaves a stock app. Meters that look the same for different values. The original handheld's four greens, which read as a borrowed Game Boy.",
       "mac": {
         "composition": "A pixel-framed window: the sidebar as an inventory list with sprite icons, the content in 9-slice frames on an integer grid, sprites drawn in code at whole art pixels, the key number in a pixel face, names and text in a readable face.",
         "moves": [

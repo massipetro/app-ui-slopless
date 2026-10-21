@@ -462,12 +462,13 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Brief written: direction, dials, what's kept from the current app, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] Swift typechecked with `scripts/typecheck.py` on the right platform at the project's deployment target (iOS 17 / macOS 14 when the project sets none), newer APIs behind `if #available`, `--ios` / `--macos` never raised to get a pass; Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`; both passing, or the report says why not.
 - [ ] `scripts/lint.py` run on the changed files: no `FAIL`, every `WARN` and `--allow` defended in the report.
-- [ ] Scrolling screens rendered at rest and scrolled to the end; `scripts/fold.py` passes on the mock (no cut row, no sliver behind a fade, the last row clears the bar by 8 pt), or the report says the fold was checked by eye and why.
+- [ ] Scrolling screens rendered at rest and scrolled to the end; `scripts/fold.py` passes on the mock (no cut row, no sliver behind a fade, no section heading orphaned above the bar, the last row clears the bar by 8 pt), or the report says the fold was checked by eye and why.
 - [ ] Signature check done on the resting frame: at least two signature moves pointed at, and the screen is not the category's stock layout in new colours.
 - [ ] Motion recorded as a filmstrip (`scripts/filmstrip.py`, or test / simulator frames) when `MOTION` ≥ 4 or the core verb animates: it moves, settles on the rest state, clips nothing, and frequent paths finish within 300 ms.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
 - [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.
+- [ ] Every meter, bar, gauge or pip row shows its own value at rest: different values look different (fill, segments lit, colour step). Three urgencies drawn as the same empty bar is decoration (round 14).
 - [ ] The brief at rest: every must-have visible or reachable in the resting frame; with a `list`, three rows show and the hero stays under about 45% of the height.
 - [ ] No request to an outside service carried the user's email, name or account; found pictures are credited.
 - [ ] Tokens defined once; no stray hex values or magic numbers in the screen.
