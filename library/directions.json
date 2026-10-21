@@ -2883,7 +2883,7 @@
         "Playdate (Panic: text floors as cap-height pixels, 2 px strokes)",
         "Stardew Valley (pixel art with its own UI scale)"
       ],
-      "composition": "A screen built on one art-pixel grid (2 or 3 pt). Content sits in 9-slice pixel frames like RPG dialogue boxes; each item is a sprite drawn in code from a limited palette, and its frames show the item's state. The key number is in a pixel face; names and body text are in a readable text face. One primary action is a chunky pixel button. Pixel budget: the content carries the art (every item's sprite and meter, the key number, the frames), while names, body text and system bars stay in the readable face.",
+      "composition": "A screen built on one art-pixel grid (2 or 3 pt) that plays like an RPG party screen. Each item is a sprite drawn in code from a limited palette, its frames showing its state, beside an HP-style meter of lit segments in the state colour. Content sits in 9-slice pixel frames; the one message that matters now speaks from a dialogue box; today's job is a quest line with a counter. The key number is in a pixel face; names and body text are in a readable text face. One primary action is a chunky pixel button. Pixel budget: the content carries the art (every item's sprite and meter, the key number, the frames), while names, body text and system bars stay in the readable face.",
       "content": [
         "action",
         "list",
@@ -2966,9 +2966,10 @@
       ],
       "shape": "Stepped pixel corners (one art pixel notched), 9-slice frames one or two art pixels thick, a hard one-art-pixel drop shadow. No blur, no radius, no gradients except ordered dither.",
       "moves": [
-        "9-slice pixel frames like RPG dialogue boxes, all on one art-pixel grid",
-        "Sprites drawn in code whose frames show state (thirsty, watered, wilting)",
-        "A chunky pixel button that sinks one art pixel on press"
+        "An HP-style meter for each item's state: segments lit in the state colour (full in the healthy colour, low in the warning colour, unlit only when empty), so different values look different at rest",
+        "A dialogue box: a 9-slice frame with a speaker sprite and one short line for the message that matters now (\"Calathea: I've been dry for two days.\")",
+        "A quest line: today's job as a quest with a counter (\"Morning round: 1 of 5 watered\") that fills as the user acts",
+        "Sprites drawn in code whose frames show state (thirsty, watered, wilting), and a chunky pixel button that sinks one art pixel on press"
       ],
       "motion": "Stepped and frame-based: 8-12 fps sprite loops, 2-4 frame state changes, a one-art-pixel press. Reduce Motion holds the idle frame and swaps state without the in-between frames.",
       "needs": [],
@@ -2978,12 +2979,12 @@
         "government",
         "enterprise"
       ],
-      "pitfall": "A pixel face for names and body text. Pixel fonts at non-integer sizes or anti-aliased. Sprites scaled with smoothing. A generic RPG skin (hearts, swords, gold coins) with no product idea. Minecraft or Nintendo look-alikes. 1-pixel strokes and type under 8 px caps. Under-committed: a flat list with pixel icons, where covering the sprites leaves a stock app. Meters that look the same for different values. The original handheld's four greens, which read as a borrowed Game Boy.",
+      "pitfall": "A pixel face for names and body text. Pixel fonts at non-integer sizes or anti-aliased. Sprites scaled with smoothing. RPG props with no product meaning (hearts, swords, gold coins): the mechanics map the product's own state (HP is thirst, the quest is today's watering), they are not decoration. Minecraft or Nintendo look-alikes. 1-pixel strokes and type under 8 px caps. Under-committed: a flat list with pixel icons, where covering the sprites leaves a stock app. Meters that look the same for different values, or rows of unlit grey segments (round 15: \"the meter barely reads\"). The original handheld's four greens, which read as a borrowed Game Boy.",
       "mac": {
         "composition": "A pixel-framed window: the sidebar as an inventory list with sprite icons, the content in 9-slice frames on an integer grid, sprites drawn in code at whole art pixels, the key number in a pixel face, names and text in a readable face.",
         "moves": [
-          "9-slice pixel frames on an integer grid",
-          "Sprites drawn in code whose frames show state",
+          "HP-style meters of lit segments in the state colour, in every row of the content",
+          "A dialogue box for the one message that matters now, and a quest line with a counter in the content header",
           "Hover lifts a frame by one art pixel; the primary action has a shortcut"
         ],
         "shape": "Stepped corners, frames one or two art pixels thick, a hard one-art-pixel shadow; an art pixel of 2 pt stays crisp at 1x and 2x.",

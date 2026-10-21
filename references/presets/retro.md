@@ -47,22 +47,25 @@ The round-14 judges split between a legible screen with retro as seasoning and a
 - **All in:** every item's state is pixel art (its sprite, its meter), the key number is in the pixel face, and every content block sits in a pixel frame on the grid. Section titles may use the pixel face at an integer size.
 - **Readable:** names, body text, numbers inside sentences, the system bars and the text on controls stay in the readable face.
 - **Two tests on the resting frame.** Cover the sprites, meters and frames: if what's left reads as a stock list with pixel icons, it's under-committed. Cover the readable text: if pixel type carries more than the key number, the section titles and two short labels, it's over-committed.
-- **Meters show their value.** A thirst bar, battery or progress pip row must look different for different values at rest (segments lit, fill, colour step). Three urgencies drawn as the same empty bar is decoration.
+- **Meters show their value, as lit segments.** A thirst bar, battery or progress row is an RPG health bar: segments lit in the state colour (full in the healthy colour, low in the warning colour), unlit only for what's empty. Different values must look different at rest. Three urgencies drawn as the same empty bar is decoration (round 14); bars of different lengths with every segment unlit grey still "barely read" (round 15).
 
 ## Motion
 - Stepped, not tweened: sprite loops at 8–12 fps, 2–4 frame state changes, type-on text, inverse-video presses.
 - **CRT effects are seasoning.** A static scanline overlay on chrome and frames only. **No glow on type**, the key number included: in round 14 a glow smeared the hero digits and lost the pair. A faint glow may sit on rules and frames. No curvature, chromatic aberration, jitter, rolling bars or flicker over content.
 - **No flashing:** at most three flashes a second (WCAG 2.3.1); a 60 Hz flicker loop fails outright. Reduce Motion turns every animated effect off (lines appear whole, the cursor holds, sprites hold their idle frame), and the screen offers a setting to switch effects off, as Balatro does.
 
-## Signature moves (pick 2–3)
+## Signature moves (pick 2–3; the pixel sprite direction takes at least two of the RPG mechanics, 6–8)
 1. **Readout lines:** label, dot leader, value and unit in a bitmap face at an integer size (terminal).
 2. **A live cursor line** that blinks at 1 Hz and holds under Reduce Motion (terminal).
 3. **Bracketed commands** that invert on press (terminal).
 4. **9-slice pixel frames** like RPG dialogue boxes, all on one art-pixel grid (sprite).
 5. **Sprites whose frames show state:** the plant wilts, the battery drains, the ferry docks (sprite).
-6. **Sections as framed windows** with striped title bars and a close box (desktop).
-7. **Bevelled buttons** that invert their bevel on press (desktop).
-8. **Inverse-video selection** for the chosen row, in every direction.
+6. **An HP bar:** each item's state as lit segments in the state colour, like a party member's health (sprite).
+7. **A dialogue box:** a framed line from a speaker sprite for the one message that matters now (sprite).
+8. **A quest line:** today's job as a quest with a counter that fills as the user acts (sprite).
+9. **Sections as framed windows** with striped title bars and a close box (desktop).
+10. **Bevelled buttons** that invert their bevel on press (desktop).
+11. **Inverse-video selection** for the chosen row, in every direction.
 
 ## Platform notes
 - iOS: opaque bars in the palette ground (Liquid Glass fights all three directions); Dynamic Type through a size table per step, then the readable fallback face. VoiceOver labels on every drawn readout and sprite: the sprite's state is its value ("Monstera, thirsty").
