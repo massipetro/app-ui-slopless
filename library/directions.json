@@ -2147,8 +2147,7 @@
       "content": [
         "list",
         "table",
-        "detail",
-        "collection"
+        "detail"
       ],
       "device": "the custom-drawn column every row carries",
       "dials": {
@@ -2223,7 +2222,11 @@
       "needs": [],
       "not_for": [
         "kids",
-        "games"
+        "games",
+        "hobby"
+      ],
+      "not_for_content": [
+        "collection"
       ],
       "pitfall": "Correct and forgettable: a stock table with the idea only in the inspector or in Settings (our round 11 runs did exactly this and were capped at Idea 5 for a stock layout). Empty striped rows filling the window below a short list. An icon on every menu item (the Tahoe mistake)."
     },

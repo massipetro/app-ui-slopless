@@ -106,7 +106,9 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
             and (sector is None or sector not in d["not_for"])
             and (have is None or set(d["needs"]) <= have)
             # The first content shape is what the user came for: a direction must be able to show it.
-            and (not content or content[0] in d["content"])]
+            and (not content or content[0] in d["content"])
+            # A shape anywhere in the brief can rule a direction out (quiet native for a collection: round 11).
+            and not set(content or []) & set(d.get("not_for_content", []))]
     rng = random.Random(seed)
     if preset is None:
         # Spread across presets first, so the options are real alternatives.
@@ -146,6 +148,8 @@ def print_option(d: dict) -> None:
         print(f"    needs: {', '.join(d['needs'])}")
     if d["not_for"]:
         print(f"    not for: {', '.join(d['not_for'])}")
+    if d.get("not_for_content"):
+        print(f"    not for briefs showing: {', '.join(d['not_for_content'])}")
 
 
 def print_scheme(label: str, scheme: dict) -> None:
@@ -254,6 +258,10 @@ def check(directions: list[dict]) -> int:
         bad = [c for c in d["content"] if c not in SHAPES]
         if bad or not d["content"]:
             problems.append(f"{d['id']}: content shapes {bad or 'missing'} not in {SHAPES}")
+        avoid = d.get("not_for_content", [])
+        holds = set(d["content"]) | set(d.get("mac", {}).get("content", []))
+        if [c for c in avoid if c not in SHAPES] or set(avoid) & holds:
+            problems.append(f"{d['id']}: not_for_content {avoid} must be shapes in {SHAPES} that it doesn't hold")
         if d["preset"] not in PRESETS:
             problems.append(f"{d['id']}: unknown preset {d['preset']}")
         for p in d["palettes"]:
@@ -292,7 +300,7 @@ def main() -> int:
     ap.add_argument("--options", type=int, help="deal N direction summaries to choose from")
     ap.add_argument("--direction", help="print the full sheet for one direction id")
     ap.add_argument("--preset", choices=PRESETS, help="deal only within this preset (the user named it)")
-    ap.add_argument("--sector", help="exclude directions marked not_for this sector, e.g. finance, health, kids")
+    ap.add_argument("--sector", help="exclude directions marked not_for this sector, e.g. finance, health, kids, hobby")
     ap.add_argument("--content", help="content shapes the screen must show at rest, primary first, comma-separated: " + ", ".join(SHAPES))
     ap.add_argument("--have", help="assets that really exist, comma-separated: photography (default: none, so photo-dependent directions are skipped)")
     ap.add_argument("--platform", choices=("ios", "android", "macos"),

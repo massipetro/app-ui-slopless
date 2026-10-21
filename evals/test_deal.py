@@ -7,6 +7,8 @@
   and none of the phone mechanics;
 - the phone deal and sheet are unchanged by the Mac blocks, and never deal a Mac-only direction;
 - every macOS deal includes at least one Mac-native preset option when one can show the content.
+- a direction is never dealt for a sector in its not_for or a shape in its not_for_content
+  (nc-quiet-native for hobby and collection briefs, after round 11).
 """
 from __future__ import annotations
 
@@ -48,6 +50,25 @@ def main() -> int:
             dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
             if dealt & mac_only:
                 failures.append(f"seed {seed} content {content}: phone deal dealt Mac-only {dealt & mac_only}")
+
+    # Round 11: quiet native lost every collection brief it was dealt, so it is never dealt for one.
+    avoided = {d["id"]: set(d.get("not_for_content", [])) for d in directions if d.get("not_for_content")}
+    hobby = {d["id"] for d in directions if "hobby" in d["not_for"]}
+    if "nc-quiet-native" not in hobby or "collection" not in avoided.get("nc-quiet-native", set()):
+        failures.append("nc-quiet-native should be not_for hobby and not_for_content collection")
+    for seed in range(40):
+        for content in ("collection", "table,collection", "list,collection"):
+            code, out = run("--options", "3", "--content", content, "--platform", "macos", "--seed", str(seed))
+            dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+            bad = {i for i in dealt & set(avoided) if avoided[i] & set(content.split(","))}
+            if bad:
+                failures.append(f"seed {seed} content {content}: dealt {bad} for a shape it is not for")
+            if not dealt & mac_only:
+                failures.append(f"seed {seed} content {content}: no Mac-native option in {sorted(dealt)}")
+        code, out = run("--options", "3", "--content", "table", "--sector", "hobby", "--platform", "macos", "--seed", str(seed))
+        dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+        if dealt & hobby:
+            failures.append(f"seed {seed} sector hobby: dealt {dealt & hobby}")
 
     for d in directions:
         if d["id"] in mac_only:
