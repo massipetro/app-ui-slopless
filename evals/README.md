@@ -34,6 +34,22 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 16: the pixel direction as an RPG, eval 10, three judges (HEAD vs none)
+
+HEAD is `3200e8e`. The pixel sprite direction is now an RPG party screen: HP-style meters lit in the state colour, a dialogue box for the message that matters now, and a quest line with a counter, with at least two of them required. Eval 10 only, two runs per config, Opus 5.5 builds ($8 cap), mocks at @2x, three blind Opus 5.5 judges per pair.
+
+| Eval | Run | HEAD direction | HEAD vs none | Votes |
+|---|---|---|---|---|
+| 10 | 1 | rt-pixel-sprite | **6.9** vs 5.7 | 3–0 |
+| 10 | 2 | rt-pixel-sprite | 6.67 vs **6.73** | 1–2 |
+
+- **1 of 2 pairs, 4 of 6 judge votes, mean 6.8 vs 6.2.** Round 15 on this brief was also 4 of 6 votes, but at 6.3 vs 6.1.
+- **The moves landed.** Both skill runs built lit HP meters (red and orange at low thirst), a talking plant in a dialogue box and a "Morning round 2/5" quest counter. In run 1 all three judges named the dialogue box and the round counter as the idea that belongs to the product.
+- **Run 2 lost by 0.07 on legibility against commitment.** Two judges preferred a baseline set entirely in pixel type, body text included, with named states (PARCHED, THIRSTY, DRY, QUENCHED) and the whole day at rest. The third capped that baseline for its caps labels, its pixel body text and an iOS status bar on an Android brief. The preset keeps names and body text in a readable face on purpose (`research/retro-references.md`: bitmap type at small sizes, caps-only faces), so this is a trade-off to decide, not a defect.
+- **Worth taking from the baseline:** named game states next to the lit segments.
+- Product checks: HEAD 18 of 18, no skill 14 of 19 (both miss Reduce Motion and fail to compile). Grader: HEAD 20/20, no skill 6/20 and 8/21.
+- Cost: $9.74 for 4 builds (HEAD $6.16) and $1.20 for 6 judges.
+
 ### Round 15: the retro preset after its fixes, evals 9, 10 and 11, three judges (HEAD vs none)
 
 HEAD is `dbc1b95`. It carries round 14's fixes: no glow on type, `fold.py` catching an orphaned heading, meters that show their value, the four-green palette replaced, and a pixel budget. This round also added a Mac brief: eval 11, a film-photography log asking for "a retro old-computer look, your pick". Two runs per config, Opus 5.5 builds ($8 cap), phone mocks at @2x and the Mac window at 1280×800. Judging moves to **three** blind Opus 5.5 judges per pair, so every pair has a majority winner; Mac pairs get the Mac judge prompt.
