@@ -34,6 +34,25 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 11: the Mac deal and the Mac presets, evals 7 and 8 (v1.6.0 vs v1.5.0 vs none)
+
+This round measured `deal.py --platform macos` (each direction's Mac window form) and the three Mac-only presets. It used two briefs: the library redesign (eval 7) and a new build, a subtitle translator's main window (eval 8: `table` + `document` + `canvas`). Builds ran on Sonnet 5.5 at medium effort ($3 cap) in three configs: v1.6.0, v1.5.0 (a worktree at `d2593d9`) and no skill. Each build wrote a 1280×800 mock, rendered through the DevTools protocol at an exact 1280×800 viewport, which fixes round 10's blank band. One blind Sonnet 5.5 judge per pair ($1 cap) saw two screenshots, with A and B shuffled.
+
+| Eval | Run | v1.6.0 direction | vs v1.5.0 | vs none |
+|---|---|---|---|---|
+| 7 | 1 | nc-quiet-native | 5.8 vs **7.6** | **6.8** vs 5.4 |
+| 7 | 2 | wp-departure-board (Mac form) | 6.2 vs **7.6** | **7.8** vs 6.6 |
+| 7 | 3 | nc-quiet-native | 5.8 vs **8.0** | **7.0** vs 6.4 |
+| 8 | 1 | pi-instrument-panel | **7.8** vs 6.0 | **7.6** vs 6.0 |
+| 8 | 2 | pi-instrument-panel | 7.2 vs 7.2 (judge picked v1.5.0) | **7.8** vs 7.2 |
+
+- **Against no skill: 5 of 5, mean 7.4 vs 6.3.** Grader: v1.6.0 18–20 of 19/21 on every run, baselines 7–9.
+- **Against v1.5.0: 1 of 5, mean 6.6 vs 7.3.** On the Mac-native pro-tool brief (eval 8), pi-instrument-panel won one pair and tied the other. On eval 7 every v1.5.0 run dealt ed-newspaper-frame and built the idea into the content: per-operator year strips that show the gaps in a collection. Two v1.6.0 runs dealt nc-quiet-native and built exactly its pitfall, a stock Finder-style table with the idea only in the inspector, so the judge capped Idea at 5 for a stock layout.
+- **Fix (`42f7fa3`).** nc-quiet-native became "Native chrome, owned content": the owned idea is drawn into every row of the content column, and a cover-the-inspector test sits in its pitfall. `deal.py` now deals for macOS on its own when the project or code says macOS, after one eval-8 run dealt without the flag and had to redeal.
+- **Round 11b: eval 7 rerun with the fix, 3 runs.** Run 1 dealt nc-quiet-native again and rose to 6.8, still behind v1.5.0's 7.8 ("a competent table with a decorative timeline strip"); against no skill it scored 8.0 vs 6.0. Run 2 dealt ed-newspaper-frame in its Mac form: 8.0 vs v1.5.0's 6.0 and 7.8 vs no skill's 5.6. Run 3 hit the account's session limit mid-build, so its two pairs aren't counted.
+- **Read.** The Mac deal and the pro-instrument directions hold up. Quiet native is still the weakest Mac option under judges who reward visible identity, even after the fix. Next: stop dealing it for collection and hobby briefs, or give it a stronger required move. Also re-measure with Opus judges and n ≥ 3 per eval: this round is one judge per pair on Sonnet.
+- Cost: $13.38 for the 15 builds, $2.27 for the 3 fix builds, and $1.62 for 16 judges.
+
 ### Round 10: macOS, eval 7 (v1.5.0, Sonnet 5.5 at medium effort)
 
 First macOS round: the Mac library redesign (`files/LibraryView.swift`), two runs per config, Sonnet 5.5 builds ($3 cap) and two blind Sonnet 5.5 judges ($1 cap), the pairs shuffled as A and B. The brief also asked for a 1280×800 HTML mock, rendered headless.
