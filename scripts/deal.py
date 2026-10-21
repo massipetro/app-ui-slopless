@@ -108,7 +108,7 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
             # The first content shape is what the user came for: a direction must be able to show it.
             and (not content or content[0] in d["content"])
             # A shape anywhere in the brief can rule a direction out (quiet native for a collection: round 11).
-            and not set(content or []) & set(d.get("not_for_content", []))]
+            and not set(content or []) & set(d.get("not_for_content") or [])]
     rng = random.Random(seed)
     if preset is None:
         # Spread across presets first, so the options are real alternatives.
@@ -260,7 +260,9 @@ def check(directions: list[dict]) -> int:
             problems.append(f"{d['id']}: content shapes {bad or 'missing'} not in {SHAPES}")
         avoid = d.get("not_for_content", [])
         holds = set(d["content"]) | set(d.get("mac", {}).get("content", []))
-        if [c for c in avoid if c not in SHAPES] or set(avoid) & holds:
+        if not isinstance(avoid, list) or not avoid and "not_for_content" in d:
+            problems.append(f"{d['id']}: not_for_content must be a non-empty list of shapes, or left out")
+        elif [c for c in avoid if c not in SHAPES] or set(avoid) & holds:
             problems.append(f"{d['id']}: not_for_content {avoid} must be shapes in {SHAPES} that it doesn't hold")
         if d["preset"] not in PRESETS:
             problems.append(f"{d['id']}: unknown preset {d['preset']}")

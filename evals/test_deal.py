@@ -6,9 +6,10 @@
 - a macOS sheet carries the Mac composition, the window chrome line and the Mac dials,
   and none of the phone mechanics;
 - the phone deal and sheet are unchanged by the Mac blocks, and never deal a Mac-only direction;
-- every macOS deal includes at least one Mac-native preset option when one can show the content.
-- a direction is never dealt for a sector in its not_for or a shape in its not_for_content
-  (nc-quiet-native for hobby and collection briefs, after round 11).
+- every macOS deal includes at least one Mac-native preset option when one can show the content;
+- a direction is never dealt when a requested shape is in its not_for_content, including deals
+  inside its preset and wide deals that would otherwise include it, and --sector hobby drops the
+  directions marked not_for hobby (nc-quiet-native for collection and hobby briefs, after round 11).
 """
 from __future__ import annotations
 
@@ -56,15 +57,31 @@ def main() -> int:
     hobby = {d["id"] for d in directions if "hobby" in d["not_for"]}
     if "nc-quiet-native" not in hobby or "collection" not in avoided.get("nc-quiet-native", set()):
         failures.append("nc-quiet-native should be not_for hobby and not_for_content collection")
+    # Most collection deals drop quiet native before not_for_content is reached (it no longer holds
+    # collection, and nc-columns outranks it on the secondary shape), so the cases include deals that
+    # reach it: inside native-craft (a redeal there was in round 12) and a wide deal.
+    cases = [(["--options", "3", "--content", c], True)
+             for c in ("collection", "table,collection", "list,collection", "detail,collection")]
+    cases += [(["--options", "3", "--preset", "native-craft", "--content", "list,collection"], False),
+              (["--options", "8", "--content", "table,collection"], False)]
     for seed in range(40):
-        for content in ("collection", "table,collection", "list,collection"):
-            code, out = run("--options", "3", "--content", content, "--platform", "macos", "--seed", str(seed))
+        for args, native in cases:
+            code, out = run(*args, "--platform", "macos", "--seed", str(seed))
             dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
-            bad = {i for i in dealt & set(avoided) if avoided[i] & set(content.split(","))}
+            content = set(args[args.index("--content") + 1].split(","))
+            bad = {i for i in dealt & set(avoided) if avoided[i] & content}
             if bad:
-                failures.append(f"seed {seed} content {content}: dealt {bad} for a shape it is not for")
-            if not dealt & mac_only:
-                failures.append(f"seed {seed} content {content}: no Mac-native option in {sorted(dealt)}")
+                failures.append(f"seed {seed} {' '.join(args)}: dealt {bad} for a shape it is not for")
+            if native and not dealt & mac_only:
+                failures.append(f"seed {seed} {' '.join(args)}: no Mac-native option in {sorted(dealt)}")
+    # The same deals without collection must reach quiet native, or the cases above test nothing.
+    reached = set()
+    for seed in range(40):
+        code, out = run("--options", "3", "--preset", "native-craft", "--content", "list,table", "--platform", "macos", "--seed", str(seed))
+        reached |= {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+    if "nc-quiet-native" not in reached:
+        failures.append("the native-craft deal never reaches nc-quiet-native, so the not_for_content cases are vacuous")
+    for seed in range(40):
         code, out = run("--options", "3", "--content", "table", "--sector", "hobby", "--platform", "macos", "--seed", str(seed))
         dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
         if dealt & hobby:
