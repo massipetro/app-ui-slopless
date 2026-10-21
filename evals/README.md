@@ -34,6 +34,25 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 14: the retro preset, evals 9 and 10 (HEAD vs none)
+
+First measure of the retro preset (`da857b4`): three named-only directions (phosphor terminal, pixel sprite, bitmap desktop) from `research/retro-references.md`. Two phone briefs name the style: a backpacker's trail status as "an old green phosphor terminal, Fallout Pip-Boy style" (eval 9, SwiftUI) and a plant-watering home as "16-bit pixel art, like an old RPG" (eval 10, Compose). Two runs per config, Opus 5.5 builds at medium effort ($8 cap), mocks at 390×844 shot at @2x with `evals/shot.mjs`, and two blind Opus 5.5 judges per pair. There is no v1.5.0 config, since it has no retro preset.
+
+| Eval | Run | HEAD direction | HEAD vs none | Votes |
+|---|---|---|---|---|
+| 9 | 1 | rt-phosphor-terminal | **7.4** vs 6.0 | 2–0 |
+| 9 | 2 | rt-phosphor-terminal | 6.0 vs **6.7** | 0–2 |
+| 10 | 1 | rt-pixel-sprite | 6.3 vs 6.0 | 1–1 |
+| 10 | 2 | rt-pixel-sprite | 6.3 vs 6.0 | 1–1 |
+
+- **4 of 8 judge votes, mean 6.5 vs 6.2:** one pair won, one lost, two split.
+- **Product checks: HEAD 36 of 36, no skill 24 of 35.** These leave out the process items only a skill run can pass. No skill missed Reduce Motion on both plant screens, a terminal face on both trail screens, the fold on three screens and one Kotlin compile. All four skill builds dealt `--preset retro` with the Deal line and picked the matching direction; none used a Fallout name, face or mark.
+- **The terminal won clearly when clean.** In run 1 both judges said the idea shapes the layout (a shell prompt for the trail day, dot-leader readouts, a sunset-versus-arrival line), while the baseline was "a generic card dashboard painted green" with caps labels and dim secondary text.
+- **It lost to its own defects.** In run 2 both judges gave HEAD the better idea and picked the baseline: the hero digits were smeared by a glow (the preset allowed "one soft glow on the key number"), and the refill-log heading peeked above the pinned button. `fold.py` passed it, because it checks rows, not section headings.
+- **The pixel screen split twice.** One judge rewarded HEAD's legibility and one-glance count; the other rewarded the baseline's fuller RPG costume (a quest banner, health bars). In run 2, HEAD's meters showed three different urgencies as the same empty bar, and its four-green palette read as a borrowed Game Boy.
+- **To fix next:** no glow on type; `fold.py` should catch a heading cut by a pinned bar; a meter must vary with its value; move the four-green palette off the handheld's original hues; and decide how much pixel art a screen should carry.
+- Cost: $17.16 for 8 builds (HEAD $10.31) and $1.68 for 8 judges.
+
 ### Round 13: Opus builds, evals 7 and 8 (HEAD vs v1.5.0 vs none)
 
 Same as round 12 except the builder. It used the same two prompts, three runs per config, v1.5.0 from the `d2593d9` worktree, 1280×800 mocks shot with `evals/shot.mjs`, and two blind Opus 5.5 judges per pair ($2 cap each). The builds ran on Opus 5.5 at medium effort, with the cap raised from $3 to $8 so skill builds wouldn't be cut off. Every Mac round before this one built on Sonnet, while the phone rounds built on Opus. HEAD is `d462d54`: round 12's skill plus the Deal line in the report. Each score is the mean of the two judges.
