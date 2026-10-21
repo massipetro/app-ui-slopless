@@ -22,12 +22,12 @@ Sources and evidence: `research/retro-references.md`.
 - **Poolsuite.** Mac OS 9 and Nokia cues recoloured into its own pink world: transformation, not a copy. [TechCrunch](https://techcrunch.com/2020/09/10/retro-inspired-music-player-poolside-fm-brings-its-summery-fun-to-iphone)
 
 ## Type
-- **Two faces, always:** a bitmap or terminal face for display, numbers and short labels, and a readable face for names and running text. Pixel faces for paragraphs are the commonest failure.
+- **Two faces, always:** a bitmap or terminal face for display, numbers and short labels, and a readable face for running text. Pixel faces for paragraphs are the commonest failure. In the pixel sprite direction, item names and named game states also take the pixel face, lowercase, at an integer size of 22 px or more (Pixelify Sans at 22 or 33): the round-16 judges rewarded a screen whose names read as game text, and 22 px keeps them clear of Playdate's floors. Body text and secondary lines stay readable.
 - **Integer sizes only.** A pixel face is crisp only at whole multiples of its grid: Press Start 2P and Silkscreen at 8, 16, 24 px; Pixelify Sans at 11, 22, 33; VT323 lands closest at 25 and 50. In SwiftUI pick the size per `dynamicTypeSize` step (`Font.custom(_:fixedSize:)` from a table) instead of letting it scale fractionally; in Compose snap the `sp` value. At accessibility text sizes, fall back to the readable face.
 - **Floors (Playdate):** body or dialogue at least 12 px cap height (14 ideal), HUD labels 10 px, nothing under 8 px, strokes at least 2 px.
 - OFL on Google Fonts: **VT323**, **Press Start 2P**, **Silkscreen** (caps only: labels and navigation), **Pixelify Sans** (has lowercase), **Jersey 15/20/25**, **Sixtyfour** (its SCAN and BLED axes fake a CRT in the type, with no shader). Readable partners: **IBM Plex Mono**, **Atkinson Hyperlegible**, **IBM Plex Sans**. **Departure Mono** is excellent in a shipped app but isn't on Google Fonts, so mocks can't load it.
 - Never the Fallout face (Monofonto is a paid Typodermic licence), Chicago or Minecraft look-alikes.
-- Caps budget still holds: terminal and pixel looks pull toward uppercase everything. Keep sentence case; caps-only faces (Silkscreen) go on two-word labels.
+- Caps budget still holds: terminal and pixel looks pull toward uppercase everything. Keep sentence case; caps-only faces (Silkscreen) go on two-word labels, never on names or game states.
 
 ## Colour
 - **Every text tier at 4.5:1.** Full phosphor passes easily (#33FF33 on black is 15.5:1); the "dim" secondary greens and ambers that feel authentic fail (#1F7A1F on black is 3.9:1, #7A5400 is 3.1:1). Make the secondary tier a lighter tint, not a darker one.
@@ -45,7 +45,7 @@ Sources and evidence: `research/retro-references.md`.
 ## How much pixel art a screen carries
 The round-14 judges split between a legible screen with retro as seasoning and a baseline that wore a fuller RPG costume. Resolve it by committing the *content*, not the chrome:
 - **All in:** every item's state is pixel art (its sprite, its meter), the key number is in the pixel face, and every content block sits in a pixel frame on the grid. Section titles may use the pixel face at an integer size.
-- **Readable:** names, body text, numbers inside sentences, the system bars and the text on controls stay in the readable face.
+- **Readable:** body text, secondary lines, numbers inside sentences, the system bars and the text on controls stay in the readable face. Item names and game states may go pixel (see Type), at 22 px or more and in lowercase.
 - **Two tests on the resting frame.** Cover the sprites, meters and frames: if what's left reads as a stock list with pixel icons, it's under-committed. Cover the readable text: if pixel type carries more than the key number, the section titles and two short labels, it's over-committed.
 - **Meters show their value, as lit segments.** A thirst bar, battery or progress row is an RPG health bar: segments lit in the state colour (full in the healthy colour, low in the warning colour), unlit only for what's empty. Different values must look different at rest. Three urgencies drawn as the same empty bar is decoration (round 14); bars of different lengths with every segment unlit grey still "barely read" (round 15).
 

@@ -2883,7 +2883,7 @@
         "Playdate (Panic: text floors as cap-height pixels, 2 px strokes)",
         "Stardew Valley (pixel art with its own UI scale)"
       ],
-      "composition": "A screen built on one art-pixel grid (2 or 3 pt) that plays like an RPG party screen. Each item is a sprite drawn in code from a limited palette, its frames showing its state, beside an HP-style meter of lit segments in the state colour. Content sits in 9-slice pixel frames; the one message that matters now speaks from a dialogue box; today's job is a quest line with a counter. The key number is in a pixel face; names and body text are in a readable text face. One primary action is a chunky pixel button. Pixel budget: the content carries the art (every item's sprite and meter, the key number, the frames), while names, body text and system bars stay in the readable face.",
+      "composition": "A screen built on one art-pixel grid (2 or 3 pt) that plays like an RPG party screen. Each item is a sprite drawn in code from a limited palette, its frames showing its state, beside an HP-style meter of lit segments in the state colour. Content sits in 9-slice pixel frames; the one message that matters now speaks from a dialogue box; today's job is a quest line with a counter. The key number is in a pixel face, and so are item names and named game states (parched, thirsty, quenched): lowercase, at an integer size of 22 px or more. Body text and secondary lines stay in a readable text face. One primary action is a chunky pixel button. Pixel budget: the content carries the art (every item's sprite and meter, the key number, the frames), the item names and game states, while body text, secondary lines and system bars stay in the readable face.",
       "content": [
         "action",
         "list",
@@ -2900,14 +2900,14 @@
       },
       "type": [
         {
-          "display": "Pixelify Sans 700 at 22 or 33 px",
-          "text": "Atkinson Hyperlegible 400-700",
-          "data": "Pixelify Sans 500"
+          "display": "Pixelify Sans 700 at 33 px",
+          "text": "Atkinson Hyperlegible 400-700 (body and secondary lines)",
+          "data": "Pixelify Sans 500-600 at 22 px, lowercase (item names and game states)"
         },
         {
-          "display": "Press Start 2P at 16 or 24 px (numbers and two-word labels only)",
-          "text": "Atkinson Hyperlegible 400-700",
-          "data": "Silkscreen at 16 px"
+          "display": "Press Start 2P at 24 px (numbers and two-word labels only)",
+          "text": "Atkinson Hyperlegible 400-700 (body and secondary lines)",
+          "data": "Pixelify Sans 500-600 at 22 px, lowercase (item names and game states)"
         }
       ],
       "palettes": [
@@ -2966,7 +2966,7 @@
       ],
       "shape": "Stepped pixel corners (one art pixel notched), 9-slice frames one or two art pixels thick, a hard one-art-pixel drop shadow. No blur, no radius, no gradients except ordered dither.",
       "moves": [
-        "An HP-style meter for each item's state: segments lit in the state colour (full in the healthy colour, low in the warning colour, unlit only when empty), so different values look different at rest",
+        "An HP-style meter for each item's state: segments lit in the state colour (full in the healthy colour, low in the warning colour, unlit only when empty), with a named game state beside it (parched, thirsty, quenched) in the pixel face, so different values look and read different at rest",
         "A dialogue box: a 9-slice frame with a speaker sprite and one short line for the message that matters now (\"Calathea: I've been dry for two days.\")",
         "A quest line: today's job as a quest with a counter (\"Morning round: 1 of 5 watered\") that fills as the user acts",
         "Sprites drawn in code whose frames show state (thirsty, watered, wilting), and a chunky pixel button that sinks one art pixel on press"

@@ -319,6 +319,7 @@ def eval10(d):
         ("A pixel face for display", *check(kt + html, RETRO_FACES)),
         ("Pixel art scaled nearest-neighbour or drawn on a grid (FilterQuality.None, drawRect)", *check(kt, r"FilterQuality\.None|drawRect\(")),
         ("An RPG mechanic carries the plant's state (HP-style meter, dialogue box or quest line)", *check(kt + html, r"\bHP\b|hpBar|HpBar|HpMeter|health ?bar|DialogueBox|dialog(ue)?Box|quest", re.I)),
+        ("Named game states for thirst (parched / thirsty / quenched)", *check(kt + html, r"parched|quenched", re.I)),
         ("Water action changes the plant's state", *check(kt, r"(water|Water)[A-Za-z]*\s*(=|\(|->)")),
         ("Text sized in sp", *check(kt, r"\d+(\.\d+)?\.sp")),
         ("Semantics on drawn sprites", *check(kt, r"semantics|contentDescription|stateDescription")),
