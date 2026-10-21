@@ -297,6 +297,16 @@ def detect_mac_project(root: Path) -> str | None:
     return why if platform == "macos" else None
 
 
+def deal_command(args: argparse.Namespace, seed: int) -> str:
+    """The command that deals these options again, flags and seed included (round 12 couldn't replay its deals)."""
+    parts = [f"deal.py --options {args.options}"]
+    for flag in ("content", "preset", "sector", "have", "platform"):
+        value = getattr(args, flag)
+        if value:
+            parts.append(f"--{flag} {value}")
+    return " ".join(parts + [f"--seed {seed}"])
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--options", type=int, help="deal N direction summaries to choose from")
@@ -365,6 +375,7 @@ def main() -> int:
             print_option(d)
         flag = " --platform macos" if args.platform == "macos" else ""
         print(f"\nThen: deal.py --direction <id> --seed {seed}{flag}")
+        print(f"Deal: {deal_command(args, seed)}  (copy into the report's Direction line)")
         return 0
     ap.print_help()
     return 2

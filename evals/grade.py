@@ -203,6 +203,7 @@ def process_checks(resp):
         ("Report block: all 15 labels, in order", *report_block(resp)),
         ("Inventory of product-only items listed", *check(resp, r"inventory")),
         ("Direction dealt: named (id, name or plain words) with its seed", *direction_stated(resp)),
+        ("Deal command recorded (deal.py --options ... --seed n)", *check(resp, r"deal\.py --options \d+[^\n`]*--seed \d+")),
         ("Owned-idea sentence written", *check(resp, r"In this app,[^\n]{0,200}becomes")),
         ("Competitor test applied", *check(resp, r"competitor")),
         ("Critique scored (Idea / Hierarchy / overall)", *check(resp, r"Idea\s*\d+[\s\S]{0,80}Hierarchy\s*\d+|overall\s*\d")),

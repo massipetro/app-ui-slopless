@@ -68,6 +68,8 @@ First name the screen's **content shapes**: what the user came to see or do, pri
 python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [--preset <name>] [--sector <e.g. finance, health, kids, hobby>] [--have photography] [--platform macos]
 ```
 
+Every deal ends with a `Deal:` line: the command with its flags and seed that deals the same options again. Copy it, and each redeal's, into the report's Direction line, so a reader can replay what you were offered.
+
 - `--content`: only directions whose composition can show the primary shape are dealt, and within each preset the ones that also hold the secondary shapes come first. A poster of colour blocks can't show a timetable, so it isn't dealt for one.
 - `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets.
 - `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example). `hobby` covers collectors' and enthusiasts' apps. Some directions also drop out when a content shape anywhere in `--content` is one they don't suit (quiet native for `collection`).
@@ -307,7 +309,7 @@ Then run the checks at the end of this file. For each failed check, fix it or, i
 ```
 app-ui-slopless report
 Inventory: <the 8–12 items from step 1b, comma-separated; (assumed) where inferred>
-Direction: <dealt id, e.g. pl-persona> (seed <n>); redeals: <none, or which and why>
+Direction: <dealt id, e.g. pl-persona> (seed <n>); deal: <deal.py's Deal line, verbatim>; redeals: <none, or each redeal's Deal line and why>
 Owned idea: In this app, <inventory item> becomes <device>.
 Competitor test: <competitor> → <why the idea fails for them>
 Live thing: <the interaction and the real state it reacts to>; filmstrip: <n animations, longest n ms, n looping, and what the frames show; or "not recorded" and why>
@@ -454,7 +456,7 @@ Models produce slop because they sample the statistical average of their trainin
 
 - [ ] Inventory of 8–12 product-only items written in the reply before `deal.py` ran, and repeated as the brief's first line.
 - [ ] Intake done: existing look and identity assets read (Redesign, or Build inside an existing app); questions asked once, or assumptions stated.
-- [ ] Content shapes named and passed to `deal.py --content` (plus `--platform macos` for a Mac app); every dealt option put through the fit test (content at rest, owned idea, costume test, category fit), misfits dropped, redeal stated if none survived; direction id and seed in the report.
+- [ ] Content shapes named and passed to `deal.py --content` (plus `--platform macos` for a Mac app); every dealt option put through the fit test (content at rest, owned idea, costume test, category fit), misfits dropped, redeal stated if none survived; direction id, seed and the `Deal:` line in the report.
 - [ ] Owned-idea sentence passes the competitor test; the live thing is built and reacts to real state.
 - [ ] Brief written: direction, dials, what's kept from the current app, owned idea, live thing, persona, 2–3 signature moves.
 - [ ] Swift typechecked with `scripts/typecheck.py` on the right platform at the project's deployment target (iOS 17 / macOS 14 when the project sets none), newer APIs behind `if #available`, `--ios` / `--macos` never raised to get a pass; Kotlin compiled with the project's Gradle build or `scripts/compile_kotlin.py`; both passing, or the report says why not.

@@ -9,7 +9,8 @@
 - every macOS deal includes at least one Mac-native preset option when one can show the content;
 - a direction is never dealt when a requested shape is in its not_for_content, including deals
   inside its preset and wide deals that would otherwise include it, and --sector hobby drops the
-  directions marked not_for hobby (nc-quiet-native for collection and hobby briefs, after round 11).
+  directions marked not_for hobby (nc-quiet-native for collection and hobby briefs, after round 11);
+- the Deal line deal.py prints replays the same options in the same order.
 """
 from __future__ import annotations
 
@@ -86,6 +87,17 @@ def main() -> int:
         dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
         if dealt & hobby:
             failures.append(f"seed {seed} sector hobby: dealt {dealt & hobby}")
+
+    # The Deal line replays the deal: same options, same order.
+    for args in (["--options", "3", "--content", "collection,list", "--platform", "macos"],
+                 ["--options", "3", "--preset", "native-craft", "--content", "list,table", "--sector", "hobby", "--platform", "macos"],
+                 ["--options", "4", "--content", "list,number", "--have", "photography"]):
+        code, out = run(*args)
+        line = next((l for l in out.splitlines() if l.startswith("Deal: deal.py ")), "")
+        again = run(*line.split("  (")[0].split()[2:])[1] if line else ""
+        dealt = [l.split()[1] for l in out.splitlines() if l.startswith("- ")]
+        if not line or dealt != [l.split()[1] for l in again.splitlines() if l.startswith("- ")]:
+            failures.append(f"{' '.join(args)}: the Deal line {line!r} doesn't replay {dealt}")
 
     for d in directions:
         if d["id"] in mac_only:
