@@ -34,6 +34,22 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 17: pixel names and game states, eval 10, three judges (HEAD vs none)
+
+HEAD is `6510d3a`. The pixel sprite direction now sets item names and named game states (parched, thirsty, quenched) in Pixelify Sans, lowercase, at an integer 22 px or more; body text and secondary lines stay in the readable face. Eval 10 only, two runs per config, Opus 5.5 builds ($8 cap), mocks at @2x, three blind Opus 5.5 judges per pair.
+
+| Eval | Run | HEAD direction | HEAD vs none | Votes |
+|---|---|---|---|---|
+| 10 | 1 | rt-pixel-sprite | **6.5** vs 6.0 | 3–0 |
+| 10 | 2 | rt-pixel-sprite | **7.2** vs 5.9 | 3–0 |
+
+- **2 of 2 pairs, 6 of 6 judge votes, mean 6.9 vs 6.0.** On this brief: round 14 had 2 of 4 votes, round 15 4 of 6, round 16 4 of 6.
+- **What the judges named:** plants as named party members (ruffles, fronda, monty) with lit HP bars and named states, one focal count, and a talking plant in a dialogue box that "no competitor ships", with pixel type kept to names, states and display.
+- **The baselines lost on the platform:** 32–40 dp tap targets, walls of uppercase pixel labels, a menu "taken almost straight from Final Fantasy", iOS chrome on an Android brief.
+- **Still to watch:** run 1 showed a "1/5" counter against 4 thirsty plants and listed a peace lily twice. A judge caught it; the run's own critique didn't.
+- Product checks: HEAD 22 of 22, no skill 15 of 21 (both miss Reduce Motion and fail to compile). Grader: HEAD 22/22 twice, no skill 8/21 and 7/22.
+- Cost: $10.29 for 4 builds (HEAD $6.67) and $1.26 for 6 judges.
+
 ### Round 16: the pixel direction as an RPG, eval 10, three judges (HEAD vs none)
 
 HEAD is `3200e8e`. The pixel sprite direction is now an RPG party screen: HP-style meters lit in the state colour, a dialogue box for the message that matters now, and a quest line with a counter, with at least two of them required. Eval 10 only, two runs per config, Opus 5.5 builds ($8 cap), mocks at @2x, three blind Opus 5.5 judges per pair.
