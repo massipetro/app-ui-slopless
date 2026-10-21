@@ -34,6 +34,27 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 15: the retro preset after its fixes, evals 9, 10 and 11, three judges (HEAD vs none)
+
+HEAD is `dbc1b95`. It carries round 14's fixes: no glow on type, `fold.py` catching an orphaned heading, meters that show their value, the four-green palette replaced, and a pixel budget. This round also added a Mac brief: eval 11, a film-photography log asking for "a retro old-computer look, your pick". Two runs per config, Opus 5.5 builds ($8 cap), phone mocks at @2x and the Mac window at 1280×800. Judging moves to **three** blind Opus 5.5 judges per pair, so every pair has a majority winner; Mac pairs get the Mac judge prompt.
+
+| Eval | Run | HEAD direction | HEAD vs none | Votes |
+|---|---|---|---|---|
+| 9 | 1 | rt-phosphor-terminal | **7.3** vs 6.0 | 3–0 |
+| 9 | 2 | rt-phosphor-terminal | **7.0** vs 6.0 | 3–0 |
+| 10 | 1 | rt-pixel-sprite | **6.5** vs 5.9 | 3–0 |
+| 10 | 2 | rt-pixel-sprite | 6.1 vs **6.3** | 1–2 |
+| 11 | 1 | rt-bitmap-desktop (Mac) | **7.2** vs 5.6 | 3–0 |
+| 11 | 2 | rt-bitmap-desktop (Mac) | **6.9** vs 6.5 | 2–1 |
+
+- **5 of 6 pairs, 15 of 18 judge votes, mean 6.9 vs 6.1.** Round 14 had 4 of 8 votes and 6.5 vs 6.2.
+- **Product checks: HEAD 52 of 52, no skill 31 of 53.** Neither Mac baseline typechecks; both phone pixel baselines miss Reduce Motion.
+- **The terminal is fixed: 6 of 6 votes.** Neither run glowed its type or orphaned a heading. The judges named the terminal "as structure, not paint" and one focal number (minutes of light left) as the reasons.
+- **The Mac works: 5 of 6 votes.** Both skill runs dealt `--preset retro --platform macos` and chose the bitmap desktop: a dithered contact sheet, a lab-pipeline stepper, keyboard-labelled actions inside a real Mac window. Both baselines reskinned the whole window as System 6 ("a 1984 Finder clone"), which is exactly what the preset forbids.
+- **The pixel screen is still the weak spot: 4 of 6 votes.** HEAD was the cleaner phone screen in both runs. But in run 2 the thirst bars differed in length with every segment unlit grey, so "the meter barely reads". Across both rounds the judges gave the baselines the better RPG mechanics: HP-style thirst bars, a plant that talks in a dialogue box.
+- **Next for pixel:** require meters as lit segments in the state colour (an RPG health bar), and name RPG mechanics (an HP bar, a dialogue box, a quest line) as signature moves.
+- Cost: $27.45 for 12 builds (HEAD $17.61) and $3.65 for 18 judges.
+
 ### Round 14: the retro preset, evals 9 and 10 (HEAD vs none)
 
 First measure of the retro preset (`da857b4`): three named-only directions (phosphor terminal, pixel sprite, bitmap desktop) from `research/retro-references.md`. Two phone briefs name the style: a backpacker's trail status as "an old green phosphor terminal, Fallout Pip-Boy style" (eval 9, SwiftUI) and a plant-watering home as "16-bit pixel art, like an old RPG" (eval 10, Compose). Two runs per config, Opus 5.5 builds at medium effort ($8 cap), mocks at 390×844 shot at @2x with `evals/shot.mjs`, and two blind Opus 5.5 judges per pair. There is no v1.5.0 config, since it has no retro preset.
