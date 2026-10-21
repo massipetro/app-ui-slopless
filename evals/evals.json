@@ -54,6 +54,18 @@
       "prompt": "I'm building a Mac app in SwiftUI for freelance subtitle translators. Build the main window: the video clip being subtitled, the list of subtitle lines with their timecodes, and the line being translated (source text above, translation below) with its reading speed. Translators spend whole afternoons in it. Pick the style yourself. Write the SwiftUI code to SubtitleWindow.swift.",
       "expected_output": "A macOS SwiftUI window dealt with --platform macos: the subtitle lines as a dense table with timecodes and reading speed (CPS), the video as the canvas, the line being edited as a document-like editor with the system text stack, keyboard-first navigation (next/previous line, play/pause, commit) in menu commands with shortcuts, a declared minimum window size, Mac density (13 pt UI, 22-28 pt rows), and an owned idea from the translator's world. Not a phone layout, not the dark-gradient 'Linear style'.",
       "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "I'm building a SwiftUI app for backpackers on multi-day hikes. Build the trip status screen: water left, phone battery, distance and time to tonight's camp, and minutes until sunset, with a way to log a water refill. Make it look like an old green phosphor terminal, Fallout Pip-Boy style. Put it in TrailStatusView.swift.",
+      "expected_output": "The named style is dealt inside the retro preset (deal.py --preset retro). A phosphor terminal built as the product's own instrument, not a Fallout costume: no Pip-Boy, Vault-Tec or Vault Boy names or art. Readouts in a terminal or bitmap face at integer sizes, running text in a readable mono at body size, phosphor ink with at least 4.5:1 on the ground and no dim green body text, CRT effects (scanlines, glow, cursor blink) subtle and off under Reduce Motion, no flashing. A live sunset countdown tied to the time, a refill action with a state change, Dynamic Type, VoiceOver labels on drawn readouts, 44 pt targets.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "My Android app in Jetpack Compose reminds people to water their houseplants. Redo the home screen as 16-bit pixel art, like an old RPG: which plants need water today, how thirsty each one is, and a one-tap way to water them. Put it in PlantHomeScreen.kt.",
+      "expected_output": "The named style is dealt inside the retro preset (deal.py --preset retro). Pixel art drawn on an integer grid and scaled nearest-neighbour (FilterQuality.None, or drawn rects), a limited palette, a pixel face for display only with a readable text face for names and body, sp text that still scales, 48 dp targets around chunky art, a water action that changes the plant's state with stepped (frame-based) motion that respects reduced motion, semantics on drawn sprites, and an owned idea from plant care rather than a generic RPG skin.",
+      "files": []
     }
   ],
   "how_to_run": "See evals/README.md. Each eval is a full build session: run it with the skill and without it (baseline), grade both with grade.py, then judge screenshots blind with references/critique.md. Ask the user before running: 6 evals x 2 configs = 12 sessions per iteration."

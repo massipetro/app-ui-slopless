@@ -10,6 +10,7 @@
 - a direction is never dealt when a requested shape is in its not_for_content, including deals
   inside its preset and wide deals that would otherwise include it, and --sector hobby drops the
   directions marked not_for hobby (nc-quiet-native for collection and hobby briefs, after round 11);
+- named-only presets (retro) are dealt only with --preset, never in the open deal;
 - the Deal line deal.py prints replays the same options in the same order.
 """
 from __future__ import annotations
@@ -87,6 +88,23 @@ def main() -> int:
         dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
         if dealt & hobby:
             failures.append(f"seed {seed} sector hobby: dealt {dealt & hobby}")
+
+    # Named-only presets (retro) join a deal only when asked for, on the phone and the Mac.
+    named = {d["id"] for d in directions if d["preset"] in deal.NAMED_ONLY}
+    if not named:
+        failures.append("no named-only directions in the library")
+    for seed in range(40):
+        for content in ("list", "number", "action", "detail,collection"):
+            for platform in ([], ["--platform", "macos"]):
+                code, out = run("--options", "3", "--content", content, *platform, "--seed", str(seed))
+                dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+                if dealt & named:
+                    failures.append(f"seed {seed} content {content} {platform}: open deal dealt named-only {dealt & named}")
+        for platform in ([], ["--platform", "macos"]):
+            code, out = run("--options", "3", "--preset", "retro", *platform, "--seed", str(seed))
+            dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+            if not dealt or dealt - named:
+                failures.append(f"seed {seed} --preset retro {platform}: dealt {sorted(dealt)}")
 
     # The Deal line replays the deal: same options, same order.
     for args in (["--options", "3", "--content", "collection,list", "--platform", "macos"],

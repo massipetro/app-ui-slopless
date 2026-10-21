@@ -287,10 +287,48 @@ def eval8(d):
     ], d, "macos")
 
 
+
+RETRO_FACES = r"VT323|Silkscreen|Press Start 2P|PressStart2P|Pixelify|Departure Mono|Jersey|Tiny5|Micro 5|DotGothic|Share Tech Mono|IBM Plex Mono|Monocraft"
+FALLOUT_IP = r"Pip-?Boy|Vault[- ]?Tec|Vault Boy|RobCo|Nuka[- ]?Cola|Fallout"
+
+
+def eval9(d):
+    sw = read(d, "**/*.swift")
+    html = read(d, "**/*.html")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
+        ("Dealt inside the retro preset (deal.py --preset retro)", *check(resp, r"--preset retro")),
+        ("A terminal or bitmap face for readouts", *check(sw + html, RETRO_FACES)),
+        ("No Fallout names or art in the product (Pip-Boy, Vault-Tec, Vault Boy, RobCo)", *absent(sw + html, FALLOUT_IP)),
+        ("Live sunset countdown driven by time (TimelineView / Timer / Date math)", *check(sw, r"TimelineView|Timer\.publish|\.timeIntervalSince|Date\.now|sunset")),
+        ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)|@ScaledMetric")),
+        ("Reduce Motion turns off CRT effects (flicker, scanline drift, cursor blink)", *check(sw, r"accessibilityReduceMotion")),
+        ("VoiceOver labels on drawn readouts", *check(sw, r"accessibility(Label|Value|Element|AddTraits)")),
+    ], d)
+
+
+def eval10(d):
+    kt = read(d, "**/*.kt")
+    html = read(d, "**/*.html")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Kotlin", *lint_fails(d)),
+        ("Dealt inside the retro preset (deal.py --preset retro)", *check(resp, r"--preset retro")),
+        ("A pixel face for display", *check(kt + html, RETRO_FACES)),
+        ("Pixel art scaled nearest-neighbour or drawn on a grid (FilterQuality.None, drawRect)", *check(kt, r"FilterQuality\.None|drawRect\(")),
+        ("Water action changes the plant's state", *check(kt, r"(water|Water)[A-Za-z]*\s*(=|\(|->)")),
+        ("Text sized in sp", *check(kt, r"\d+(\.\d+)?\.sp")),
+        ("Semantics on drawn sprites", *check(kt, r"semantics|contentDescription|stateDescription")),
+        ("Reduce-motion handled", *check(kt, r"reduceMotion|ReduceMotion|ANIMATOR_DURATION_SCALE|animationsEnabled|MotionDurationScale")),
+    ], d)
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
            "guesthouse-photos-no-preset-swiftui": eval6,
-           "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8}
+           "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8,
+           "retro-terminal-trail-swiftui": eval9, "retro-pixel-plants-compose": eval10}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

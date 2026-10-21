@@ -1,5 +1,5 @@
 {
-  "about": "Researched directions for app-ui-slopless, 5 per preset for phone and Mac, plus 8 Mac-only directions in three Mac presets (research/macos-references.md). Each is anchored in shipped apps from research/real-ui-references.md. Dealt by scripts/deal.py; do not read the whole file into context. Hex values are starting points checked for contrast by `deal.py --check`, not measured from the anchor apps. Fonts are OFL on Google Fonts unless marked.",
+  "about": "Researched directions for app-ui-slopless, 5 per preset for phone and Mac, plus 8 Mac-only directions in three Mac presets (research/macos-references.md) and 3 retro directions that are dealt only when the user names the style (research/retro-references.md). Each is anchored in shipped apps from research/real-ui-references.md. Dealt by scripts/deal.py; do not read the whole file into context. Hex values are starting points checked for contrast by `deal.py --check`, not measured from the anchor apps. Fonts are OFL on Google Fonts unless marked.",
   "dated": "2026-10-21",
   "directions": [
     {
@@ -2765,6 +2765,337 @@
       "needs": [],
       "not_for": [],
       "pitfall": "A web-style rich-text toolbar over the editor; panes that can't be hidden; the editor at the 13 pt UI size."
+    },
+    {
+      "id": "rt-phosphor-terminal",
+      "preset": "retro",
+      "name": "Phosphor terminal",
+      "anchors": [
+        "Fallout series UI (one phosphor hue, recolourable by the player; Pip-Boy companion app, 2015)",
+        "Alien: Isolation (lo-fi analogue terminals: \"lo-fi didn't mean crappy\")",
+        "cool-retro-term (phosphor profiles: green, amber, IBM 3287)"
+      ],
+      "composition": "One monochrome phosphor screen. Readouts are terminal lines (label, dot leader, value, unit) in a bitmap face at an integer size; the key number is large in the same face; sections are framed by box-drawing rules under a header line like a system prompt. One live line carries a block cursor. Actions are bracketed text commands that invert when pressed. Running text stays in a readable mono at body size.",
+      "content": [
+        "list",
+        "number",
+        "action",
+        "detail"
+      ],
+      "device": "the readout line: label, dot leader, value, with a live cursor",
+      "dials": {
+        "B": 6,
+        "M": 4,
+        "D": 6,
+        "C": 2,
+        "F": 7
+      },
+      "type": [
+        {
+          "display": "VT323 at 25 or 50 px (integer steps only)",
+          "text": "IBM Plex Mono 400-500",
+          "data": "VT323"
+        },
+        {
+          "display": "Sixtyfour (SCAN axis gives the scanline in the type itself; display only)",
+          "text": "IBM Plex Mono 400-500",
+          "data": "Share Tech Mono"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "P1 green phosphor, green-bar paper in light mode",
+          "proportions": "Dark: one phosphor hue in two intensities on near-black, both at 4.5:1 or better; inverse video for the pressed or selected line. Light: continuous-form printer paper, pale green bands every other line, near-black green ink.",
+          "light": {
+            "ground": "#F4F8EF",
+            "surface": "#E3F0DA",
+            "ink": "#0B2A0B",
+            "ink2": "#3E5A3E",
+            "accent": "#0D6B2A",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#040A04",
+            "surface": "#0A160A",
+            "ink": "#33FF66",
+            "ink2": "#7FD08F",
+            "accent": "#B6FFC6",
+            "on_accent": "#040A04"
+          }
+        },
+        {
+          "name": "P3 amber phosphor, amber listing paper in light mode",
+          "proportions": "As above in amber. The hue is a token: offer green or amber as a setting, as Fallout 4 does.",
+          "light": {
+            "ground": "#FBF6EC",
+            "surface": "#F3E6CC",
+            "ink": "#2A1C00",
+            "ink2": "#5E4A26",
+            "accent": "#8A4F00",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#0A0700",
+            "surface": "#161004",
+            "ink": "#FFB000",
+            "ink2": "#D4A35C",
+            "accent": "#FFD27A",
+            "on_accent": "#0A0700"
+          }
+        }
+      ],
+      "shape": "Box-drawing rules one art pixel thick, square corners, no cards and no shadows. One soft glow on the key number only. Everything on a 2 pt art-pixel grid.",
+      "moves": [
+        "Readout lines: label, dot leader, value and unit in one bitmap face at an integer size",
+        "A live line with a block cursor that blinks at 1 Hz and holds steady under Reduce Motion",
+        "Bracketed text commands that invert (phosphor fill, dark text) on press"
+      ],
+      "motion": "New lines type on (about 20 ms a character, capped at 300 ms), the cursor blinks at 1 Hz, a press inverts. No flicker, jitter, rolling scanlines or screen curvature over content. Reduce Motion shows lines whole and the cursor steady.",
+      "needs": [],
+      "not_for": [
+        "kids",
+        "health",
+        "finance",
+        "government"
+      ],
+      "pitfall": "Fallout cosplay: Pip-Boy, Vault-Tec, Vault Boy or RobCo names and art, or the Monofonto face. Dim green secondary text under 4.5:1. Scanlines, bloom or flicker over running text. Every label in uppercase. VT323 at a non-integer size, or for paragraphs.",
+      "mac": {
+        "composition": "A terminal-like window: a text menu of sections in the sidebar (Status, Log, Map), readout lines and a scrolling log in the bitmap face in the content column, and a command field at the foot that takes typed commands (Return runs, Up recalls the last). The menu bar mirrors every command with a shortcut.",
+        "moves": [
+          "Readout lines in a bitmap face at an integer size",
+          "A command field at the foot with history (Up arrow), mirrored as menu items with shortcuts",
+          "A live line with a block cursor"
+        ],
+        "shape": "1 pt box-drawing rules, square corners, rows 20-24 pt, an art pixel of 1 pt so the face stays crisp at 1x and 2x.",
+        "chrome": "Dark window in the phosphor palette with the system title bar and traffic lights kept; the user's accent colour is ignored (say so). The light appearance uses the listing-paper palette.",
+        "dials": {
+          "D": 7
+        }
+      }
+    },
+    {
+      "id": "rt-pixel-sprite",
+      "preset": "retro",
+      "name": "Pixel sprite",
+      "anchors": [
+        "Balatro (Apple Design Award 2025: limited-palette sprites; CRT, bloom and shake can each be turned off)",
+        "Shovel Knight (\"Breaking the NES\": keep the palette, drop the flicker)",
+        "Playdate (Panic: text floors as cap-height pixels, 2 px strokes)",
+        "Stardew Valley (pixel art with its own UI scale)"
+      ],
+      "composition": "A screen built on one art-pixel grid (2 or 3 pt). Content sits in 9-slice pixel frames like RPG dialogue boxes; each item is a sprite drawn in code from a limited palette, and its frames show the item's state. The key number is in a pixel face; names and body text are in a readable text face. One primary action is a chunky pixel button.",
+      "content": [
+        "action",
+        "list",
+        "number",
+        "progression"
+      ],
+      "device": "a sprite whose frames show the item's state",
+      "dials": {
+        "B": 7,
+        "M": 6,
+        "D": 5,
+        "C": 6,
+        "F": 8
+      },
+      "type": [
+        {
+          "display": "Pixelify Sans 700 at 22 or 33 px",
+          "text": "Atkinson Hyperlegible 400-700",
+          "data": "Pixelify Sans 500"
+        },
+        {
+          "display": "Press Start 2P at 16 or 24 px (numbers and two-word labels only)",
+          "text": "Atkinson Hyperlegible 400-700",
+          "data": "Silkscreen at 16 px"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Sixteen-colour fantasy console",
+          "proportions": "A PICO-8-style 16-colour set: deep navy and cream as ground and ink, every sprite drawn only from the set, one orange for the primary action.",
+          "support": [
+            "#FF004D",
+            "#FFEC27",
+            "#00E436",
+            "#29ADFF",
+            "#FF77A8",
+            "#AB5236"
+          ],
+          "light": {
+            "ground": "#FFF1E8",
+            "surface": "#FFFFFF",
+            "ink": "#1D2B53",
+            "ink2": "#5F574F",
+            "accent": "#7E2553",
+            "on_accent": "#FFF1E8"
+          },
+          "dark": {
+            "ground": "#1D2B53",
+            "surface": "#263764",
+            "ink": "#FFF1E8",
+            "ink2": "#C2C3C7",
+            "accent": "#FFA300",
+            "on_accent": "#1D2B53"
+          }
+        },
+        {
+          "name": "Four-green handheld",
+          "proportions": "Four greens only, like an early handheld LCD: ink, two mids for sprites and frames, and the screen ground.",
+          "support": [
+            "#88C070",
+            "#346856"
+          ],
+          "light": {
+            "ground": "#E0F8D0",
+            "surface": "#F0FCE8",
+            "ink": "#081820",
+            "ink2": "#2A5446",
+            "accent": "#346856",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#081820",
+            "surface": "#10282A",
+            "ink": "#E0F8D0",
+            "ink2": "#9CC98A",
+            "accent": "#88C070",
+            "on_accent": "#081820"
+          }
+        }
+      ],
+      "shape": "Stepped pixel corners (one art pixel notched), 9-slice frames one or two art pixels thick, a hard one-art-pixel drop shadow. No blur, no radius, no gradients except ordered dither.",
+      "moves": [
+        "9-slice pixel frames like RPG dialogue boxes, all on one art-pixel grid",
+        "Sprites drawn in code whose frames show state (thirsty, watered, wilting)",
+        "A chunky pixel button that sinks one art pixel on press"
+      ],
+      "motion": "Stepped and frame-based: 8-12 fps sprite loops, 2-4 frame state changes, a one-art-pixel press. Reduce Motion holds the idle frame and swaps state without the in-between frames.",
+      "needs": [],
+      "not_for": [
+        "finance",
+        "health",
+        "government",
+        "enterprise"
+      ],
+      "pitfall": "A pixel face for names and body text. Pixel fonts at non-integer sizes or anti-aliased. Sprites scaled with smoothing. A generic RPG skin (hearts, swords, gold coins) with no product idea. Minecraft or Nintendo look-alikes. 1-pixel strokes and type under 8 px caps.",
+      "mac": {
+        "composition": "A pixel-framed window: the sidebar as an inventory list with sprite icons, the content in 9-slice frames on an integer grid, sprites drawn in code at whole art pixels, the key number in a pixel face, names and text in a readable face.",
+        "moves": [
+          "9-slice pixel frames on an integer grid",
+          "Sprites drawn in code whose frames show state",
+          "Hover lifts a frame by one art pixel; the primary action has a shortcut"
+        ],
+        "shape": "Stepped corners, frames one or two art pixels thick, a hard one-art-pixel shadow; an art pixel of 2 pt stays crisp at 1x and 2x.",
+        "chrome": "System title bar and traffic lights kept; the window ground is the palette ground; the user's accent colour is ignored (say so).",
+        "dials": {
+          "D": 6
+        }
+      }
+    },
+    {
+      "id": "rt-bitmap-desktop",
+      "preset": "retro",
+      "name": "Bitmap desktop",
+      "anchors": [
+        "Return of the Obra Dinn (1-bit, legibility first: outlines over dither)",
+        "Poolsuite (Mac OS 9 and early Windows chrome, recoloured rather than copied)",
+        "system.css and 98.css (MIT rebuilds of System 6 and Windows 98 chrome)"
+      ],
+      "composition": "The product's sections as windows of an old desktop: each a framed panel with a striped title bar and a close box, lists as bordered list boxes, actions as bevelled push buttons, a dithered pattern as the ground. Dark ink on light (positive polarity), with one accent at most.",
+      "content": [
+        "list",
+        "detail",
+        "action",
+        "collection"
+      ],
+      "device": "the window frame each section lives in",
+      "dials": {
+        "B": 6,
+        "M": 3,
+        "D": 6,
+        "C": 2,
+        "F": 7
+      },
+      "type": [
+        {
+          "display": "Silkscreen 700 at 16 or 24 px (title bars only)",
+          "text": "Atkinson Hyperlegible 400-700",
+          "data": "IBM Plex Mono"
+        },
+        {
+          "display": "Pixelify Sans 600 at 22 px (title bars only)",
+          "text": "IBM Plex Sans 400-600",
+          "data": "IBM Plex Mono"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "One bit",
+          "proportions": "Black and white only, with greys made by dither, never by tint. Selection is inverse video.",
+          "light": {
+            "ground": "#FFFFFF",
+            "surface": "#FFFFFF",
+            "ink": "#000000",
+            "ink2": "#4A4A4A",
+            "accent": "#000000",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#000000",
+            "surface": "#0E0E0E",
+            "ink": "#FFFFFF",
+            "ink2": "#B4B4B4",
+            "accent": "#FFFFFF",
+            "on_accent": "#000000"
+          }
+        },
+        {
+          "name": "Bevelled grey with a navy title",
+          "proportions": "Silver panels with light and dark bevel edges, black text, navy only for the active title bar and the default button.",
+          "light": {
+            "ground": "#C0C0C0",
+            "surface": "#DFDFDF",
+            "ink": "#000000",
+            "ink2": "#333333",
+            "accent": "#000080",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#1E1E1E",
+            "surface": "#2D2D2D",
+            "ink": "#F0F0F0",
+            "ink2": "#B8B8B8",
+            "accent": "#9DB2FF",
+            "on_accent": "#000000"
+          }
+        }
+      ],
+      "shape": "Square windows with one-art-pixel black frames and a hard one-art-pixel drop shadow. Bevels (light top-left, dark bottom-right) on buttons and fields. Title bars striped with 1 pt lines. Dither patterns for fills, never gradients.",
+      "moves": [
+        "Sections as framed windows with a striped title bar and a close box",
+        "Bevelled push buttons that invert their bevel on press",
+        "A dithered pattern ground and a 1-bit icon set drawn in code"
+      ],
+      "motion": "Instant, like the old systems: an outline zoom when a panel opens (150 ms or less), inverted selection, a stepped progress bar. Reduce Motion skips the zoom.",
+      "needs": [],
+      "not_for": [
+        "kids"
+      ],
+      "pitfall": "Copying Apple or Microsoft marks (the rainbow apple, the Windows flag, the Happy Mac, Chicago). Grey #808080 text on #C0C0C0 (2.2:1). A fake desktop of icons, a dock and a clock instead of the product's content. Windows nested in windows. System type at 9 px.",
+      "mac": {
+        "composition": "A real Mac window outside, an old desktop inside: the sidebar as a bordered list box, the content as one or two framed panels with striped title bars, a dithered ground, bevelled push buttons. The real menu bar carries the commands.",
+        "moves": [
+          "Framed panels with striped title bars inside the real window",
+          "Bevelled push buttons with keyboard equivalents shown in the menu bar",
+          "Inverse-video selection in bordered list boxes"
+        ],
+        "shape": "One-art-pixel frames and a hard shadow, 1 pt title-bar stripes, rows 20-24 pt, an art pixel of 1 pt.",
+        "chrome": "The system title bar and traffic lights stay real; never draw a second fake title bar on the window itself. The user's accent colour is ignored (say so).",
+        "dials": {
+          "D": 7
+        }
+      }
     }
   ],
   "content_shapes": {

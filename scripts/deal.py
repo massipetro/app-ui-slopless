@@ -27,9 +27,12 @@ from pathlib import Path
 
 LIBRARY = Path(__file__).resolve().parent.parent / "library" / "directions.json"
 PRESETS = ("warm-premium", "neo-brutalist", "playful", "editorial",
-           "native-craft", "pro-instrument", "document-first")
+           "native-craft", "pro-instrument", "document-first", "retro")
 # Mac-only presets: dealt only with --platform macos, where one option always comes from them.
 MAC_PRESETS = ("native-craft", "pro-instrument", "document-first")
+# Named-only presets: dealt only with --preset, when the user asked for the style. A nostalgia look
+# offered unasked is a costume for most products, so it never joins the open deal.
+NAMED_ONLY = ("retro",)
 ROLES = ("ground", "surface", "ink", "ink2", "accent", "on_accent")
 SHAPES = ("list", "number", "detail", "collection", "canvas", "story", "progression", "action",
           "table", "document")  # the last two only occur on a Mac
@@ -102,7 +105,7 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
                  sector: str | None, have: set[str] | None, content: list[str] | None = None,
                  platform: str | None = None) -> list[dict]:
     pool = [d for d in directions
-            if (preset is None or d["preset"] == preset)
+            if (d["preset"] == preset if preset else d["preset"] not in NAMED_ONLY)
             and (sector is None or sector not in d["not_for"])
             and (have is None or set(d["needs"]) <= have)
             # The first content shape is what the user came for: a direction must be able to show it.

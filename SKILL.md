@@ -71,7 +71,7 @@ python3 <skill>/scripts/deal.py --options 3 --content <primary>[,<secondary>] [-
 Every deal ends with a `Deal:` line: the command with its flags and seed that deals the same options again. Copy it, and each redeal's, into the report's Direction line, so a reader can replay what you were offered.
 
 - `--content`: only directions whose composition can show the primary shape are dealt, and within each preset the ones that also hold the secondary shapes come first. A poster of colour blocks can't show a timetable, so it isn't dealt for one.
-- `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets.
+- `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets. **Retro** is dealt only this way: when the user asks for a pixel, 8-bit, terminal, CRT or old-desktop look, pass `--preset retro`; the open deal never offers it.
 - `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example). `hobby` covers collectors' and enthusiasts' apps. Some directions also drop out when a content shape anywhere in `--content` is one they don't suit (quiet native for `collection`).
 - `--platform macos`: for a Mac app. Each direction is dealt in its Mac form: a window composition (sidebar, content, inspector, toolbar, menu bar extra) instead of the phone screen, pointer-and-keyboard signature moves, Mac-scale shape, Mac dial defaults (usually denser), and a **window chrome** line that says what stays system (translucent sidebar, the user's accent colour, the title bar) and what carries the palette. Directions with no Mac form (`ed-story-cards`) are not dealt. Three **Mac-only presets** (native craft, pro instrument, document first) join the deal, and one of the three options always comes from them, because Mac users reward Mac-native craft (`research/macos-references.md`). Without the flag they are never dealt. Pass the same flag when printing the sheet. When the working directory's project or code says macOS (`Package.swift`, the `.xcodeproj`, AppKit APIs), `deal.py` deals for the Mac on its own and says so; a brief that only *says* "Mac app" still needs the flag. The fit test reads the Mac composition: "content at rest" means in a 1280×800 window, not a phone.
 - `--have photography`: only when the product really has photographs: its own photos in the project, or photos it shows at runtime (listings, products, places, people's uploads). Without it, directions that depend on photographs are not dealt, so a screen never ends up built around grey placeholder boxes. Drawn art never needs `--have`: it is made in code.
@@ -116,7 +116,7 @@ python3 <skill>/scripts/deal.py --direction <id> --seed <seed from the deal> [--
 
 The sheet gives the composition, the idea slot, a dealt type system and palette (light and dark, with measured contrast), shape, signature moves, motion and the way the direction goes wrong. If the brand already fixes colours or typefaces, pass `--keep palette,type` and map the brand onto the roles. Redeal only for a reason you can state (it contradicts the brand, or needs an asset that doesn't exist), and say so in the report. If the script can't run, read `library/directions.json` and pick by the same rules.
 
-The presets behind the directions (the last three are Mac-only):
+The presets behind the directions (native craft, pro instrument and document first are Mac-only; retro is dealt only when the user names it):
 
 | Preset | One-liner | Real-world anchors | File |
 |---|---|---|---|
@@ -127,6 +127,7 @@ The presets behind the directions (the last three are Mac-only):
 | **Native craft** (Mac) | Mac-assed: Mac behaviour everywhere, identity concentrated in one control or owned chrome | Panic Nova/Transmit, NetNewsWire, Things 3, Ivory | `references/presets/native-craft.md` |
 | **Pro instrument** (Mac) | Dense, keyboard-first, content centre and controls at the edges, exact readouts | Raycast, Linear app, Logic Pro, iStat Menus | `references/presets/pro-instrument.md` |
 | **Document first** (Mac) | The document's typography is the design; chrome disappears while you work | iA Writer, Ulysses, Bear | `references/presets/document-first.md` |
+| **Retro** (named only) | A past machine made usable: phosphor terminal, pixel sprites, 1-bit desktop; one grid, integer type sizes, effects off under Reduce Motion | Fallout's Pip-Boy, Balatro, Shovel Knight, Playdate, Obra Dinn | `references/presets/retro.md` |
 
 Then read **only** the chosen direction's preset file. It holds the wider rules for that style: palette strategy, type, shape, depth, motion, more signature moves, real examples, and how cheap imitations go wrong. Where the sheet and the preset file differ, the sheet wins for this build.
 

@@ -118,7 +118,7 @@ $ python3 scripts/deal.py --options 2 --content list,number --preset playful
 `--direction <id> --seed <n>` then prints the full sheet: two type systems, two palettes with measured contrast in light and dark, shape, signature moves, motion and how the direction goes wrong.
 </details>
 
-### Styles: four presets (plus three for the Mac), five dials
+### Styles: four presets (plus three for the Mac and a retro one on request), five dials
 
 | Preset | Feel | Real-world anchors |
 |---|---|---|
@@ -129,6 +129,7 @@ $ python3 scripts/deal.py --options 2 --content list,number --preset playful
 | Native craft (Mac) | Mac behaviour everywhere, identity in one control or owned chrome | Panic Nova, NetNewsWire, Things 3, Ivory |
 | Pro instrument (Mac) | dense, keyboard-first, exact readouts, a menu bar instrument | Raycast, Linear app, Logic Pro, iStat Menus |
 | Document first (Mac) | the document's typography is the design | iA Writer, Ulysses, Bear |
+| Retro (on request) | phosphor terminal, pixel sprites or a 1-bit desktop, legible and accessible | Fallout's Pip-Boy, Balatro, Shovel Knight, Playdate |
 
 Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how bespoke the components look; platform mechanics stay native). Name a preset or let the deal pick one.
 
