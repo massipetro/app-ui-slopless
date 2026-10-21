@@ -34,6 +34,28 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
 
+### Round 13: Opus builds, evals 7 and 8 (HEAD vs v1.5.0 vs none)
+
+Same as round 12 except the builder. It used the same two prompts, three runs per config, v1.5.0 from the `d2593d9` worktree, 1280×800 mocks shot with `evals/shot.mjs`, and two blind Opus 5.5 judges per pair ($2 cap each). The builds ran on Opus 5.5 at medium effort, with the cap raised from $3 to $8 so skill builds wouldn't be cut off. Every Mac round before this one built on Sonnet, while the phone rounds built on Opus. HEAD is `d462d54`: round 12's skill plus the Deal line in the report. Each score is the mean of the two judges.
+
+| Eval | Run | HEAD direction | vs v1.5.0 | vs none |
+|---|---|---|---|---|
+| 7 | 1 | ed-newspaper-frame (Mac form) | **7.3** vs 6.6 | **7.2** vs 5.9 |
+| 7 | 2 | ed-newspaper-frame (Mac form) | **7.5** vs 7.1 | **7.2** vs 6.5 |
+| 7 | 3 | ed-newspaper-frame (Mac form) | 7.2 vs 7.3 (judges split) | **7.4** vs 6.3 |
+| 8 | 1 | pi-instrument-panel | **7.9** vs 6.5 | **7.8** vs 6.3 |
+| 8 | 2 | nc-quiet-native | **7.5** vs 7.0 | **7.6** vs 6.0 |
+| 8 | 3 | df-library | **7.4** vs 7.0 | **7.6** vs 5.8 |
+
+- **Against v1.5.0: 5 of 6 pairs and 1 split, 11 of 12 judge votes, mean 7.5 vs 6.9.** By eval: eval 7 7.3 vs 7.0, eval 8 7.6 vs 6.8.
+- **Against no skill: 6 of 6 pairs, 12 of 12 judge votes, mean 7.5 vs 6.1.** By eval: eval 7 7.3 vs 6.2, eval 8 7.7 vs 6.0.
+- **The lead holds on Opus but narrows.** Round 12 had the same harness with Sonnet builds, and HEAD led v1.5.0 by 0.8 and no skill by 1.7. Here the leads are 0.55 and 1.3. Opus lifts both baselines more than it lifts HEAD: no skill went from 5.6 to 6.1, v1.5.0 from 6.4 to 6.9, HEAD from 7.1–7.3 to 7.5. The phone rounds on Opus showed the same pattern (round 9: +0.55 over no skill).
+- **Eval 7 is now close against v1.5.0.** All six skill runs built ed-newspaper-frame, as in round 12, and HEAD's margin fell from 1.0 to 0.3. The split pair is run 3. One judge preferred v1.5.0's collector detail (gaps in each run, provenance, price paid, sailings transcribed from the timetable) over HEAD's "in force today" idea, which in its words "doesn't really serve collectors of old timetables". The other preferred HEAD's density and its live idea. HEAD's eval-7 wins come from Mac density and the coverage strips.
+- **Eval 8 is where HEAD pulls ahead.** HEAD dealt three different directions and won with all three: pi-instrument-panel by 1.4, nc-quiet-native by 0.5 and df-library by 0.4. Every v1.5.0 run built nb-spec-sheet. Quiet native won its pair against v1.5.0 again (it lost only on collection briefs).
+- **The Deal line works.** All six HEAD runs recorded it, for example `deal.py --options 3 --content collection,detail --sector hobby --platform macos --seed 57916`. Every eval-7 run passed `--sector hobby` and a collection-led `--content`, so quiet native couldn't be dealt there.
+- Grader, without the new "Deal command recorded" item (only HEAD can pass it): HEAD scored 16–19 of 19 on eval 7 and 20–21 of 21 on eval 8; v1.5.0 17–19 of 19 and 18–20 of 21; no skill 8 of 19 and 8–9 of 21. All 18 Swift files typecheck on macOS 14.0. The two judges agreed on 11 of 12 pairs, and HEAD sat in position A in 7 of 12.
+- Cost: $51.36 for 18 builds (HEAD $21.58, v1.5.0 $20.42, none $9.36), 3.2× round 12's Sonnet builds, and $4.28 for 24 Opus judges. The most expensive build was $4.43, well under the $8 cap.
+
 ### Round 12: quiet native out of collection briefs, Opus judges, evals 7 and 8 (HEAD vs v1.5.0 vs none)
 
 This round ran HEAD at `de50768`: v1.6.0, with nc-quiet-native no longer dealt for collection or hobby briefs (`not_for_content: [collection]`, `not_for: hobby`). As the eval 7 notes below explain, it doesn't measure that change on its own. Round 11's judges rejected the stronger-move alternative: after `42f7fa3` put the idea in every row, quiet native still lost as "a competent table with a decorative timeline strip". Builds were the same as round 11: the same two prompts, Sonnet 5.5 at medium effort ($3 cap), v1.5.0 from the `d2593d9` worktree, and 1280×800 mocks shot with `evals/shot.mjs`. This round used three runs per config on both evals. The judges changed to two independent blind Opus 5.5 judges per pair ($2 cap each), 12 pairs with A and B shuffled. Each score below is the mean of the two judges.
