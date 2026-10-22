@@ -139,6 +139,7 @@ Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how
 |---|---|---|
 | Compiles | `scripts/typecheck.py` (Swift, iOS simulator or macOS SDK, at the project's deployment target; iOS 17 / macOS 14 by default) · Gradle or `scripts/compile_kotlin.py` (Kotlin 2.2 + Compose MP 1.9) | code that only looks right |
 | Lint | `scripts/lint.py` | slop tells (violet accents, stock greys, 5%-black shadows, emoji), sub-44/48 targets, fixed font sizes, code-baseline mistakes; in macOS mode also missing hover states, menu commands and window sizes, and phone-sized frames |
+| Real render (Mac) | `scripts/render_swiftui.py` renders the window from its `#Preview` | mock/code drift: truncation, locale formats, a column pushed off-screen, that an HTML mock hides |
 | Bottom edge | `scripts/fold.py` measures the mock at 390×844 | a row or a sliver of card cut by the tab bar at rest; a section heading orphaned above the bar; a last row that can't scroll clear |
 | One moment in time | every live value derived from one `now`; critique pass 9 reads the resting frame | a progress bar, a countdown and a "since" time that imply different times of day; a counter that disagrees with its rows |
 | Signature | the resting frame, against the category's stock layout | a good direction built as the default layout in new paint |
@@ -245,6 +246,7 @@ scripts/fold.py             measures the mock's bottom edge: every row at the pi
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times, with measured durations
 scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code, to Lottie JSON, a pausable preview, and the 24 px check sheet
 scripts/blind_critique.py   a blind judge for the built screens: only the images, the brief and critique.md go to a fresh claude session
+scripts/render_swiftui.py   renders a macOS SwiftUI window natively from its #Preview, captured from the window server, no Xcode project
 research/                   the source material behind the rules
 evals/                      briefs, input files, grade.py, shot.mjs, and model-free tests for deal.py, fold.py and the mascot kit
 docs/examples/              the screens shown above
