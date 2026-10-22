@@ -40,6 +40,23 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Eighteen rounds, October 2026, newest first: rounds 1–9 on the phone, 10–13 and 18 on the Mac, 14–17 on the retro preset. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
 
+### Round 21: the blind judge sees the real Mac window, eval 12, three judges (HEAD vs v1.7.0)
+
+HEAD is `4662de6`. Mac builds now render the real SwiftUI window from its `#Preview` with `scripts/render_swiftui.py`, and hand that render, not the HTML mock, to the blind judge. Eval 12 (sourdough bake day), three runs per config, Opus 5.5 builds ($8 cap), three blind Opus 5.5 judges per pair. The eval judges still compare the HTML mocks, since v1.7.0 only makes mocks.
+
+| Run | HEAD direction | v1.7.0 direction | Blind judge's first score | HEAD vs v1.7.0 | Votes |
+|---|---|---|---|---|---|
+| 1 | nc-owned-chrome | nc-owned-chrome | 6 | 6.6 vs **7.0** | 0–3 |
+| 2 | nc-owned-chrome | nc-owned-chrome | 5 | **7.3** vs 6.7 | 3–0 |
+| 3 | wp-exaggerated-number | nc-owned-chrome | 6 | **7.3** vs 7.2 | 2–1 |
+
+- **2 of 3 pairs, 5 of 9 votes, mean 7.07 vs 6.98.** Round 20 on this brief was 3 of 9 and 6.64 vs 7.13. Over both rounds, HEAD has 8 of 18 votes against v1.7.0 on the Mac. The swing is in the right direction but within the noise measured at n = 3.
+- **All three HEAD builds rendered the real window**, at several sizes and in light and dark. The reports don't say which image each build gave the blind judge.
+- **Run 1 lost as "the polished category default".** v1.7.0 had more sourdough in it: a rise jar, a named starter with a peak window, and a two-day schedule. Run 2 won 3–0 with the whole bake as 12 timed steps and a levain build. Run 3 won 2–1 with a jar-rise gauge that says bulk is done at +50%, not when the clock says so.
+- **Renderer gap:** custom fonts aren't registered in the native render, so it shows the system font. Two builds noted it, and one worked around it with a scratch copy.
+- Grader: HEAD 19–20 of 20, v1.7.0 17–19. Product checks: HEAD 24 of 24, v1.7.0 23 of 24.
+- Cost: $20.63 for 6 builds (HEAD $11.86, v1.7.0 $8.77, +35%). HEAD builds took 14.6 minutes against 10.7. Judges: $1.73 for 9.
+
 ### Round 20: a blind judge inside the build, evals 4 and 12, three judges (HEAD vs v1.7.0)
 
 HEAD is `bc944b6`. Before its own critique, the skill now hands its screenshots to a fresh judge that never sees the code or the intent (`scripts/blind_critique.py`), and takes its fixes first. v1.7.0 (a worktree at the tag) is the same skill without that step. Evals 4 (ferry home, iPhone) and 12 (sourdough bake day, Mac), three runs per config, Opus 5.5 builds ($8 cap), three blind Opus 5.5 judges per pair.
