@@ -40,6 +40,23 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Eighteen rounds, October 2026, newest first: rounds 1–9 on the phone, 10–13 and 18 on the Mac, 14–17 on the retro preset. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
 
+### Round 19: the fresh Mac brief after its fixes, eval 12, three judges (HEAD vs v1.5.0 vs none)
+
+HEAD is `1f632fa`. It carries round 18's fixes: one moment in time (every live value derived from one `now`), one dominant readout for ambient screens, and two Mac-native options in a Mac deal. The setup is the same as round 18: three runs per config, Opus 5.5 builds ($8 cap), v1.5.0 from `d2593d9`, and three blind Opus 5.5 judges per pair.
+
+| Run | HEAD direction | v1.5.0 direction | vs v1.5.0 | vs none |
+|---|---|---|---|---|
+| 1 | nc-owned-chrome | wp-departure-board | 6.7 vs **7.2** (0–3) | **7.1** vs 6.0 (3–0) |
+| 2 | nc-owned-chrome | ed-newspaper-frame | **7.6** vs 7.2 (2–1) | **7.4** vs 6.5 (3–0) |
+| 3 | wp-exaggerated-number | pl-persona | 6.7 vs **6.8** (1–2) | **7.3** vs 6.0 (3–0) |
+
+- **Against no skill: 3 of 3 pairs, 9 of 9 votes, mean 7.27 vs 6.16.** Round 18 was 4 of 9. Most judges named HEAD's one dominant readout, or its numbers agreeing with one clock. One caught the baseline with a conflicting dough figure.
+- **Against v1.5.0: 1 of 3 pairs, 3 of 9 votes, mean 7.00 vs 7.07.** Still a tie. v1.5.0 won run 1 with a bigger single number and run 3 with a talking starter. On this brief, nothing since v1.5.0 shows a measurable gain.
+- **Read the swing with the noise.** HEAD's own mean barely moved (about 7.0 in round 18, 7.0–7.3 here). The no-skill mean fell from 6.91 to 6.16 between two rounds of the same brief, so part of the 9-of-9 is run-to-run variance. A real Mac gain over v1.5.0 needs more runs or more briefs to show.
+- **The deal change took.** Two of three HEAD runs chose `nc-owned-chrome` (Mac-only). None chose the playful persona that lost round 18; run 3 chose `wp-exaggerated-number`.
+- Grader: HEAD 18–19 of 19, v1.5.0 16–17, no skill 6–7. Product checks: HEAD 23 of 24 (run 1 tripped the 44 pt / phone-frame check), v1.5.0 24 of 24, no skill 19 of 24.
+- Cost: $22.89 for 9 builds (HEAD $8.99, v1.5.0 $10.23, none $3.67) and $3.77 for 18 judges.
+
 ### Round 18: a fresh Mac brief, eval 12, three judges (HEAD vs v1.5.0 vs none)
 
 HEAD is `ed41eff` (1.7.0). Eval 12 is new and untuned: a sourdough bake-day window kept open on the kitchen counter all day, neither a collection nor a pro tool. Three runs per config, Opus 5.5 builds at medium effort ($8 cap), v1.5.0 from the `d2593d9` worktree, mocks at 1280×800, three blind Opus 5.5 judges per pair.
