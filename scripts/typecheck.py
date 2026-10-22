@@ -153,7 +153,9 @@ def main() -> int:
 
     arch = "arm64" if subprocess.run(["uname", "-m"], capture_output=True, text=True).stdout.strip() == "arm64" else "x86_64"
     triple = f"{arch}-apple-macos{target}" if platform == "macos" else f"{arch}-apple-ios{target}-simulator"
-    cmd = ["xcrun", "--sdk", sdk_name, "swiftc", "-typecheck", "-target", triple, "-sdk", sdk.stdout.strip()]
+    # -emit-sil, not -typecheck: the SIL passes are where errors like a missing return in a getter show
+    # (round 20 found one that -typecheck passed). It still emits nothing to disk.
+    cmd = ["xcrun", "--sdk", sdk_name, "swiftc", "-emit-sil", "-o", "/dev/null", "-target", triple, "-sdk", sdk.stdout.strip()]
     if not any(f.name == "main.swift" for f in files):
         cmd.append("-parse-as-library")  # a lone file with @main is otherwise parsed as top-level code
     cmd += map(str, files)
