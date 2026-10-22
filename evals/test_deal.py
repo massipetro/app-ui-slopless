@@ -6,7 +6,7 @@
 - a macOS sheet carries the Mac composition, the window chrome line and the Mac dials,
   and none of the phone mechanics;
 - the phone deal and sheet are unchanged by the Mac blocks, and never deal a Mac-only direction;
-- every macOS deal includes at least one Mac-native preset option when one can show the content;
+- every macOS deal includes two Mac-native preset options when two can show the content (one when only one can);
 - a direction is never dealt when a requested shape is in its not_for_content, including deals
   inside its preset and wide deals that would otherwise include it, and --sector hobby drops the
   directions marked not_for hobby (nc-quiet-native for collection and hobby briefs, after round 11);
@@ -36,6 +36,14 @@ def main() -> int:
     skipped = {d["id"] for d in directions if deal.for_platform(d, "macos") is None}
     mac_only = {d["id"] for d in directions if deal.mac_only(d)}
     native_shapes = {c for d in directions if deal.mac_only(d) for c in d["content"]}
+    preset = {d["id"]: d["preset"] for d in directions}
+
+    def native_presets(content: str) -> set[str]:
+        """Mac presets with a direction that can show the primary shape and isn't ruled out by any requested shape."""
+        shapes = content.split(",")
+        return {d["preset"] for d in directions if deal.mac_only(d) and shapes[0] in d["content"]
+                and not set(shapes) & set(d.get("not_for_content", []))}
+
 
     code, out = run("--check")
     if code != 0:
@@ -47,8 +55,9 @@ def main() -> int:
             dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
             if dealt & skipped:
                 failures.append(f"seed {seed} content {content}: dealt {dealt & skipped} on macOS")
-            if content.split(",")[0] in native_shapes and not dealt & mac_only:
-                failures.append(f"seed {seed} content {content}: no Mac-native option in {sorted(dealt)}")
+            need = min(2, len(native_presets(content)))
+            if len({preset[i] for i in dealt & mac_only}) < need:
+                failures.append(f"seed {seed} content {content}: fewer than {need} Mac-native options in {sorted(dealt)}")
             code, out = run("--options", "3", "--content", content, "--seed", str(seed))
             dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
             if dealt & mac_only:

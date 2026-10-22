@@ -2244,7 +2244,8 @@
       "composition": "A window the app draws itself but that behaves like a Mac app: an opaque sidebar that stops under the title area, a content column where bold type and white space carry the hierarchy, and the list's actions in a compact toolbar at the foot of the list instead of the title bar. Colour comes in role-bound splashes: area glyphs, the selected area's colour, the core verb. Menus, shortcuts, selection, drag and drop and keyboard focus are all standard.",
       "content": [
         "list",
-        "detail"
+        "detail",
+        "number"
       ],
       "device": "the area colour and glyph that follows you from sidebar to list to item",
       "dials": {
@@ -2490,7 +2491,8 @@
       "content": [
         "canvas",
         "detail",
-        "table"
+        "table",
+        "number"
       ],
       "device": "the readout and the control that sets it",
       "dials": {

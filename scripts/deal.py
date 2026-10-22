@@ -124,12 +124,14 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
         fit = lambda d: len(set(content[1:]) & set(d["content"])) if content else 0
         picked = []
         if platform == "macos":
-            # Mac users reward Mac-native craft, so one option always comes from a Mac preset
-            # (research/macos-references.md); the others stay a spread across all presets.
+            # Mac users reward Mac-native craft (research/macos-references.md), so two options come
+            # from Mac presets when two can show the content, one when only one can. Round 18: a
+            # phone-first direction's Mac form lost both pairs while a Mac-only one swept.
             native = [p for p in presets if p in MAC_PRESETS]
-            if native and not any(p in MAC_PRESETS for p in presets[:n]):
-                presets.remove(native[0])
-                presets.insert(n - 1 if n > 0 else 0, native[0])
+            head = presets[:n]
+            while sum(p in MAC_PRESETS for p in head) < min(2, len(native), n):
+                head[max(i for i, p in enumerate(head) if p not in MAC_PRESETS)] = next(p for p in native if p not in head)
+            presets = head + [p for p in presets if p not in head]
         for p in presets[:n]:
             best = max(fit(d) for d in by_preset[p])
             picked.append(rng.choice([d for d in by_preset[p] if fit(d) == best]))
