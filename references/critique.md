@@ -54,6 +54,8 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 
 The aim is overall ≥ 8 with no criterion below 6.
 
+**A blind judge sees what you can't.** Before your own round, run `scripts/blind_critique.py` on the same frames (SKILL.md step 5): it scores the screen with this file from the pixels alone. Where its scores and yours differ by more than a point, trust the blind one; the difference is your intent showing.
+
 ## 3. Writing the critique
 
 Write it in your reply, in this format, before fixing anything. Each round goes in the reply, so the user can see what you looked at and why you changed it:

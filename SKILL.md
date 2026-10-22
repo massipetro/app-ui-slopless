@@ -305,6 +305,14 @@ Judge only the pictures, never the code: you wrote the code, so you'll read your
 
 Fix this before the taste pass, and put both results on the report's "Signature moves" line.
 
+**Blind pass first.** Your own critique knows what you meant to build, so it reads intent into the pixels: in our evals the builds' own critiques passed a stock layout, an orphaned heading, a counter that disagreed with its list and live numbers implying three times of day, and blind judges capped every one. So before your own critique, hand the resting frame (and any other frames you rendered) to a judge that has never seen your code, brief notes or report:
+
+```bash
+python3 <skill>/scripts/blind_critique.py screenshot.png [more.png] --brief "<the user's brief in one or two sentences>" --platform ios|android|macos
+```
+
+It copies only the images, the brief and `references/critique.md` into an empty folder and runs a fresh headless `claude` judge on them (about a minute, about $0.30). Without a `claude` CLI it prints the hand-off instead: give exactly those files and that prompt to a fresh subagent with no other context. Never judge "blind" yourself; you can't unsee your intent. Treat its three fixes as the first items of your top three, unless one contradicts the brief (say which and why). Put its overall on the report's Critique line.
+
 **Taste pass.** Passing the craft pass means nothing is broken. It doesn't mean the screen is good. Critique the same screenshots with `references/critique.md`: the one-second glance, the squint, the cover-the-logo test, idea reach, sameness, fullness, the thumb, the bottom edge, the motion. Score them, and **write the critique in your reply** in its format, including the scores line. The critique is part of the deliverable, not private working: a run that ends without it hasn't finished step 5. If you couldn't render at all, say so in the reply in place of the critique ("Critique: not run, the screen was never rendered") rather than leaving it out.
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
@@ -321,7 +329,7 @@ Live thing: <the interaction and the real state it reacts to>; filmstrip: <n ani
 Built: <files, screens, states; the brief's must-haves visible at rest>
 Signature moves: <each move → where it shows at rest, or "not visible">; stock layout: <the default screen's blocks> → <what this screen does instead>
 Lint: <compile: pass / FAIL / not run and why, at <iOS or macOS> <target> (<from the project / default>); lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
-Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
+Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>); blind judge before fixes: overall n (or "not run" and why)
 Bottom edge: <fold.py: pass / FAIL, or "not measured: no HTML mock">; rest frame <each row at the fold: whole / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
 Sample content to replace: <names, prices, dates, photos>
@@ -470,6 +478,7 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Signature check done on the resting frame: at least two signature moves pointed at, and the screen is not the category's stock layout in new colours.
 - [ ] Motion recorded as a filmstrip (`scripts/filmstrip.py`, or test / simulator frames) when `MOTION` ≥ 4 or the core verb animates: it moves, settles on the rest state, clips nothing, and frequent paths finish within 300 ms.
 - [ ] Rendered and looked at: no clipped, stretched, off-centre or overlapping elements (or the report says it couldn't be rendered).
+- [ ] Blind pass run with `scripts/blind_critique.py` (or a fresh subagent given only the images, the brief and `critique.md`) before your own critique; its fixes taken first.
 - [ ] Taste pass written in the reply in `references/critique.md` format (or "Critique: not run" with the reason), top three fixed, at most two rounds; final scores reported.
 - [ ] Real content at real density, every state designed, no invented proof; sample content to replace is listed.
 - [ ] One moment in time: every live value derived from one `now` and one data set, and the resting frame read for numbers that disagree.

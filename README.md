@@ -144,6 +144,7 @@ Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how
 | Signature | the resting frame, against the category's stock layout | a good direction built as the default layout in new paint |
 | Motion | `scripts/filmstrip.py` freezes every animation at set times | a check-off that never lands, counters that change too early, anything clipped mid-animation |
 | Mascot | `scripts/mascot.py`: SVG rig to SwiftUI / Compose code and Lottie | freehand characters that differ per platform; a silhouette that doesn't read at 24 px |
+| Blind judge | `scripts/blind_critique.py`: a fresh `claude` judge sees only the screenshots, the brief and the rubric | what the build's own critique reads past because it knows the intent: a stock layout, numbers that disagree, an orphaned heading |
 | Taste | a scored critique of the screenshots (`references/critique.md`, 14 passes) | no focal point, sameness, a wireframe feel, an idea that only reaches the home screen |
 
 Accessibility trade-offs are reported as warnings with the criterion, the value and a fix. Bold choices aren't silently blocked.
@@ -243,6 +244,7 @@ scripts/kotlin-check/       the Gradle template that compile_kotlin.py copies co
 scripts/fold.py             measures the mock's bottom edge: every row at the pinned bar is whole or cut, and the last row clears it
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times, with measured durations
 scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code, to Lottie JSON, a pausable preview, and the 24 px check sheet
+scripts/blind_critique.py   a blind judge for the built screens: only the images, the brief and critique.md go to a fresh claude session
 research/                   the source material behind the rules
 evals/                      briefs, input files, grade.py, shot.mjs, and model-free tests for deal.py, fold.py and the mascot kit
 docs/examples/              the screens shown above

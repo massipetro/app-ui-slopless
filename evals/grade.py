@@ -207,6 +207,7 @@ def process_checks(resp):
         ("Owned-idea sentence written", *check(resp, r"In this app,[^\n]{0,200}becomes")),
         ("Competitor test applied", *check(resp, r"competitor")),
         ("Critique scored (Idea / Hierarchy / overall)", *check(resp, r"Idea\s*\d+[\s\S]{0,80}Hierarchy\s*\d+|overall\s*\d")),
+        ("Blind judge run before the critique (blind_critique.py or a fresh subagent)", *check(resp, r"blind[ _-]?(critique|judge|pass)")),
         ("Lint gate run", *check(resp, r"lint\.py|\d+ FAIL")),
         ("Motion recorded as a filmstrip, or stated as not recorded", *check(resp, r"filmstrip|motion not recorded")),
         ("Signature moves pointed at in the resting frame", *check(resp, r"^\s*Signature moves\s*:[^\n]*(→|->|not visible)[^\n]*stock layout")),
