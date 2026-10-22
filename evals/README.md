@@ -40,6 +40,25 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Eighteen rounds, October 2026, newest first: rounds 1–9 on the phone, 10–13 and 18 on the Mac, 14–17 on the retro preset. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
 
+### Round 18: a fresh Mac brief, eval 12, three judges (HEAD vs v1.5.0 vs none)
+
+HEAD is `ed41eff` (1.7.0). Eval 12 is new and untuned: a sourdough bake-day window kept open on the kitchen counter all day, neither a collection nor a pro tool. Three runs per config, Opus 5.5 builds at medium effort ($8 cap), v1.5.0 from the `d2593d9` worktree, mocks at 1280×800, three blind Opus 5.5 judges per pair.
+
+| Run | HEAD direction | v1.5.0 direction | vs v1.5.0 | vs none |
+|---|---|---|---|---|
+| 1 | wp-departure-board | wp-departure-board | **7.3** vs 7.2 (2–1) | 7.1 vs **7.3** (1–2) |
+| 2 | nc-owned-chrome | wp-exaggerated-number | **6.9** vs 6.5 (3–0) | **7.2** vs 6.0 (3–0) |
+| 3 | pl-persona | ed-newspaper-frame | 6.7 vs **7.2** (0–3) | 6.7 vs **7.4** (0–3) |
+
+- **Against v1.5.0: 2 of 3 pairs, 5 of 9 votes, mean 7.00 vs 6.96.** A tie.
+- **Against no skill: 1 of 3 pairs, 4 of 9 votes, mean 7.02 vs 6.91.** Opus without the skill built a calm, glanceable window: one huge elapsed timer readable across a kitchen, a warm palette, every number consistent.
+- **So the Mac lead from evals 7 and 8 doesn't carry over to an untuned brief yet.** Those briefs were tuned against three times; this one wasn't.
+- **One moment in time.** Run 1 lost to no skill because its progress bar, fold countdown and time since feeding implied different times of day ("fatal for a screen bakers trust all day"). Round 17 had a counter that disagreed with its list. The skill has no check that live numbers agree.
+- **One focal point for an ambient window.** The winners answered the counter glance with one dominant timer; HEAD's run 3 split attention between two timers and a talking starter, with the accent spread everywhere.
+- **Phone-first directions on a Mac.** `pl-persona`'s Mac form became "a stock grid of rounded cards" and lost both pairs 0–3; `nc-owned-chrome` (Mac-only) swept both 3–0.
+- Grader: HEAD 18–19 of 19, v1.5.0 16–17, no skill 6–7. Product checks: HEAD 24 of 24, v1.5.0 23, no skill 20 (all three no-skill runs lack menu shortcuts). The grader can't see what lost.
+- Cost: $22.81 for 9 builds (HEAD $10.87, v1.5.0 $8.36, none $3.58) and $3.49 for 18 judges.
+
 ### Round 17: pixel names and game states, eval 10, three judges (HEAD vs none)
 
 HEAD is `6510d3a`. The pixel sprite direction now sets item names and named game states (parched, thirsty, quenched) in Pixelify Sans, lowercase, at an integer 22 px or more; body text and secondary lines stay in the readable face. Eval 10 only, two runs per config, Opus 5.5 builds ($8 cap), mocks at @2x, three blind Opus 5.5 judges per pair.
