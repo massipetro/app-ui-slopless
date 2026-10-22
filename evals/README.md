@@ -40,6 +40,27 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 Eighteen rounds, October 2026, newest first: rounds 1–9 on the phone, 10–13 and 18 on the Mac, 14–17 on the retro preset. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
 
+### Round 20: a blind judge inside the build, evals 4 and 12, three judges (HEAD vs v1.7.0)
+
+HEAD is `bc944b6`. Before its own critique, the skill now hands its screenshots to a fresh judge that never sees the code or the intent (`scripts/blind_critique.py`), and takes its fixes first. v1.7.0 (a worktree at the tag) is the same skill without that step. Evals 4 (ferry home, iPhone) and 12 (sourdough bake day, Mac), three runs per config, Opus 5.5 builds ($8 cap), three blind Opus 5.5 judges per pair.
+
+| Eval | Run | HEAD direction | v1.7.0 direction | Blind judge on HEAD's first frame | HEAD vs v1.7.0 | Votes |
+|---|---|---|---|---|---|---|
+| 4 | 1 | wp-departure-board | wp-exaggerated-number | 6 ("the standard transit layout") | **7.2** vs 6.3 | 3–0 |
+| 4 | 2 | wp-departure-board | wp-departure-board | 6 | **7.2** vs 6.7 | 3–0 |
+| 4 | 3 | wp-exaggerated-number | wp-departure-board | 7 (Idea capped at 5, stock layout) | **7.7** vs 7.1 | 3–0 |
+| 12 | 1 | nc-owned-chrome | wp-exaggerated-number | 5.8 | 6.5 vs **7.1** | 0–3 |
+| 12 | 2 | nb-dot-matrix | nc-owned-chrome | 5.6 | 6.1 vs **7.5** | 0–3 |
+| 12 | 3 | nc-owned-chrome | wp-exaggerated-number | 6 | **7.3** vs 6.9 | 3–0 |
+
+- **Phone: 3 of 3 pairs, 9 of 9 votes, mean 7.36 vs 6.71.** The blind judge told two of three builds they had the standard transit layout. Their final screens made the last boat back the structure of the screen (a timeline ending at the last boat, a hatched dead zone, its own amber line), and every eval judge named exactly that.
+- **Mac: 1 of 3 pairs, 3 of 9 votes, mean 6.64 vs 7.13.** HEAD's losses lacked Mac structure: primary actions in a sidebar footer with no toolbar (run 1), and a dot-matrix timer that doesn't read from across a kitchen, in a grid of cards with no sidebar (run 2). The blind judge saw an HTML mock, which can't show a real toolbar or sidebar. The next step is to give it the native render from `render_swiftui.py`.
+- **Overall: 4 of 6 pairs, 12 of 18 votes, mean 7.00 vs 6.92.**
+- **The reports are more honest.** Every HEAD build ran the blind judge and reported its score. Taken before the fixes, it sat 0.2–1.4 below the build's own final critique. One run wrote that its own 7.6 "was written after seeing my own code, so the blind 7 is the more reliable number."
+- **Confound:** `typecheck.py` switched to a stricter SIL compile at 15:12 while four HEAD builds were still running. It only makes the compile gate stricter; all six HEAD builds passed it.
+- Grader: HEAD 17–19, v1.7.0 17–19. Product checks: HEAD 46 of 46, v1.7.0 46 of 47.
+- Cost: $38.20 for 12 builds (HEAD $21.43, v1.7.0 $16.77, +28%), and HEAD builds took 14.9 minutes against 10.7. Judges: $3.53 for 18.
+
 ### Round 19: the fresh Mac brief after its fixes, eval 12, three judges (HEAD vs v1.5.0 vs none)
 
 HEAD is `1f632fa`. It carries round 18's fixes: one moment in time (every live value derived from one `now`), one dominant readout for ambient screens, and two Mac-native options in a Mac deal. The setup is the same as round 18: three runs per config, Opus 5.5 builds ($8 cap), v1.5.0 from `d2593d9`, and three blind Opus 5.5 judges per pair.
