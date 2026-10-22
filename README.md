@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Agent_Skills-compatible-24292f?style=flat" alt="Agent Skills compatible">
   <img src="https://img.shields.io/badge/SwiftUI-iOS_17+_%C2%B7_macOS_14+-0A6A6C?style=flat" alt="SwiftUI, iOS 17+ and macOS 14+">
   <img src="https://img.shields.io/badge/Compose-Android_%2B_CMP-0A6A6C?style=flat" alt="Jetpack Compose and Compose Multiplatform">
-  <a href="evals/README.md"><img src="https://img.shields.io/badge/blind_evals-34_of_40_wins-0A6A6C?style=flat" alt="Blind evals: 34 of 40 pairs won"></a>
+  <a href="evals/README.md"><img src="https://img.shields.io/badge/blind_evals-68_of_81_wins-0A6A6C?style=flat" alt="Blind evals: 68 of 81 pairs won against no skill"></a>
 </p>
 
 It avoids two failure modes equally:
@@ -43,7 +43,7 @@ Screens it built, each from one brief, in our blind evals:
   </tr>
 </table>
 
-<sub>macOS support (v1.5) has a compile-and-lint gate, a reference, rules `R-MAC-1…9` and an eval, but the blind-eval results below are iPhone and Android only.</sub>
+<sub>The screens above are iPhone and Android. The Mac and retro results are in the eval table below, and every screen from rounds 12–19 is on the live results page.</sub>
 
 <sub>The screens are the HTML mocks each run writes next to its SwiftUI or Compose code, rendered at 390×844. Names, prices and timetables are sample content.</sub>
 
@@ -93,7 +93,7 @@ The same prompt ("a habit tracker home in Compose Multiplatform, Duolingo-level 
 ## How it works
 
 1. **Intake and inventory.** For a redesign, read the app's current look first (fonts, colours, mascot, illustrations) and keep its identity assets by default. Then list 8–12 things only this product has: its objects, rituals, places and numbers.
-2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (20 directions, each anchored in shipped apps; 19 also have a Mac window form, and 8 more are Mac-only, dealt with `--platform macos`). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
+2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (31 directions, each anchored in shipped apps: 20 for the phone, 19 of them with a Mac window form; 8 Mac-only, dealt with `--platform macos`, where two of the three options are Mac-native; and 3 retro, dealt only when the user names the style). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
 3. **Owned idea.** One sentence: *"In this app, ⟨inventory item⟩ becomes ⟨device⟩."* It has to fail for the nearest competitor. One live interaction reacts to real state.
 4. **Build.** Tokens, then components, then the screen, with real content at real density, following a code baseline: stable identity, state that survives, transforms not layout.
 5. **Check, fix, report.** The gates below. Then a scored critique of the screenshots, at most two fix rounds, and a fixed report block.
@@ -139,7 +139,8 @@ Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how
 |---|---|---|
 | Compiles | `scripts/typecheck.py` (Swift, iOS simulator or macOS SDK, at the project's deployment target; iOS 17 / macOS 14 by default) · Gradle or `scripts/compile_kotlin.py` (Kotlin 2.2 + Compose MP 1.9) | code that only looks right |
 | Lint | `scripts/lint.py` | slop tells (violet accents, stock greys, 5%-black shadows, emoji), sub-44/48 targets, fixed font sizes, code-baseline mistakes; in macOS mode also missing hover states, menu commands and window sizes, and phone-sized frames |
-| Bottom edge | `scripts/fold.py` measures the mock at 390×844 | a row or a sliver of card cut by the tab bar at rest; a last row that can't scroll clear |
+| Bottom edge | `scripts/fold.py` measures the mock at 390×844 | a row or a sliver of card cut by the tab bar at rest; a section heading orphaned above the bar; a last row that can't scroll clear |
+| One moment in time | every live value derived from one `now`; critique pass 9 reads the resting frame | a progress bar, a countdown and a "since" time that imply different times of day; a counter that disagrees with its rows |
 | Signature | the resting frame, against the category's stock layout | a good direction built as the default layout in new paint |
 | Motion | `scripts/filmstrip.py` freezes every animation at set times | a check-off that never lands, counters that change too early, anything clipped mid-animation |
 | Mascot | `scripts/mascot.py`: SVG rig to SwiftUI / Compose code and Lottie | freehand characters that differ per platform; a silhouette that doesn't read at 24 px |
@@ -175,10 +176,20 @@ Not verified: Compose render (the HTML mock stands in); iOS compile; large-text 
 
 ## Evals
 
-Six build briefs. Each was run with and without the skill and judged blind from screenshots by a separate model with `references/critique.md`. `evals/grade.py` adds objective checks: compile, lint, bottom edge, report block. Method, per-run scores and limits: [`evals/README.md`](evals/README.md). Live results page with every screen: [build eval](https://claude.ai/artifact/4xRqy6RHwvGgAsJoKck6QY).
+Twelve build briefs: phone, Mac and retro. Each was run with and without the skill (and on the Mac also with the previous release, v1.5.0) and judged blind from screenshots by separate models with `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15. `evals/grade.py` adds objective checks: compile, lint, bottom edge, report block. Method, per-run scores and limits: [`evals/README.md`](evals/README.md). Live results page with every screen: [build eval](https://claude.ai/artifact/4xRqy6RHwvGgAsJoKck6QY).
 
 | Round | Setup | Briefs | Blind wins for the skill | Average margin |
 |---|---|---|---|---|
+| 19 | Opus 5.5, three judges, v1.5.0 as a third config | Mac bake day (a fresh brief) × 3 | 3 of 3 (vs v1.5.0: 1 of 3) | +1.1 (vs v1.5.0: −0.1) |
+| 18 | the same, before the round-18 fixes | Mac bake day (a fresh brief) × 3 | 1 of 3 (vs v1.5.0: 2 of 3) | +0.1 (vs v1.5.0: 0.0) |
+| 17 | Opus 5.5, three judges | retro pixel art × 2 | 2 of 2 | +0.9 |
+| 16 | Opus 5.5, three judges | retro pixel art × 2 | 1 of 2 | +0.6 |
+| 15 | Opus 5.5, three judges | retro terminal, pixel art, Mac film log × 2 | 5 of 6 | +0.8 |
+| 14 | Opus 5.5, two judges | retro terminal, pixel art × 2 | 1 of 4 (2 split) | +0.3 |
+| 13 | Opus 5.5, two judges, v1.5.0 as a third config | Mac library, subtitle window × 3 | 6 of 6 (vs v1.5.0: 5 of 6, 1 split) | +1.3 (vs v1.5.0: +0.55) |
+| 12 | Sonnet 5.5 builds, two Opus judges | Mac library, subtitle window × 3 | 6 of 6 (vs v1.5.0: 6 of 6) | +1.7 (vs v1.5.0: +0.8) |
+| 11 | Sonnet 5.5, Sonnet judge, v1.5.0 as a third config | Mac library × 3, subtitle window × 2, library rerun × 2 | 7 of 7 (v1.6.0 vs v1.5.0: 2 of 7) | +1.1 |
+| 10 | Sonnet 5.5, Sonnet judge | Mac library × 2 | 2 of 2 | +1.7 |
 | 9 | Opus 5.5, every gate in place (mascot kit, fold, signature, iOS 17) | habit home, ferry × 2 runs | 4 of 4 | +0.55 |
 | 8 | Opus 5.5 builds and judge, judges see motion filmstrips | habit home × 2 runs | 2 of 2 | +0.5 |
 | 7 | Opus 5.5, balanced A/B, both compile gates | ferry, flat budget × 3 runs | 5 of 6 | +0.9 |
@@ -189,18 +200,21 @@ Six build briefs. Each was run with and without the skill and judged blind from 
 | 2 | Opus 5.5, Sonnet judge | ferry, flat budget | 2 of 2 | +0.5 |
 | 1 | Sonnet 5 | ferry, flat budget | 2 of 2 | +1.5 |
 
-34 of 40 pairs went to the skill. Each round fixed what the one before found:
+**68 of 81 pairs against no skill went to the skill**: 34 of 40 on the phone, 34 of 41 on the Mac and the retro briefs. Against the previous release on the Mac, the skill won 11 of 12 pairs on the briefs it was tuned on (evals 7–8), but **ties v1.5.0 on the fresh bake-day brief** (3 of 6 pairs, 8 of 18 votes). Each round fixed what the one before found:
 - the deal and fit test, after a direction that missed the product;
 - the compile gates, after code that didn't build;
 - the fold check, after rows cut by the tab bar;
 - the filmstrip, because motion was invisible to the judges;
-- a stricter fold rule, after round 9's judges capped a 2 px sliver and a half-showing row that the first version passed.
+- a stricter fold rule, after round 9's judges capped a 2 px sliver and a half-showing row that the first version passed;
+- the Mac deal and three Mac-only presets, then quiet native kept out of collection briefs after it lost the library redesign (rounds 10–12);
+- the retro preset's rules after round 14: no glow on type, the orphaned-heading fold check, meters that show their value, and the pixel screen as an RPG with names in a pixel face (rounds 14–17);
+- one moment in time, one readout for ambient screens, and two Mac-native options in a Mac deal, after the fresh Mac brief (round 18).
 
-The skill runs cost about 1.6–1.9× the baseline. One run per config and one model judge per pair: treat each score as ±0.5.
+The skill runs cost about 1.5–2.5× the baseline. Two or three runs per config: a gap of 0.2–0.3 points is within run-to-run noise, and the judges are models looking at HTML mocks, not native renders.
 
 ## Grounded in
 
-Norman, Nielsen, Shneiderman, Fitts, Hick–Hyman, Cowan, Hoober, Clark, Budiu/NN/g, Cooper, Wroblewski, Bringhurst, Lupton, Albers, Tufte, Chang & Ungar, Willenskomer, Saffer, Walter, Kurosu & Kashimura, Tractinsky, Lindgaard, Tuch, Hassenzahl, Apple HIG, Material 3, and WCAG 2.2. See [`research/literature.md`](research/literature.md); every claim is tagged by how well it's verified. The visual references are real shipped apps (Apple Design Award winners, design-team case studies), not AI concept shots: [`research/real-ui-references.md`](research/real-ui-references.md). The Mac presets rest on Mac practice and its critics (Simmons, Gruber, Panic, MacStories, the macOS 26–27 Liquid Glass reviews, Tonsky on menu icons) and on hotkey and novice-to-expert research: [`research/macos-references.md`](research/macos-references.md).
+Norman, Nielsen, Shneiderman, Fitts, Hick–Hyman, Cowan, Hoober, Clark, Budiu/NN/g, Cooper, Wroblewski, Bringhurst, Lupton, Albers, Tufte, Chang & Ungar, Willenskomer, Saffer, Walter, Kurosu & Kashimura, Tractinsky, Lindgaard, Tuch, Hassenzahl, Apple HIG, Material 3, and WCAG 2.2. See [`research/literature.md`](research/literature.md); every claim is tagged by how well it's verified. The visual references are real shipped apps (Apple Design Award winners, design-team case studies), not AI concept shots: [`research/real-ui-references.md`](research/real-ui-references.md). The Mac presets rest on Mac practice and its critics (Simmons, Gruber, Panic, MacStories, the macOS 26–27 Liquid Glass reviews, Tonsky on menu icons) and on hotkey and novice-to-expert research: [`research/macos-references.md`](research/macos-references.md). The retro preset rests on shipped retro UIs (Fallout's Pip-Boy, Balatro, Shovel Knight, Playdate, Obra Dinn) and on legibility research for bitmap type and light-on-dark text: [`research/retro-references.md`](research/retro-references.md).
 
 **Companion skills** for deeper code correctness (optional): [twostraws/swiftui-agent-skill](https://github.com/twostraws/swiftui-agent-skill) for SwiftUI, and [aldefy/compose-skill](https://github.com/aldefy/compose-skill) for Compose/CMP. See [`research/code-baseline.md`](research/code-baseline.md).
 
@@ -220,7 +234,7 @@ references/
   presets/*.md              one file per style
   critique.md               the scored taste pass on screenshots
   mascot.md                 designing a mascot or hero glyph the skill can draw, rig it, ship it, animate it
-library/directions.json     20 dealt directions (5 per preset), with palettes checked for contrast
+library/directions.json     31 dealt directions (5 per phone preset, 8 Mac-only, 3 retro), with palettes checked for contrast
 scripts/deal.py             deals directions (--platform macos for their Mac window forms); --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator or macOS SDK, no Xcode project needed
@@ -230,7 +244,7 @@ scripts/fold.py             measures the mock's bottom edge: every row at the pi
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times, with measured durations
 scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code, to Lottie JSON, a pausable preview, and the 24 px check sheet
 research/                   the source material behind the rules
-evals/                      briefs, input files, grade.py, and model-free tests for fold.py and the mascot kit
+evals/                      briefs, input files, grade.py, shot.mjs, and model-free tests for deal.py, fold.py and the mascot kit
 docs/examples/              the screens shown above
 ```
 </details>
