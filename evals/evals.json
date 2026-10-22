@@ -72,6 +72,12 @@
       "prompt": "I'm building a small Mac app in SwiftUI that keeps a log of my film photography: the rolls I've loaded, frames shot on each, which lab developed them, and which scans I still need to check. Give it a retro old-computer look, your pick of which one. Write the main window to RollLogWindow.swift.",
       "expected_output": "A macOS window dealt with --platform macos --preset retro, the direction picked by fit (a bitmap desktop, phosphor terminal or pixel sprite Mac form) and named with its Deal line. The real title bar and traffic lights stay real, with no fake title bar drawn on the window; sidebar navigation, a minimum window size, menu commands with shortcuts, Mac density. Retro faces at integer sizes for titles and readouts, a readable face for text, no glow on type, every text tier at 4.5:1, no Apple or Microsoft marks (the rainbow apple, Happy Mac, Chicago, the Windows flag). An owned idea from film photography (a contact sheet, a roll's frame counter, a lab ticket).",
       "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "I'm building a Mac app in SwiftUI for home bakers who make sourdough. Build the main window for a bake day: the recipe being made with its steps, every ingredient scaled by weight for the loaves they're making, the timers running for the current step (bulk ferment, proof), and when the starter was last fed. People keep it open on the kitchen counter all day. Pick the style yourself. Write the SwiftUI code to BakeDayWindow.swift.",
+      "expected_output": "A macOS window dealt with --platform macos (no preset named): the bake's steps with the current one leading, ingredients in grams scaled to the number of loaves (baker's percentages a plus), live timers driven by the clock for the current step, the starter's last feed and its peak window, readable across a kitchen at a glance and dense enough for a Mac. Menu commands with shortcuts for the daily actions (start or pause a timer, next step), a declared minimum window size, not a stretched phone layout, and an owned idea from the baker's world rather than a generic recipe card.",
+      "files": []
     }
   ],
   "how_to_run": "See evals/README.md. Each eval is a full build session: run it with the skill and without it (baseline), grade both with grade.py, then judge screenshots blind with references/critique.md. Ask the user before running: 6 evals x 2 configs = 12 sessions per iteration."

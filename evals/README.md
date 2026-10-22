@@ -15,12 +15,18 @@ Two kinds of eval live here:
 | 4 | `ferry-home-no-preset-swiftui` | **no preset named**: inventory, dealt direction, owned idea, live countdown, lint, critique |
 | 5 | `flat-budget-no-preset-cmp` | **no preset named**: the same workflow in CMP, with a sector that must not be misread as banking |
 | 6 | `guesthouse-photos-no-preset-swiftui` | **no preset, no photos**: a photo-led brief (room detail and booking) where the honest answer is designed image slots and credited pictures of the place, never grey boxes or found photos passed off as the room |
+| 7 | `library-sidebar-macos-swiftui` | **macOS redesign** of `files/LibraryView.swift` (an iPhone layout in a window): sidebar, menu commands, minimum window size, Mac density, an owned idea |
+| 8 | `subtitle-window-macos-swiftui` | **macOS new build**, a pro tool: table, video and editor in one window, keyboard-first, reading speed |
+| 9 | `retro-terminal-trail-swiftui` | a named **retro** style (phosphor terminal) on a phone: legibility, no Fallout marks, CRT effects off under Reduce Motion |
+| 10 | `retro-pixel-plants-compose` | a named **retro** style (16-bit pixel art) on a phone: pixel grid, nearest-neighbour art, meters that show their value |
+| 11 | `retro-film-log-macos-swiftui` | **retro on a Mac**, the look left to the designer: real window chrome kept, no Apple or Microsoft marks |
+| 12 | `bake-day-macos-swiftui` | **a fresh macOS brief**, neither a collection nor a pro tool: a home baker's bake-day window kept open on the counter all day |
 
-Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style.
+Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named.
 
 ### How to run
 
-**Each eval is a full build session**, so a run is expensive: 6 evals × 2 configs = 12 sessions per iteration. Agree the count, model and parallelism with the owner before starting.
+**Each eval is a full build session**, so a run is expensive: n runs × evals × configs sessions per round (round 18: 3 × 1 × 3 = 9). Agree the count, model and parallelism with the owner before starting.
 
 1. For each eval, run the prompt in a fresh session **with the skill** and in another **without it** (the baseline). Save each session's final reply as `response.md` and its files under:
    `<iteration>/eval-<id>-<name>/<with_skill|without_skill>/run-<n>/outputs/`
@@ -32,7 +38,7 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Nine rounds, October 2026. Each build was a separate `claude -p` session, run once with the skill and once without, given the same prompt plus one line asking for a 390×844 HTML mock, and the same tools. A separate judge saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders.
+Eighteen rounds, October 2026, newest first: rounds 1–9 on the phone, 10–13 and 18 on the Mac, 14–17 on the retro preset. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
 
 ### Round 17: pixel names and game states, eval 10, three judges (HEAD vs none)
 

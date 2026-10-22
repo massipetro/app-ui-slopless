@@ -344,12 +344,28 @@ def eval11(d):
     ], d, "macos")
 
 
+
+def eval12(d):
+    sw = read(d, "**/*.swift")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py (macOS): no FAIL in the produced Swift", *lint_fails(d, "macos")),
+        ("Dealt for the Mac (--platform macos)", *check(resp, r"--platform macos")),
+        ("Ingredients scaled by weight (grams, scale factor or baker's percentages)", *check(sw, r"\bgrams?\b|\d\s?g\b|scale|baker.?s ?percent|hydration")),
+        ("Live timers driven by the clock (TimelineView / Timer / Date math)", *check(sw, r"TimelineView|Timer\.publish|\.timeIntervalSince|Date\.now")),
+        ("Starter feeding tracked (last fed / peak)", *check(sw, r"starter[\s\S]{0,200}(fed|feed|peak)|lastFed|fedAt", re.I)),
+        ("Root view declares a minimum window size", *check(sw, r"minWidth:|windowResizability|defaultSize\(")),
+        ("Menu-bar commands with keyboard shortcuts", *check(sw, r"(CommandGroup|CommandMenu|Commands)[\s\S]{0,800}keyboardShortcut|keyboardShortcut[\s\S]{0,800}(CommandGroup|CommandMenu|\.commands)")),
+        ("No iPhone-sized frame or 44pt target stretched into the window", *absent(sw, r"frame\([^)]*width:\s*(375|390|393|430)\b|UIScreen|height:\s*44\b")),
+    ], d, "macos")
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
            "guesthouse-photos-no-preset-swiftui": eval6,
            "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8,
            "retro-terminal-trail-swiftui": eval9, "retro-pixel-plants-compose": eval10,
-           "retro-film-log-macos-swiftui": eval11}
+           "retro-film-log-macos-swiftui": eval11, "bake-day-macos-swiftui": eval12}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])
