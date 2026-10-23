@@ -168,7 +168,7 @@ macOS has no Dynamic Type. System text styles are fixed point sizes, so `.font(.
 - **Custom fonts** still use one display face + one text face (R-VIS-4). `.custom("Name", size: 13, relativeTo: .body)` is harmless on macOS and keeps one code path; `relativeTo` simply has no scaling effect. Register fonts under `ATSApplicationFontsPath` in Info.plist, or with `CTFontManagerRegisterFontsForURL`.
 - **Monospaced digits** for any changing number: `.monospacedDigit()`.
 - **Row heights:** 22-28 pt for dense lists, 32-44 pt for comfortable ones, via `.environment(\.defaultMinListRowHeight, 28)`. `controlSize(.small/.regular/.large)` changes all control heights consistently.
-- **Offer zoom for content-heavy apps:** a ⌘+ / ⌘− / ⌘0 command that scales a `@AppStorage("zoom")` factor applied through `.environment(\.dynamicTypeSize, …)` on your own text, or a `scaleEffect` for canvases. Accessibility for low-vision users on macOS is system zoom plus your own zoom.
+- **Offer zoom for content-heavy apps:** a ⌘+ / ⌘− / ⌘0 command that scales a `@AppStorage("zoom")` factor multiplied into your own font sizes (`.font(.custom(face, size: 13 * zoom))`, or a type-scale token that reads the factor), or a `scaleEffect` for canvases. Don't use `.environment(\.dynamicTypeSize, …)` for it: on macOS that value "does not affect the text size" (Apple's docs), and a render with it is identical. Accessibility for low-vision users on macOS is system zoom plus your own zoom, and the layout must reflow at the zoomed size (WCAG 1.4.4, 1.4.10).
 
 ## 7. Colour, materials and vibrancy
 
@@ -229,3 +229,4 @@ Hard requirements on macOS (breaking one gets a ⚠️ warning in the report, as
 - **Targets:** WCAG 2.5.8 (24×24 CSS px) is the floor; the Mac standard is a 22 pt control with generous padding and hover, not 44 pt.
 - **Traffic lights and title bar** stay visible and clickable; the window remains movable by dragging an obvious area.
 - **Text:** macOS has no Dynamic Type, so offer in-app zoom for content-heavy views (§6) and make sure the layout survives it without clipping.
+- **Checks and the conformance line:** `accessibility.md` §3 applies to the Mac too (names, order, modals, status announcements, single-key shortcuts that need a modifier or focus, a visible focus ring). Run `lint.py --a11y --platform macos`.

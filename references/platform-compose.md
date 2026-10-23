@@ -186,9 +186,11 @@ Modifier
     .semantics { contentDescription = "Notifications" }
 ```
 
-- Hide decorative images and mascots: `contentDescription = null`.
+- Hide decorative images and mascots: `contentDescription = null`. A drawn `Canvas` that shows state: `Modifier.semantics { contentDescription = "Fern"; stateDescription = "Thirsty, 2 days" }`.
 - Merge stat tiles into one element: `Modifier.semantics(mergeDescendants = true) {}`.
 - State in text, not only colour: `stateDescription = "Completed"`.
+- Every `clickable` gets `role` and an `onClickLabel`; never detect taps with `pointerInput` alone, because TalkBack, Switch Access and the keyboard can't reach it (lint `tap-no-role`). Swipe and drag actions also go in `customActions`. Headings: `semantics { heading() }`. Status: `liveRegion = LiveRegionMode.Polite`. Keep an `Indication` (or draw focus yourself) when you remove the ripple.
+- Large text: render at `fontScale = 2f` (Android 14 scales nonlinearly: 14 sp → 26 dp, 30 sp → 38 dp); use `heightIn(min =)`, never `height()`, around text. The full checklist is in `accessibility.md`.
 
 ## 8b. Code baseline (what users feel)
 

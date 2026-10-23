@@ -1,6 +1,6 @@
 # Audit mode
 
-How to critique an existing mobile or Mac screen against the studied principles. For a Mac app also read `platform-macos.md` and use the `R-MAC-*` rules in `principles.md` in place of the touch and reach rules. Read `principles.md` first; every finding cites one of its rule IDs.
+How to critique an existing mobile or Mac screen against the studied principles. For an accessibility audit or a conformance report (WCAG 2.2 AA, a VPAT or ACR), follow `accessibility.md` instead; its findings use the same severity scale. For a Mac app also read `platform-macos.md` and use the `R-MAC-*` rules in `principles.md` in place of the touch and reach rules. Read `principles.md` first; every finding cites one of its rule IDs.
 
 ## Process
 1. **Understand the screen.** Who is the primary user, what is their goal here, how often do they come, and what platform(s) is it for? If the code alone doesn't say, infer it and state the assumption.

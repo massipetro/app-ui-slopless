@@ -2,7 +2,7 @@
 
 The craft pass in step 5 finds what's broken. This file finds out whether the screen is *good*. Use it on the screenshots, never on the code. You wrote the code, so you'll read your intentions into it; the picture only shows what's there.
 
-Look at each screenshot at phone size (not zoomed), light and dark if both were rendered, and one large-text render if you have it. For a Mac app, look at the window at its typical size (about 1280×800) and at its minimum size, light and dark; there is no large-text render. Make each pass on its own; don't blend them.
+Look at each screenshot at phone size (not zoomed), light and dark if both were rendered, and the large-text render (iOS AX5, Android font scale 2.0; SKILL.md step 5). For a Mac app, look at the window at its typical size (about 1280×800) and at its minimum size, light and dark; macOS has no Dynamic Type, so the large-text frame is the in-app zoom if the app has one. Make each pass on its own; don't blend them.
 
 ## Contents
 1. The passes
@@ -27,6 +27,12 @@ Look at each screenshot at phone size (not zoomed), light and dark if both were 
 12. **Slop tells.** Any tell from the SKILL.md list that you can't defend in one sentence?
 13. **Bottom edge.** Use both frames, the resting one and the one scrolled to the end. In the resting frame, zoom into the bottom 150 pt and list every row whose box comes within 24 pt of the pinned bar's top edge: whole (fully above the bar, or fully under it) or cut (any part shows above the bar while the rest is under it). For an HTML mock, `scripts/fold.py` measures this; use its result rather than your eye. A row whose text, avatar or card border is sliced by the bar is a visible craft defect (see the caps), even if the code would let it scroll clear: people, and judges, see the resting frame. A sliver of card behind a fade is still cut, and so is a half-showing row with its title intact: the fade excuses nothing. Content may continue below the fold only with the fold in a gap between rows, under an opaque bar with a visible top edge. In the end frame, the last row sits fully above the bar with at least 8 pt clear. Also check in the code that the bar is a `safeAreaInset` / `Scaffold` bottom bar whose height reaches the list's bottom padding.
 14. **Motion (from the filmstrip).** Skip only when the dial is under 4 and nothing on the core verb animates, and say so. Otherwise, on the frames: does the core verb or live thing visibly change, and does the last frame land on the designed rest state (nothing stuck halfway, no snap at the end)? Does anything clip against its container, or push its neighbours, in any frame, not just the last? Timing: the script's longest finite time for a frequent action is 300 ms or less (a milestone celebration may run longer); a stagger reads as a sequence, not a lump; overshoot is visible but small. Count the loops: each is subtle, never on text, and the static (Reduce Motion) render still carries the same information. Then hold it against the `MOTION` row: at 7 or more the strip shows ambient life; at 1–3 nothing loops.
+15. **Access (from the large-text render, a grayscale squint and the code).** The one pass that may read code, because names, roles and reading order aren't in the pixels; a blind judge with only the images does the first three items and says the fourth wasn't checked. Use `accessibility.md` §3 and answer in order:
+    - **Large text:** in the largest-size frame, does any text clip, truncate into "…" or overlap? Does a row keep a height its text can't fit? Do columns that should stack stay side by side? Does the hero still lead? Name each defect and where it is.
+    - **Colour alone:** in grayscale (squint), does every state still read: late, done, selected, error?
+    - **Contrast:** the worst text pair and the worst control edge on screen, measured, in light and dark.
+    - **Names and order (code):** read the screen top to bottom as VoiceOver or TalkBack would. Does every control say what it is, what it does and what state it's in? Is the order the meaning (the hero before its caption)? Does a custom overlay trap focus? Does every gesture have an action and a visible alternative? Do status changes get announced?
+    - Then write the Accessibility line (`accessibility.md` §4) from what this pass found, not from what the code intends.
 
 ## 2. The score and its caps
 
@@ -38,7 +44,7 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 | **Hierarchy** | 1, 2, 6, 7 | One answer at a glance, two or three masses, decisive type jumps, an accent that means "here" |
 | **Craft** | the craft pass, 5, 13, 14 | Nothing clipped, stretched, off-centre or uneven; rhythm varies on purpose |
 | **Substance** | 9 | Real content at real density; every state designed; nothing reads as a wireframe |
-| **Platform & access** | 8, 11, contrast | Thumb-zone primary, 44/48 targets, native mechanics intact, text scales, contrast holds in both modes (macOS: pointer and keyboard paths, 22 pt+ controls, window chrome and menu bar intact, composed at minimum and large sizes) |
+| **Platform & access** | 8, 11, 15 | Thumb-zone primary, 44/48 targets, native mechanics intact, text scales, contrast holds in both modes (macOS: pointer and keyboard paths, 22 pt+ controls, window chrome and menu bar intact, composed at minimum and large sizes) |
 
 **Overall** = the mean, then apply the caps:
 - Any visible craft defect (clipping, overlap, content under a bar or cut off behind a pinned button, an invisible signifier): Craft ≤ 4 and overall ≤ 6.
@@ -50,6 +56,7 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 - Live numbers that contradict each other (two times of day, a counter that disagrees with its rows): Substance ≤ 5.
 - An ambient screen with two live readouts of equal weight, or a mascot rivalling the readout: Hierarchy ≤ 5.
 - A must-have from the brief is not visible or reachable at rest, or a list shows fewer than three rows at rest: Substance ≤ 5.
+- At the largest text size, text that carries the screen's meaning clips, truncates or overlaps, or a control has no name or role (pass 15): Platform ≤ 5. With no large-text render and no reason given (iOS and Android): Platform ≤ 6.
 - The only primary action is out of thumb reach, or primary targets are under 44/48: Platform ≤ 5. (macOS: the layout is a stretched phone screen, the window has no minimum size, or an action is reachable only by click with no menu or keyboard path: Platform ≤ 5.)
 
 The aim is overall ≥ 8 with no criterion below 6.
@@ -75,6 +82,7 @@ Signature: <which moves are visible; the live thing>
 Platform: <back, insets, large text>
 Tells: <any, with reason or "none">
 Bottom edge: fold.py <pass / FAIL / not run>; rest frame <each row at the fold: whole / cut>; end frame <last row clear by n pt, or what it hides under>
+Access: large text <size rendered: what clips or "nothing clips">; grayscale <states that need colour, or "all read">; contrast <worst pair n:1>; names and order <gaps, or "none found in code">
 Scores: Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which applied>)
 Top three fixes: 1. … 2. … 3. …
 ```

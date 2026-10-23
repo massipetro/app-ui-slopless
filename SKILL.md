@@ -1,6 +1,6 @@
 ---
 name: app-ui-slopless
-description: Visual design and UX for native app screens in SwiftUI (iOS and macOS), Jetpack Compose and Compose Multiplatform (KMP). Use whenever the user wants to design, build, restyle, redesign, theme or audit how an iOS, Android or Mac screen, window, flow, component or design system looks and feels — e.g. a screen that looks generic, boring, stock Material or "AI-made"; picking a type scale, colour palette or theme code; giving an app a style (warm premium, neo-brutalist, playful, editorial); or a UX critique of a mobile or Mac screen or screenshot (hierarchy, tap targets, thumb reach, sidebar and toolbar layout, hover and keyboard use, contrast, error states). Trigger even if "design" is never said ("make it less ugly", "give it personality", "is this memorable or generic?"). Grounded in Apple HIG (iOS and macOS), Material 3 and UX research (Norman, Nielsen, Fitts, Hoober). Not for web/React/HTML pages, Figma tool how-tos, pixel-identical XML-to-Compose ports, or non-visual app work (crashes, scroll performance, navigation/deep links, tests, backend, CI/release, notarization and App Store packaging).
+description: Visual design and UX for native app screens in SwiftUI (iOS and macOS), Jetpack Compose and Compose Multiplatform (KMP). Use whenever the user wants to design, build, restyle, redesign, theme or audit how an iOS, Android or Mac screen, window, flow, component or design system looks and feels — e.g. a screen that looks generic, boring, stock Material or "AI-made"; picking a type scale, colour palette or theme code; giving an app a style (warm premium, neo-brutalist, playful, editorial); a UX critique of a mobile or Mac screen or screenshot (hierarchy, tap targets, thumb reach, sidebar and toolbar layout, contrast, error states); or an accessibility audit of an existing app with no restyle (VoiceOver, TalkBack, Dynamic Type, WCAG 2.2, a VPAT or ACR). Trigger even if "design" is never said ("make it less ugly", "give it personality"). Grounded in Apple HIG, Material 3, WCAG and UX research. Not for web/React/HTML pages, Figma tool how-tos, pixel-identical XML-to-Compose ports, or non-visual app work (crashes, scroll performance, navigation/deep links, tests, backend, CI/release, notarization and App Store packaging).
 ---
 
 # app-ui-slopless
@@ -17,7 +17,7 @@ So the job is: **studied bones, unmistakable skin.**
 
 ## Workflow
 
-Work out which mode the user wants. A request can combine several (e.g. audit → redesign).
+Work out which mode the user wants. A request can combine several (e.g. audit → redesign). Accessibility mode stands alone: it applies to any iOS, Android or Mac app, whatever its style, and never deals a direction; when the user also wants a redesign, run it first and carry its findings into the brief.
 
 | Mode | Trigger | Output |
 |---|---|---|
@@ -25,6 +25,7 @@ Work out which mode the user wants. A request can combine several (e.g. audit �
 | **Redesign** | existing screen + "make it better/bolder" | Intake (read what exists, then ask) → brief → code + short "what changed and why" |
 | **Audit** | "review / critique / what's wrong" | Findings report (see `references/audit.md`) |
 | **Spec** | "design system", "tokens", "style guide" | Intake → brief expanded into a token file |
+| **Accessibility** | "is this accessible", "VoiceOver / TalkBack", "WCAG", "VPAT", "ACR", "Nutrition Labels" | No intake, deal or direction: the app keeps its look. Follow `references/accessibility.md` §2 (lint `--a11y`, renders at the largest text size, code read for names and order), then findings, the Accessibility line and a draft ACR (`scripts/acr.py`) |
 
 ### 1. Intake: read what exists, then inventory the product
 
@@ -268,6 +269,14 @@ It flags the slop tells and craft defects the code itself shows (violet accents,
 2. **Faithful mock:** if you can't run the platform, write an HTML/CSS mock with the same tokens, sizes and layout, and screenshot it headless at phone size (a Mac window: 1280×800, plus the minimum size) with motion settled (e.g. Chromium-based `--headless=new --force-prefers-reduced-motion --window-size=390,844 --screenshot=s.png file.html`; `--size 1280x800` for `filmstrip.py`).
 3. **Neither possible:** say clearly in the report that the layout was never seen rendered.
 
+**Render the largest text size too** (iOS and Android; WCAG 1.4.4 and 1.4.10, Apple's Larger Text label). A screen that holds at the default size often clips, truncates into "…" or overlaps at the size many people actually use. At iOS AX5, body text is about three times its default size. Render the resting frame there and read it with critique pass 15:
+- **iOS (SwiftUI):** `python3 <skill>/scripts/render_swiftui.py <files> --platform ios --dynamic-type ax5 --out ax5.png`. It builds the `#Preview` into a small app on an iPhone simulator; without `--dynamic-type` it gives the default frame, so the native render replaces the mock for iOS too.
+- **Android (Compose):** a screenshot test or preview at `fontScale = 2f`, or `adb shell settings put system font_scale 2.0` on an emulator.
+- **HTML mock** (whenever there's one): `python3 <skill>/scripts/fold.py mock.html --text-scale ax5 --shot ax5.png` (Android: `android2`). It maps each font size through the platform's large-text table, reruns the fold check at that size, and writes the frame. Mark the mock's status bar and home indicator `data-system` so they keep their size.
+- **macOS:** no Dynamic Type (Apple: the setting "does not affect the text size" on a Mac). Render the in-app zoom if the app has one, and the minimum window as before.
+
+Fix what clips: a `minHeight` instead of a fixed height, a stack instead of a row at accessibility sizes, `@ScaledMetric` for sizes beside text. Then hand both frames, default and large, to the blind judge. If none of these can run, write "large text not rendered" under Not verified.
+
 **Render every scrolling screen twice: at rest and scrolled to the end** (on a Mac, also check that the last row isn't hidden by a status bar or bottom toolbar, and that a resized window reflows rather than clips). The resting frame is what people and screenshots see first; the end frame proves the last row clears the pinned bar. On a simulator, swipe to the bottom and screenshot again; in a Compose screenshot test, render a second preview with the list state scrolled to the last item. In the HTML mock, give the scroll container an id and end the file with one line, `<script>if (location.hash === '#end') { const s = document.getElementById('scroll'); s.scrollTop = s.scrollHeight; }</script>`, then render `mock.html` and `mock.html#end` as two frames.
 
 **Record the motion whenever there is some to judge.** Stills can't show motion: a stuck, janky or clipped animation passes every check above, and a good one earns nothing. When `MOTION` is 4 or more, or the core verb or the live thing animates, turn the motion into a filmstrip (frames over time in one image) and look at it:
@@ -280,7 +289,7 @@ It flags the slop tells and craft defects the code itself shows (violet accents,
 
 Read the strip with `references/critique.md` pass 14, and put the numbers on the report's "Live thing" line.
 
-Judge only the pictures, never the code: you wrote the code, so you'll read your intentions into it. If a problem is visible in the screenshot, it's real.
+Judge only the pictures, never the code: you wrote the code, so you'll read your intentions into it. If a problem is visible in the screenshot, it's real. The one exception is critique pass 15's names-and-order check, because what VoiceOver and TalkBack hear isn't in the pixels.
 
 **Craft pass.** Read the image like a picky designer:
 - Text clipped, truncated or overflowing its container, especially the biggest numbers at their widest value ("12" vs "365").
@@ -317,7 +326,7 @@ It copies only the images, the brief and `references/critique.md` into an empty 
 
 Then fix the top three problems across both passes, render again and look again. **Two rounds at most**; report what still falls short instead of looping.
 
-Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). **End with the report block.** Your final message ends with the block below, filled in. It is a fixed format, not a suggestion: copy the 15 labels exactly, in this order, one per line, inside the fenced block, starting with the `app-ui-slopless report` line. Don't rename, merge, reorder or drop a label, and don't restate it as prose or under your own headings. Fill every field; if one doesn't apply, write `n/a` and why. You may write anything you like before the block (what you built, notes for the user), but the block comes last and stands on its own: some hosts (headless runs, some models) show only the last message, so a step that only appeared mid-run is invisible to the reader. Don't claim a check you didn't run.
+Then run the checks at the end of this file. For each failed check, fix it or, if the style choice deliberately trades it off, keep it and **warn** the user (see Accessibility stance). **End with the report block.** Your final message ends with the block below, filled in. It is a fixed format, not a suggestion: copy the 16 labels exactly, in this order, one per line, inside the fenced block, starting with the `app-ui-slopless report` line. Don't rename, merge, reorder or drop a label, and don't restate it as prose or under your own headings. Fill every field; if one doesn't apply, write `n/a` and why. You may write anything you like before the block (what you built, notes for the user), but the block comes last and stands on its own: some hosts (headless runs, some models) show only the last message, so a step that only appeared mid-run is invisible to the reader. Don't claim a check you didn't run.
 
 ```
 app-ui-slopless report
@@ -335,6 +344,7 @@ Still short: <what the critique found and you didn't fix>
 Sample content to replace: <names, prices, dates, photos>
 Pictures: <each found picture: title, creator, licence, source; the mascot: its .svg and the mascot.py command that made the code; or "none, drawn in code">
 Warnings: <accessibility trade-offs with criterion, value and fix>
+Accessibility: <WCAG 2.2 AA, from code, lint and renders at <sizes rendered>, and whether any assistive technology was used; then per criterion, grouped as "Supports: 1.1.1 (reason), …; Partially supports: …; Does not support: …; Not applicable: …" (references/accessibility.md §4: the core set every screen answers, plus the ones its content adds)>
 Not verified: <e.g. not compiled, not run on device, large text not checked>
 ```
 
@@ -358,6 +368,12 @@ These hold in every preset. Each one exists because ignoring it measurably hurts
 - Keep context visible (selected item, totals, active filters). Working memory holds ~4 chunks, not 7 (Cowan 2001). Chunk long numbers in groups of 3–4.
 - Show 3–5 top destinations in a visible tab or navigation bar. Hidden navigation cut discoverability by >20% (NN/g 2016).
 - Spacing *is* grouping. Make gaps within a group clearly smaller than gaps between groups (Gestalt proximity).
+
+**Access** (every preset, every dial setting; `references/accessibility.md`)
+- Use the real control and style it (a `Button` with a `ButtonStyle`, `clickable(role =)`). A tap gesture on a shape has no name, role, state or keyboard path for VoiceOver, TalkBack, Switch Control or Full Keyboard Access (WCAG 4.1.2, 2.1.1).
+- Every picture that means something says what it means; decoration is marked decorative (1.1.1). The accessible name starts with the visible words (2.5.3). Every swipe, drag or pinch also exists as an accessibility action and a visible control (2.5.1, 2.5.7).
+- Text scales to the platform's largest size and the layout reflows: no fixed heights around text, rows that stack at accessibility sizes (1.4.4, 1.4.10). Render it.
+- Reading order is the meaning; custom overlays are modal to assistive tech; status messages are announced (1.3.2, 2.4.3, 4.1.3).
 
 **Forms and errors**
 - Use persistent labels above the field, never placeholder-only labels (NN/g 2014; Wroblewski). Use the right keyboard, autofill hints and sensible defaults, and validate when the field is finished.
@@ -424,7 +440,8 @@ The user is allowed to break platform conventions when the style calls for it, f
 Bold choices sometimes trade against accessibility, such as neon-on-black contrast, a 9 pt caption in an editorial layout, or non-stop motion. The user decides, but always with the information in front of them:
 - Default to compliant (WCAG 2.2 AA: 4.5:1 text, 3:1 large text and UI components, 44/48 targets, scalable text, reduce-motion fallback).
 - If the style needs a trade-off, make it, and list it under **⚠️ Accessibility warnings** with the criterion, the measured or estimated value, and the compliant fix (e.g. "Caption #8A8A8A on #FFF = 3.5:1, fails 1.4.3; #6B6B6B gives 5.3:1").
-- Never drop screen-reader labels, text scaling or the reduce-motion fallback to get a look. These cost nothing visually.
+- Never drop screen-reader labels, roles and states, reading order, text scaling, accessibility actions or the reduce-motion fallback to get a look. These cost nothing visually.
+- Say what conformance the build claims on the report's Accessibility line, in VPAT terms with a reason per criterion, and only what the renders and the code show. A style trade-off makes its criterion "Partially supports". For a conformance report, draft it with `scripts/acr.py` (`references/accessibility.md` §5) and hand it over as a draft: nothing in this skill tests with assistive technology.
 
 ## Slop tells (as of 2026-10; check before handing over)
 
@@ -491,11 +508,13 @@ Models produce slop because they sample the statistical average of their trainin
 - [ ] Primary action is in the thumb zone; targets are 44/48; destructive actions are isolated. (macOS: primary action in the toolbar and menu bar with a shortcut; controls ≥22 pt; every clickable thing has a hover state and a right-click or keyboard path.)
 - [ ] macOS only: root view has a minimum window size and the layout was rendered at minimum, typical and full-screen sizes; sidebar/toolbar/inspector follow `references/platform-macos.md` §2-3; menu commands and shortcuts exist for the daily actions; light, dark and a non-default accent colour checked; no iPhone layout stretched into a window.
 - [ ] Type scale of 4–6 sizes, a real display moment, and custom fonts that scale with Dynamic Type / `sp` (macOS: the system text styles, body 13 pt, plus in-app zoom where content is dense).
-- [ ] Contrast checked in light and dark (or a warning given); colour never carries meaning alone.
+- [ ] Contrast checked in light and dark on the rendered pairs (or a warning given); colour never carries meaning alone (grayscale squint).
+- [ ] Largest text size rendered (iOS AX5 with `render_swiftui.py --platform ios --dynamic-type ax5`, Android font scale 2.0, or `fold.py --text-scale`) and read with critique pass 15: nothing that carries meaning clips, truncates or overlaps.
+- [ ] Custom controls expose name, role and state; pictures are labelled or decorative; gestures have accessibility actions; overlays are modal; status changes are announced (`lint.py` accessibility rules clean or defended).
 - [ ] Core-verb icon and hero glyphs are custom-designed and animated; stock icons only for utility chrome.
 - [ ] A mascot, if the screen has one, was drawn as an SVG rig and generated with `mascot.py svg2code` (`--into` for a single-file brief), never freehand; it passed `mascot.py check` (24 px silhouette, squint) and its states were filmstripped and read with pass 14.
 - [ ] Motion matches the `MOTION` dial's row in the motion budget (at 7+: ambient life, press squish everywhere, animated icons); frequent paths ≤300 ms; reduce-motion fallback present.
 - [ ] Depth signifiers (lips, strokes, shadows) visible at ≥3:1 against their surface.
 - [ ] Native mechanics intact (back, insets, text scaling, screen-reader labels; on macOS: window chrome, menu bar, keyboard access, VoiceOver), or the break is justified.
 - [ ] None of the slop tells.
-- [ ] The final message ends with the `app-ui-slopless report` block from step 5: all 15 labels verbatim, in order, every field filled (or `n/a` with a reason).
+- [ ] The final message ends with the `app-ui-slopless report` block from step 5: all 16 labels verbatim, in order, every field filled (or `n/a` with a reason), the Accessibility line in VPAT terms per criterion.
