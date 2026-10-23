@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lint SwiftUI (.swift) and Compose / CMP (.kt) source for slop tells and craft defects.
 
-  lint.py <file or folder> [...] [--platform ios|macos] [--allow rule,rule] [--list-rules]
+  lint.py <file or folder> [...] [--platform ios|macos] [--allow rule,rule] [--a11y] [--list-rules]
 
 Swift files are linted as macOS when --platform macos is given, or when the project (Package.swift,
 .xcodeproj) or the file itself (AppKit, MenuBarExtra, NSViewRepresentable ...) says so. On macOS the
@@ -12,6 +12,10 @@ Prints FAIL / WARN findings as file:line. Exit code 1 if any FAIL remains.
 A FAIL is a tell or defect with no good default reason; a WARN needs a one-sentence
 defence (e.g. hard offset shadows are the point of neo-brutalist). Use --allow for
 deliberate style choices and say so in the report.
+
+Accessibility rules carry the WCAG 2.2 criterion they are evidence against in brackets (CRITERIA
+maps each rule to its criteria for scripts/acr.py); --a11y reports only those, for an accessibility
+audit of an existing app. A clean a11y lint is not conformance: it can't hear VoiceOver.
 
 Heuristic regexes, not a parser: it catches the common defaults, not everything.
 Standard library only; works on Python 3.9.
@@ -65,6 +69,31 @@ RULES = {
     "mac-haptics": ("WARN", "haptic feedback on a Mac", "Trackpad haptics only for alignment/snapping; use a hover or pressed state and, rarely, a short sound"),
     "no-reduce-motion": ("WARN", "animation with no Reduce Motion / Remove animations handling", "Read accessibilityReduceMotion / animator scale and swap travel for fades"),
     "unshipped-font": ("WARN", "custom font with no font file in the project, so the system font shows in its place", "Ship the .ttf/.otf next to the code or in Fonts/ (listed in UIAppFonts / ATSApplicationFontsPath, or in res/font / composeResources/font), or use a system face"),
+    # Accessibility (WCAG 2.2 AA as WCAG2ICT applies it to native apps; criterion in brackets).
+    "tap-no-role": ("FAIL", "tap gesture on a plain view: VoiceOver/TalkBack get no button role, and keyboard and Switch users may not reach it [4.1.2, 2.1.1]", "SwiftUI: a Button with a custom ButtonStyle, or .accessibilityAddTraits(.isButton) on the same view; Compose: Modifier.clickable(role = Role.Button, onClickLabel = …) instead of pointerInput"),
+    "clickable-no-role": ("WARN", "clickable/toggleable/selectable with no role: TalkBack says only \"double-tap to activate\" [4.1.2]", "role = Role.Button / Checkbox / Switch / RadioButton / Tab, and onClickLabel for what it does"),
+    "toggle-no-state": ("WARN", "custom toggle that never tells assistive tech whether it is on [4.1.2]", "SwiftUI: .accessibilityValue(on ? \"On\" : \"Off\") or .accessibilityAddTraits(.isSelected / .isToggle); Compose: Modifier.toggleable(value, role = Role.Switch) or stateDescription"),
+    "image-no-label": ("WARN", "picture or drawing with no text alternative and no decorative marking [1.1.1]", "Label what it shows (.accessibilityLabel / contentDescription / semantics { contentDescription }), or mark it decorative (Image(decorative:), .accessibilityHidden(true))"),
+    "a11y-hidden-control": ("FAIL", "interactive control hidden from assistive tech [4.1.2]", "Hide only decoration; a control hidden from VoiceOver/TalkBack is unusable for their users"),
+    "label-in-name": ("WARN", "accessible name doesn't contain the visible label, so Voice Control / Voice Access can't call it by what it shows [2.5.3]", "Start the accessibilityLabel / contentDescription with the visible words"),
+    "colour-only-state": ("WARN", "a state shown only by a change of colour [1.4.1]", "Pair the colour with a shape, icon, weight or text that changes too (and an accessibilityValue / stateDescription)"),
+    "fixed-text-frame": ("WARN", "text inside a fixed-height frame: it clips or truncates at the largest text sizes [1.4.4, 1.4.10]", "minHeight / heightIn(min =), @ScaledMetric, or let the row grow; switch HStack→VStack at accessibility sizes"),
+    "dynamic-type-capped": ("WARN", "text scaling capped below the accessibility sizes [1.4.4]", "Let text reach the AX sizes / fontScale 2.0; cap only a display number that already fills its region, and say so"),
+    "gesture-no-alternative": ("WARN", "drag, swipe, pinch or rotate gesture with no accessibility action [2.5.1, 2.5.7]", "Add .accessibilityAction(named:) / .accessibilityAdjustableAction (Compose: customActions or a progressBarRangeInfo + setProgress) and a visible single-tap control"),
+    "overlay-not-modal": ("WARN", "custom overlay (scrim + panel) that leaves the content behind it reachable to VoiceOver/TalkBack and the keyboard [2.4.3]", "Use .sheet / .alert / Dialog / ModalBottomSheet, or add .accessibilityAddTraits(.isModal) (Compose: hide the content behind with clearAndSetSemantics or use Dialog/Popup)"),
+    "heading-missing": ("WARN", "titled sections with no heading marked, so screen-reader users can't jump between them [1.3.1, 2.4.6]", "SwiftUI: .accessibilityAddTraits(.isHeader); Compose: Modifier.semantics { heading() }"),
+    "no-reduce-transparency": ("WARN", "translucent material with no Reduce Transparency fallback [508 503.2, EN 301 549 11.7]", "@Environment(\\.accessibilityReduceTransparency): swap the material for an opaque surface token"),
+}
+
+# Which WCAG 2.2 criteria each rule is evidence against (scripts/acr.py reads this).
+CRITERIA = {
+    "unlabelled-icon-button": ["1.1.1", "4.1.2"], "placeholder-only-field": ["3.3.2", "1.3.1"], "small-target": ["2.5.8"],
+    "fixed-font-size": ["1.4.4"], "no-reduce-motion": ["2.2.2"], "pinned-bottom-overlap": ["2.4.11"],
+    "tap-no-role": ["4.1.2", "2.1.1"], "clickable-no-role": ["4.1.2"], "toggle-no-state": ["4.1.2"],
+    "image-no-label": ["1.1.1"], "a11y-hidden-control": ["4.1.2"], "label-in-name": ["2.5.3"],
+    "colour-only-state": ["1.4.1"], "fixed-text-frame": ["1.4.4", "1.4.10"], "dynamic-type-capped": ["1.4.4"],
+    "gesture-no-alternative": ["2.5.1", "2.5.7"], "overlay-not-modal": ["2.4.3"], "heading-missing": ["1.3.1", "2.4.6"],
+    "no-reduce-transparency": ["503.2"],
 }
 
 HEX_KT = re.compile(r"Color\(\s*0x([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6})\s*\)")
@@ -156,6 +185,307 @@ def brace_block(text: str, start: int) -> tuple[int, int]:
             if depth == 0:
                 return (i, j + 1)
     return (i, len(text))
+
+
+OPEN, CLOSE = "({[", ")}]"
+
+
+def match_back(text: str, j: int) -> int:
+    """Index of the opener that matches the closer at text[j]."""
+    depth = 0
+    for k in range(j, -1, -1):
+        if text[k] in CLOSE:
+            depth += 1
+        elif text[k] in OPEN:
+            depth -= 1
+            if depth == 0:
+                return k
+    return 0
+
+
+def match_fwd(text: str, i: int) -> int:
+    """Index just past the closer that matches the opener at text[i]."""
+    depth = 0
+    for k in range(i, len(text)):
+        if text[k] in OPEN:
+            depth += 1
+        elif text[k] in CLOSE:
+            depth -= 1
+            if depth == 0:
+                return k + 1
+    return len(text)
+
+
+def swift_chain(text: str, at: int) -> tuple[int, int]:
+    """(start, end) of the SwiftUI expression whose modifier chain includes the `.modifier` at `at`:
+    back to the head view (`HStack { … }`, `Image("x")`), forward over every `.modifier(…) { … }`."""
+    start = at
+    p = at if text[at:at + 1] == "." else -1
+    while p >= 0:  # backward from a `.link`: [groups] identifier, and on while a '.' precedes it
+        j = p - 1
+        while j >= 0 and text[j].isspace():
+            j -= 1
+        while j >= 0 and text[j] in CLOSE:  # the previous link's ( ) and { } groups
+            j = match_back(text, j) - 1
+            while j >= 0 and text[j] in " \t":
+                j -= 1
+        k = j
+        while k >= 0 and (text[k].isalnum() or text[k] == "_"):
+            k -= 1
+        start = k + 1
+        if k == j:  # no identifier: a closure or a leading-dot expression
+            break
+        while k >= 0 and text[k].isspace():
+            k -= 1
+        p = k if k >= 0 and text[k] == "." else -1
+    m = re.match(r"\.?[\w]+", text[at:])
+    k = at + (m.end() if m else 0)
+    while True:  # forward: groups after this link (and labelled trailing closures), then more `.links`
+        while True:
+            g = re.match(r"[ \t]*([({])", text[k:]) or re.match(r"\s*[a-z]\w*:\s*(\{)", text[k:])
+            if not g:
+                break
+            k = match_fwd(text, k + g.start(1))
+        nxt = re.match(r"\s*\.[A-Za-z_]\w*", text[k:])
+        if not nxt:
+            break
+        k += nxt.end()
+    return start, k
+
+
+def kotlin_call(text: str, at: int) -> tuple[str, int, int]:
+    """(name, start, end) of the innermost call whose argument list contains `at`, with its trailing lambda."""
+    depth = 0
+    for k in range(at - 1, -1, -1):
+        c = text[k]
+        if c in CLOSE:
+            depth += 1
+        elif c in OPEN:
+            if depth:
+                depth -= 1
+                continue
+            m = re.search(r"([A-Za-z_]\w*)\s*$", text[:k]) if c == "(" else None
+            if not m:
+                return "", 0, 0
+            end = match_fwd(text, k)
+            lam = re.match(r"\s*\{", text[end:])
+            if lam:
+                end = match_fwd(text, end + lam.end() - 1)
+            return m.group(1), m.start(1), end
+    return "", 0, 0
+
+
+SWIFT_A11Y_ROLE = re.compile(r"accessibilityAddTraits\([^)]*\.is(Button|Link|Toggle|Selected|Tab)|accessibilityAction\b|accessibilityRepresentation|accessibilityAdjustableAction|accessibilityHidden\(\s*true")
+SWIFT_COLOUR_CALL = re.compile(r"\.(foregroundStyle|foregroundColor|fill|background|tint|stroke|strokeBorder|border|shadow)\(\s*!?\(?\s*([A-Za-z_][\w.]*)\s*\)?\s*\?(?!\?)")
+KT_COLOUR_CALL = re.compile(r"\b(color|containerColor|contentColor|tint|background|borderColor|backgroundColor|targetValue)\s*=\s*if\s*\(\s*!?\s*([A-Za-z_][\w.]*)\s*\)|\.background\(\s*(?:color\s*=\s*)?if\s*\(\s*!?\s*([A-Za-z_][\w.]*)\s*\)|animateColorAsState\(\s*(?:targetValue\s*=\s*)?if\s*\(\s*!?\s*([A-Za-z_][\w.]*)\s*\)")
+NOT_AX = ("xSmall", "small", "medium", "large", "xLarge", "xxLarge", "xxxLarge")
+
+
+def labelled_around(text: str, at: int, swift: bool) -> bool:
+    """True when the view or composable that contains `at` sets an accessible name or hides itself,
+    or every call site of it does (a drawing inside `fun Gauge(modifier)` is labelled where it's used)."""
+    decl = r"\bstruct\s+(\w+)\s*(?::[^{]*)?\{" if swift else r"\bfun\s+(\w+)\s*\("
+    marks = r"accessibility(Label|Value|Hidden|Element|Representation)" if swift else r"semantics|contentDescription"
+    owner = None
+    for m in re.finditer(decl, text[:at]):
+        s, e = brace_block(text, m.end() - 1)
+        if s <= at < e:
+            owner = (m.group(1), s, e)
+    if not owner:
+        return False
+    name, s, e = owner
+    if re.search(marks, text[s:e]):
+        return True
+    sites = [c.start() for c in re.finditer(r"(?<![\w.])" + name + r"\s*\(", text) if not (s - 200 < c.start() < e)]
+    for c in sites:
+        span = text[swift_chain(text, c)[0]:swift_chain(text, c)[1]] if swift else text[c:c + len(call_span(text, c))]
+        if not re.search(marks, span):
+            return False
+    return bool(sites)
+
+
+def norm_words(s: str) -> str:
+    return " ".join(re.sub(r"[^\w\s]", " ", s.lower()).split())
+
+
+def a11y_findings(text: str, swift: bool, mac: bool, add, line_of) -> None:
+    """Accessibility rules (WCAG 2.2 AA as WCAG2ICT applies it to native apps). Heuristic, like the rest."""
+    if swift:
+        # Tap gestures on plain views. A Button keeps its role, focus and keyboard activation; a gesture doesn't.
+        for m in re.finditer(r"\.onTapGesture\b|\.(simultaneous|highPriority)?[gG]esture\(\s*TapGesture", text):
+            s, e = swift_chain(text, m.start())
+            chain = text[s:e]
+            body = text[m.start():e]
+            if re.match(r"\s*(Button|Toggle|Link|NavigationLink|Menu)\b", chain) or SWIFT_A11Y_ROLE.search(chain):
+                continue
+            body = body[:match_fwd(body, body.find("{"))] if "{" in body else body
+            if re.search(r"(?i)focus|keyboard|endEditing|resignFirstResponder", body):  # tap-outside to dismiss the keyboard
+                continue
+            if re.match(r"\s*Image\(\s*systemName:", chain) and "accessibilityLabel" not in chain:
+                add("unlabelled-icon-button", line_of(m.start()), "Image(systemName:) with a tap gesture")
+            add("tap-no-role", line_of(m.start()))
+        # Custom toggles: a Button that flips a Bool must say which way it is.
+        for m in re.finditer(r"\bButton\s*(\(action:|\{)", text):
+            s, e = swift_chain(text, m.start())
+            chain = text[s:e]
+            action = text[m.start():match_fwd(text, m.end() - 1)] if m.group(1) == "{" else call_span(text, m.start())
+            flip = re.search(r"([\w.]+)\.toggle\(\)|(\b[\w.]+)\s*=\s*!\s*\2\b", action)
+            if not flip:
+                continue
+            var = (flip.group(1) or flip.group(2)).split(".")[-1]
+            label = chain[len(action):] if chain.startswith(action) else chain
+            # Showing a panel is a plain button (the panel is the state); a label that changes with it (Play/Pause) says it.
+            if re.match(r"(?i)(show|isShowing|is\w*Presented|present|expand|isExpanded)", var) and "expand" not in var.lower() \
+                    or re.search(r"(Text\(|Label\(|systemName:|systemImage:)[^\n]*\b" + re.escape(var) + r"\b", label):
+                continue
+            if not re.search(r"accessibilityValue|\.is(Selected|Toggle)\b|accessibilityRepresentation|\bToggle\(", chain):
+                add("toggle-no-state", line_of(m.start()), var)
+        # Label in name: the accessible name must contain the words the button shows.
+        for m in re.finditer(r"\bButton\b", text):
+            s, e = swift_chain(text, m.start())
+            chain = text[s:e]
+            shown = re.match(r"\s*Button\(\s*\"([^\"\\]{3,60})\"", chain) or re.search(r"\bText\(\s*\"([^\"\\]{3,60})\"", chain)
+            named = re.search(r"\.accessibilityLabel\(\s*(?:Text\()?\s*\"([^\"\\]+)\"", chain)
+            if shown and named and norm_words(shown.group(1)) not in norm_words(named.group(1)):
+                add("label-in-name", line_of(named.start()), f"shows '{shown.group(1)}', named '{named.group(1)}'")
+        # Pictures and drawings: a text alternative, or marked decorative.
+        for m in re.finditer(r"\bImage\(\s*\"|\bImage\(\s*(uiImage|nsImage):|\bAsyncImage\(|\bCanvas\s*[({]", text):
+            s, e = swift_chain(text, m.start())
+            chain = text[s:e]
+            if not re.search(r"accessibilityLabel|accessibilityHidden|accessibilityValue|accessibilityRepresentation|accessibilityElement|\bLabel\(", chain) \
+                    and not labelled_around(text, m.start(), True):
+                add("image-no-label", line_of(m.start()), m.group(0).strip("({ \""))
+        # Controls hidden from assistive tech.
+        for m in re.finditer(r"\.accessibilityHidden\(\s*true\s*\)", text):
+            s, e = swift_chain(text, m.start())
+            chain = text[s:m.start()]
+            if re.search(r"\bButton\b|\bToggle\(|\bLink\(|NavigationLink|\bTextField\(|\.onTapGesture", chain) and \
+                    not re.match(r"\s*(Color|Rectangle|Circle)\b", chain):
+                add("a11y-hidden-control", line_of(m.start()))
+        if not mac:
+            # Fixed-height frames around text clip at the accessibility sizes (AX5 body is about 3x the default).
+            scaled = set(re.findall(r"@ScaledMetric[^\n]*?var\s+(\w+)", text))
+            for m in re.finditer(r"\.frame\(([^()]*)\)", text):
+                h = re.search(r"(?<![A-Za-z])height:\s*([A-Za-z_][\w.]*|\d+(?:\.\d+)?)", m.group(1))
+                if not h or h.group(1).split(".")[-1] in scaled:
+                    continue
+                s, _ = swift_chain(text, m.start())
+                head = text[s:m.start()]
+                if re.match(r"\s*(ScrollView|List|Map|Chart|Canvas|Image|Color|Rectangle|Circle|Spacer|Divider|GeometryReader|TabView|VideoPlayer)\b", head):
+                    continue
+                if re.search(r"\b(Text|Label|TextField)\(", head):
+                    add("fixed-text-frame", line_of(m.start()), f"height: {h.group(1)}")
+            for m in re.finditer(r"\.dynamicTypeSize\(([^)]*)\)", text):
+                arg = m.group(1)
+                cap = re.search(r"(?:\.\.\.|\.\.<)\s*(?:DynamicTypeSize)?\.(\w+)", arg) or re.fullmatch(r"\s*(?:DynamicTypeSize)?\.(\w+)\s*", arg)
+                if cap and cap.group(1) in NOT_AX:
+                    add("dynamic-type-capped", line_of(m.start()), f"capped at .{cap.group(1)}")
+        # Path, drag and multi-touch gestures need an accessible and a single-tap alternative.
+        g = re.search(r"\bDragGesture\((?!\s*minimumDistance:\s*0\b)|\bMagnif(y|ication)Gesture\b|\bRotat(e|ion)Gesture\b", text)
+        if g and not re.search(r"accessibilityAction|accessibilityAdjustableAction|accessibilityScrollAction|accessibilityZoomAction|accessibilityRepresentation", text):
+            add("gesture-no-alternative", line_of(g.start()), g.group(0).rstrip("("))
+        # A home-made modal: a full-screen scrim with no .isModal leaves the content behind it reachable.
+        for m in re.finditer(r"(Color\.black|\.black|Color\(\s*\.black\s*\))\s*\.opacity\(\s*0?\.[1-9]|\b\w*[Ss]crim\b(?!\w*\()", text):
+            s, e = swift_chain(text, m.start())
+            if re.search(r"ignoresSafeArea|onTapGesture", text[s:e]) and ".isModal" not in text:
+                add("overlay-not-modal", line_of(m.start()))
+                break
+        # Section titles with no heading trait.
+        titles = re.findall(r"\bText\([^\n]*\)\s*\n?\s*\.font\(\s*(?:\.(?:largeTitle|title|title2|title3|headline)\b|[\w.]*(?i:title|heading|section)\w*)", text)
+        if len(titles) >= 2 and ".isHeader" not in text:
+            add("heading-missing", line_of(text.find(titles[1])), f"{len(titles)} titles")
+        b = re.search(r"\.blur\(\s*radius:\s*[1-9]", text)
+        if b and "accessibilityReduceTransparency" not in text:
+            add("no-reduce-transparency", line_of(b.start()))
+        colour_calls = [(m.start(), m.start() + len(call_span(text, m.start()) or m.group(0)), m.group(2)) for m in SWIFT_COLOUR_CALL.finditer(text)]
+        colour_calls += [(m.start(), m.end(), m.group(1)) for m in re.finditer(r":\s*Color\s*=\s*!?([A-Za-z_][\w.]*)\s*\?", text)]
+    else:
+        # Taps detected by hand are invisible to TalkBack and unreachable by Switch Access and the keyboard.
+        for m in re.finditer(r"\bpointerInput\(", text):
+            block = text[m.start():match_fwd(text, text.find("{", m.start()))] if "{" in text[m.start():m.start() + 120] else ""
+            if "detectTapGestures" not in block or re.search(r"\bonPress\b", block) and "onTap" not in block:
+                continue
+            name, s, e = kotlin_call(text, m.start())
+            span = text[s:e] if name else text[max(0, m.start() - 300):m.start() + 300]
+            if not re.search(r"\bsemantics\b|\bclickable\b|\btoggleable\b|\bselectable\b|onClick\s*=", span):
+                add("tap-no-role", line_of(m.start()), "pointerInput { detectTapGestures }")
+        for m in re.finditer(r"\.(clickable|combinedClickable|toggleable|selectable|triStateToggleable)\b\s*(\(|\{)", text):
+            span = call_span(text, m.start()) if m.group(2) == "(" else ""
+            args = span[:span.find("{")] if "{" in span else span
+            if "role" not in args:
+                add("clickable-no-role", line_of(m.start()), m.group(1))
+            if m.group(1) in ("clickable", "combinedClickable"):
+                lam = text[m.start():match_fwd(text, text.find("{", m.start()))] if "{" in text[m.start():m.start() + 200] else ""
+                if re.search(r"(\b[\w.]+)\s*=\s*!\s*\1\b|\.toggle\(\)", lam):
+                    name, s, e = kotlin_call(text, m.start())
+                    if not re.search(r"stateDescription|toggleable|\bselected\s*=|Role\.(Switch|Checkbox)", text[s:e] if name else lam):
+                        add("toggle-no-state", line_of(m.start()))
+        for m in re.finditer(r"\bclearAndSetSemantics\s*\{\s*\}|\binvisibleToUser\(\)|\bhideFromAccessibility\(\)", text):
+            name, s, e = kotlin_call(text, m.start())
+            if name and re.search(r"\bclickable\b|\bonClick\s*=|\btoggleable\b|\bButton\(|IconButton\(", text[s:e]):
+                add("a11y-hidden-control", line_of(m.start()))
+        for m in re.finditer(r"clearAndSetSemantics\s*\{[^}]*contentDescription\s*=\s*\"([^\"\\]+)\"", text):
+            name, s, e = kotlin_call(text, m.start())
+            shown = re.search(r"\bText\(\s*(?:text\s*=\s*)?\"([^\"\\]{3,60})\"", text[s:e]) if name else None
+            if shown and norm_words(shown.group(1)) not in norm_words(m.group(1)):
+                add("label-in-name", line_of(m.start()), f"shows '{shown.group(1)}', named '{m.group(1)}'")
+        for m in re.finditer(r"\bCanvas\(", text):
+            args = call_span(text, m.start())
+            args = args[:args.find("{")] if "{" in args else args
+            if not re.search(r"semantics|contentDescription", args) and not labelled_around(text, m.start(), False):
+                add("image-no-label", line_of(m.start()), "Canvas")
+        for m in re.finditer(r"\.(height|size|requiredHeight|requiredSize)\(\s*\d+(\.\d+)?\.dp\s*\)", text):
+            name, s, e = kotlin_call(text, m.start())
+            if name in ("Text", "Row", "Box", "Column", "Surface", "Card", "Button", "OutlinedButton", "TextButton", "FilledTonalButton", "ElevatedButton", "LazyRow", "FlowRow") \
+                    and re.search(r"\bText\(", text[s:e]):
+                add("fixed-text-frame", line_of(m.start()), f"{name} with a fixed {m.group(1)}")
+        for m in re.finditer(r"fontScale\s*=\s*1(\.0)?f\b|fontScale\.coerceAtMost\(|fontScale\s*=\s*min\(|/\s*(LocalDensity\.current\.)?fontScale\b", text):
+            add("dynamic-type-capped", line_of(m.start()), m.group(0)[:30])
+        g = re.search(r"\bdetect(Horizontal|Vertical)?DragGestures(AfterLongPress)?\b|\bdetectTransformGestures\b|\.(draggable|anchoredDraggable|swipeable|transformable)\(|\bSwipeToDismissBox\(", text)
+        if g and not re.search(r"customActions|CustomAccessibilityAction|setProgress|progressBarRangeInfo", text):
+            add("gesture-no-alternative", line_of(g.start()), g.group(0).strip(".("))
+        for m in re.finditer(r"Color\.Black\.copy\(\s*alpha\s*=\s*0?\.[1-9]|\b\w*[Ss]crim\w*\b", text):
+            name, s, e = kotlin_call(text, m.start())
+            span = text[s:e] if name else ""
+            if "fillMaxSize" in span and re.search(r"clickable|pointerInput", span) and \
+                    not re.search(r"clearAndSetSemantics|isTraversalGroup|traversalIndex|paneTitle|hideFromAccessibility|invisibleToUser", text):
+                add("overlay-not-modal", line_of(m.start()))
+                break
+        titles = re.findall(r"style\s*=\s*(?:MaterialTheme\.typography\.(?:title|headline|display)\w*|[\w.]*(?i:title|heading|section)\w*)", text)
+        if len(titles) >= 2 and "heading()" not in text:
+            add("heading-missing", line_of(text.find(titles[1])), f"{len(titles)} titles")
+        colour_calls = []
+        for m in KT_COLOUR_CALL.finditer(text):
+            var = next(v for v in m.groups()[1:] if v)
+            colour_calls.append((m.start(), text.find(")", m.end() - 1) + 1 if m.group(0).endswith(")") else m.end(), var))
+            # an `if (x) A else B` colour expression runs to the end of its line
+            colour_calls[-1] = (m.start(), text.find("\n", m.start()) if text.find("\n", m.start()) > 0 else len(text), var)
+
+    # Colour as the only signal: the Bool that picks a colour changes nothing else people can see.
+    # Only status hues count (green for on time, red for late): a zebra band or an inverted selected fill
+    # changes lightness too, so it isn't the colour-alone case WCAG 1.4.1 is about.
+    status = re.compile(r"(?i)\b(red|green|orange|yellow|amber)\b|success|error|danger|warn|alert|positive|negative|late|overdue|delay|ontime|onTime|good|bad|ok\b|critical|urgent|status")
+    reported = set()
+    for start, end, var in colour_calls:
+        name = var.split(".")[-1]
+        if not status.search(text[start:end].replace(var, "", 1)):
+            continue
+        if name in reported or name in ("isEnabled", "enabled", "colorScheme", "isDark", "dark", "darkTheme", "isPressed", "pressed", "isHovered", "hovering", "configuration"):
+            continue
+        visible = False
+        for u in re.finditer(r"(?<![\w.])(?:[\w]+\.)*" + re.escape(name) + r"\b", text):
+            if any(s <= u.start() < e for s, e, _ in colour_calls):
+                continue
+            ln = text[text.rfind("\n", 0, u.start()) + 1:text.find("\n", u.start()) if text.find("\n", u.start()) > 0 else len(text)]
+            if re.search(r"\b(var|let|val)\s+" + re.escape(name) + r"\b|" + re.escape(name) + r"\s*:\s*\w|" + re.escape(name) + r"\s*=[^=]|" + re.escape(name) + r"\.toggle\(\)", ln):
+                continue
+            if re.search(r"accessibility|semantics|stateDescription|contentDescription|Description\s*=", ln):
+                continue
+            visible = True
+            break
+        if not visible:
+            reported.add(name)
+            add("colour-only-state", line_of(start), f"'{var}' changes only a colour")
 
 
 MAC_FILE = re.compile(r"^\s*import\s+AppKit\b|\bNSViewRepresentable\b|\bNSWindow\b|\bNSApp\b|\bNSColor\b|\bNSImage\b|\bMenuBarExtra\b|\.windowStyle\(|\.inspector\(isPresented", re.M)
@@ -400,6 +730,8 @@ def lint_file(path: Path, platform: str | None = None) -> list[tuple[str, int, s
         if wg and not re.search(r"minWidth:|\.defaultSize\(|\.windowResizability\(|\.windowMinSize|\.defaultWindowPlacement", text):
             add("mac-window-size", line_of(wg.start()))
 
+    a11y_findings(text, swift, mac, add, line_of)
+
     # Caps budget: uppercase transforms plus ALL-CAPS text literals (2+ words or 4+ letters).
     caps_sites = []
     for m in re.finditer(r"\.textCase\(\s*\.uppercase\s*\)|\.uppercased\(\)|\.uppercase\(\)|textTransform\s*=", text):
@@ -466,12 +798,14 @@ def main() -> int:
     ap.add_argument("paths", nargs="*")
     ap.add_argument("--platform", choices=["ios", "macos"], help="lint Swift files as this platform (default: detected from the project and the file)")
     ap.add_argument("--allow", default="", help="comma-separated rules to skip, for deliberate style choices")
+    ap.add_argument("--a11y", action="store_true", help="report only the accessibility rules (Accessibility audit mode)")
     ap.add_argument("--list-rules", action="store_true")
     args = ap.parse_args()
 
     if args.list_rules:
         for rule, (sev, what, fix) in RULES.items():
-            print(f"{sev:4} {rule:24} {what}. Instead: {fix}.")
+            if not args.a11y or rule in CRITERIA:
+                print(f"{sev:4} {rule:24} {what}. Instead: {fix}.")
         return 0
     if not args.paths:
         ap.print_help()
@@ -493,7 +827,7 @@ def main() -> int:
     fails = warns = 0
     for f in files:
         for rule, lineno, detail in lint_file(f, args.platform):
-            if rule in allow:
+            if rule in allow or args.a11y and rule not in CRITERIA:
                 continue
             sev, what, fix = RULES[rule]
             fails += sev == "FAIL"
