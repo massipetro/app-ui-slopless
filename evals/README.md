@@ -39,7 +39,36 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Twenty-three rounds, October 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–23 on accessibility. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+Twenty-four rounds, October 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–24 on accessibility. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+
+### Round 24: native bottom edge and the build's clock, eval 13, three judges (HEAD vs round 23's HEAD)
+
+HEAD is `247aa27` (worktree `skill-head24`). Since round 23:
+- every iOS render checks its own bottom edge, by reading the accessibility elements that cross the tab bar or a pinned bar;
+- the render takes the clock from the `#Preview`'s name when `--clock` isn't passed;
+- the eval 13 grader adds the native bottom edge.
+
+The comparison is round 23's HEAD `a2668bb` (`skill-head23`). The setup is round 23's, except that the harness rendered with `evals/render_builds.py`, so each build appears with its own clock. Five of the six builds named their preview with a time and got it; round 23's HEAD run 1 didn't and shows the wall clock. No build passed `--clock`.
+
+| Run | HEAD direction | Round 23 HEAD direction | HEAD vs round 23 HEAD | Access | Votes |
+|---|---|---|---|---|---|
+| 1 | wp-departure-board | wp-departure-board | **7.27** vs 5.57 | **8.0** vs 4.3 | 3–0 |
+| 2 | wp-departure-board | ed-newspaper-frame | **7.23** vs 6.00 | 7.7 vs **8.0** | 3–0 |
+| 3 | ed-newspaper-frame | wp-departure-board | 7.04 vs **7.18** | **8.0** vs 7.0 | 1–2 |
+
+- **2 of 3 pairs, 7 of 9 votes, mean 7.18 vs 6.25; Access 7.89 vs 6.44.** This is HEAD's highest mean on eval 13 so far. It is still n = 3 on one brief.
+- **Nothing cut at the bottom edge on the HEAD side.**
+  - The native check found nothing pinned over the list in any HEAD build, so no row could be cut.
+  - It flagged rows cut by the floating tab bar in two of round 23's HEAD builds, at both sizes: a 3 pt sliver in run 1 and 17 pt in run 2.
+  - Every judge in pairs 1 and 2 named those cut rows. They were the craft cap that decided both pairs.
+  - The grader's new native check failed exactly those two builds.
+  - HEAD run 3's mock failed `fold.py` (text crossing the mock's bar) while its native render had no pinned bar; the judges saw the native render.
+- **The clock shows up in a judgement for the first time.** In pair 1, all three judges said HEAD's times agree with the status bar, while the other screen's lateness contradicted its 15:37 wall clock.
+- **Pair 3 went to round 23's HEAD on hierarchy.** All three judges gave HEAD the better AX5 behaviour (Access 8 vs 7): both buttons in the first screen, the action reordered first. Two of them preferred the other screen's single strong focus over HEAD's headings, which carried as much weight as the overdue dose, and its small "Show" link.
+- **Lint:** no FAIL on either side.
+- Grader: HEAD 29–30 of 30–31, round 23's HEAD 29–30 of 30–31.
+- Cost: $29.91 for 6 builds (HEAD $14.57, round 23's HEAD $15.34). Builds took 19.0 minutes against 21.0. Judges: $2.39 for 9.
+- **Not measured:** Android, the Mac, and any assistive technology. The Access score is a judgement on pixels.
 
 ### Round 23: round 22's follow-ups, eval 13, three judges (HEAD vs round 22's HEAD)
 
