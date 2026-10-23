@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -42,14 +43,24 @@ PLATFORM = {
 
 PROMPT = """You are a blind design judge. The image file(s) {files} in this folder are renders of {what}. They answer this brief: '{brief}'
 Read critique.md in this folder, then look at every image (Read tool). You know nothing about how they were made; judge only what is visible.
-Score the screen with critique.md's passes, criteria and caps: Idea, Hierarchy, Craft, Substance, Platform, each 0-10, an overall, and every cap that applies.
+Score the screen with critique.md's passes, criteria and caps: Idea, Hierarchy, Craft, Substance, Platform and Access, each 0-10, an overall (the mean of the six, then the caps), and every cap that applies. Score Access from pass 15's visible part: a large-text frame if one is given (if none is, say so and apply its cap), the grayscale squint, and contrast; you have no code, so say that names, roles and reading order weren't checked.
 Look hard for what a strict judge would mark down: no single answer at a glance (and on a screen kept open all day, nothing readable from across a room); live numbers that disagree with each other or with the clock shown; anything cut, clipped or orphaned at an edge or under a bar; the category's stock layout in new colours; small uppercase labels; low contrast; a state shown by colour alone; in a large-text frame (the same screen at the largest text size), text that clips, truncates or overlaps, or the thing to act on now pushed below the fold by headers and summaries; a must-have from the brief that isn't visible at rest.
 Then give the three most important problems, most damaging first, each as: where on the screen, what is wrong, and the fix.
 End with exactly these lines:
-SCORES: Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
+SCORES: Idea n · Hierarchy n · Craft n · Substance n · Platform n · Access n → overall n (caps: <which, or none>)
 FIX 1: <...>
 FIX 2: <...>
 FIX 3: <...>"""
+
+
+def parse_scores(verdict: str) -> dict[str, float]:
+    """The criteria and the overall from the judge's SCORES line ({} when it has none)."""
+    line = next((l for l in verdict.splitlines() if l.strip().startswith("SCORES:")), "")
+    scores = {k.lower(): float(v) for k, v in re.findall(r"(Idea|Hierarchy|Craft|Substance|Platform|Access)\s+(\d+(?:\.\d+)?)", line)}
+    overall = re.search(r"overall\s+(\d+(?:\.\d+)?)", line)
+    if overall:
+        scores["overall"] = float(overall.group(1))
+    return scores
 
 
 def main() -> int:
@@ -102,10 +113,12 @@ def main() -> int:
         print(f"blind_critique: no verdict returned ({proc.stderr.strip()[:200] or 'empty answer'}); critique by eye and say so")
         return 1
     cost = result.get("total_cost_usd")
+    scores = parse_scores(verdict)
     (images[0].parent / "blind-critique.json").write_text(json.dumps(
-        {"images": [str(i) for i in images], "brief": args.brief, "verdict": verdict, "cost_usd": cost}, indent=2))
+        {"images": [str(i) for i in images], "brief": args.brief, "verdict": verdict, "scores": scores, "cost_usd": cost}, indent=2))
     print(verdict)
-    print(f"\nblind_critique: judged {len(images)} screen(s){f', ${cost:.2f}' if cost else ''}; saved blind-critique.json")
+    summary = ", ".join(f"{k} {scores[k]:g}" for k in ("overall", "access") if k in scores)
+    print(f"\nblind_critique: judged {len(images)} screen(s){f' ({summary})' if summary else ''}{f', ${cost:.2f}' if cost else ''}; saved blind-critique.json")
     return 0
 
 

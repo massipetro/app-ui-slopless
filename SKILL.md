@@ -339,7 +339,7 @@ Live thing: <the interaction and the real state it reacts to>; filmstrip: <n ani
 Built: <files, screens, states; the brief's must-haves visible at rest>
 Signature moves: <each move → where it shows at rest, or "not visible">; stock layout: <the default screen's blocks> → <what this screen does instead>
 Lint: <compile: pass / FAIL / not run and why, at <iOS or macOS> <target> (<from the project / default>); lint n FAIL, n WARN; each --allow and each kept WARN with its reason>
-Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>); blind judge before fixes: overall n (or "not run" and why)
+Critique (final round): Idea n · Hierarchy n · Craft n · Substance n · Platform n · Access n → overall n (caps: <which, or none>); blind judge before fixes: overall n, Access n (or "not run" and why)
 Bottom edge: <fold.py: pass / FAIL, or "not measured: no HTML mock">; rest frame <each row at the fold: whole / cut>; end frame <last row clear by n pt>
 Still short: <what the critique found and you didn't fix>
 Sample content to replace: <names, prices, dates, photos>

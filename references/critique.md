@@ -36,7 +36,7 @@ Look at each screenshot at phone size (not zoomed), light and dark if both were 
 
 ## 2. The score and its caps
 
-Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 is Apple Design Award level.** Most first renders land at 5–6.
+Score six criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 is Apple Design Award level.** Most first renders land at 5–6.
 
 | Criterion | Passes | 9–10 looks like |
 |---|---|---|
@@ -44,7 +44,8 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 | **Hierarchy** | 1, 2, 6, 7 | One answer at a glance, two or three masses, decisive type jumps, an accent that means "here" |
 | **Craft** | the craft pass, 5, 13, 14 | Nothing clipped, stretched, off-centre or uneven; rhythm varies on purpose |
 | **Substance** | 9 | Real content at real density; every state designed; nothing reads as a wireframe |
-| **Platform & access** | 8, 11, 15 | Thumb-zone primary, 44/48 targets, native mechanics intact, text scales, contrast holds in both modes (macOS: pointer and keyboard paths, 22 pt+ controls, window chrome and menu bar intact, composed at minimum and large sizes) |
+| **Platform** | 8, 11 | Thumb-zone primary, 44/48 targets, native mechanics intact (macOS: pointer and keyboard paths, 22 pt+ controls, window chrome and menu bar intact, composed at minimum and large sizes) |
+| **Access** | 15 | At the largest text size nothing clips and the action that matters is still first; every state reads in grayscale; text and control edges pass contrast in both modes; in code, every control has a name, role and state, the order is the meaning and overlays are modal (a judge with only images scores the visible part and says so) |
 
 **Overall** = the mean, then apply the caps:
 - Any visible craft defect (clipping, overlap, content under a bar or cut off behind a pinned button, an invisible signifier): Craft ≤ 4 and overall ≤ 6.
@@ -56,7 +57,7 @@ Score five criteria from 0 to 10. Be a hard judge: **7 is a good shipped app; 9 
 - Live numbers that contradict each other (two times of day, a counter that disagrees with its rows): Substance ≤ 5.
 - An ambient screen with two live readouts of equal weight, or a mascot rivalling the readout: Hierarchy ≤ 5.
 - A must-have from the brief is not visible or reachable at rest, or a list shows fewer than three rows at rest: Substance ≤ 5.
-- At the largest text size, text that carries the screen's meaning clips, truncates or overlaps, or a control has no name or role (pass 15): Platform ≤ 5. The brief's primary action (and what it acts on) is not in the first screen at the largest text size: Substance ≤ 5. With no large-text render and no reason given (iOS and Android): Platform ≤ 6.
+- At the largest text size, text that carries the screen's meaning clips, truncates or overlaps, or a control has no name or role (pass 15): Access ≤ 4. The brief's primary action (and what it acts on) is not in the first screen at the largest text size, or a state reads only by colour: Access ≤ 5. With no large-text render and no reason given (iOS and Android): Access ≤ 6.
 - The only primary action is out of thumb reach, or primary targets are under 44/48: Platform ≤ 5. (macOS: the layout is a stretched phone screen, the window has no minimum size, or an action is reachable only by click with no menu or keyboard path: Platform ≤ 5.)
 
 The aim is overall ≥ 8 with no criterion below 6.
@@ -83,7 +84,7 @@ Platform: <back, insets, large text>
 Tells: <any, with reason or "none">
 Bottom edge: fold.py <pass / FAIL / not run>; rest frame <each row at the fold: whole / cut>; end frame <last row clear by n pt, or what it hides under>
 Access: large text <size rendered: what clips or "nothing clips">; grayscale <states that need colour, or "all read">; contrast <worst pair n:1>; names and order <gaps, or "none found in code">
-Scores: Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which applied>)
+Scores: Idea n · Hierarchy n · Craft n · Substance n · Platform n · Access n → overall n (caps: <which applied>)
 Top three fixes: 1. … 2. … 3. …
 ```
 

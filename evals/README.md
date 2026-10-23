@@ -32,7 +32,7 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 1. For each eval, run the prompt in a fresh session **with the skill** and in another **without it** (the baseline). Save each session's final reply as `response.md` and its files under:
    `<iteration>/eval-<id>-<name>/<with_skill|without_skill>/run-<n>/outputs/`
 2. Grade both configs: `python3 evals/grade.py <iteration>`. It writes `grading.json` per run and prints pass counts. The no-preset evals reuse `scripts/lint.py`, so "no FAIL" means the same thing it means in the skill.
-3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (five criteria, caps, overall). A fresh agent with only the two images and `critique.md` works as the judge.
+3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (six criteria from round 22 on, five before; caps; overall). A fresh agent with only the two images and `critique.md` works as the judge. The judge prompts live in `evals/judges.py` (`phone`, `mac`, and `access`, which shows each screen at the default and the largest text size and scores Access as a sixth criterion); a round's `make_pairs.py` imports it, so every round asks the same question.
 4. Record per eval: grader pass rate, lint FAIL count, and blind critique overall for both configs. The skill earns its place when it wins the blind critique, not just the regex checks.
 
 `grade.py` checks presence of craft and absence of tells. It can't see taste; step 3 is where taste is measured.
@@ -88,6 +88,8 @@ Judging changed for this brief:
 - **After this round** (not yet measured):
   - **The brief at rest now holds at the largest text size.** At AX5 the thing to act on now, and its control, stays in the first screen. Summaries and finished groups move below it at accessibility sizes. The rule is in SKILL.md, critique pass 15 (with a Substance ≤ 5 cap), `accessibility.md` §3.3 and the blind judge's prompt.
   - **`render_swiftui.py --clock HH:MM`** sets the simulator's status bar to the preview's `now` for the screenshot, then clears the override. Builds are told to pass it, so a render no longer contradicts its own sample data.
+  - **Access is its own criterion.** `critique.md` now scores six criteria: Platform keeps passes 8 and 11, and Access scores pass 15. The pass 15 caps moved from Platform to Access. `blind_critique.py` scores Access from the pixels, says it couldn't check names and order, and saves the scores in `blind-critique.json`. The report's Critique line carries Access too. Overalls from here on are means of six, so they don't compare directly with earlier rounds' five.
+  - **The eval judge prompts are in the repo:** `evals/judges.py`, with round 22's access prompt (made platform-neutral, plus the first-screen clause) next to the phone and Mac prompts used until round 21.
 
 ### Round 21: the blind judge sees the real Mac window, eval 12, three judges (HEAD vs v1.7.0)
 
