@@ -212,6 +212,35 @@ class Headings(unittest.TestCase):  # 1.3.1, 2.4.6
         self.assertNotIn("heading-missing", rules(src))
 
 
+class Settings(unittest.TestCase):  # 1.3.4, 1.3.5, 2.1.4, 2.4.7, 4.1.3
+    def test_orientation_lock(self):
+        self.assertIn("orientation-locked", rules('fun A(a: Activity) { a.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }\n', "kt"))
+
+    def test_email_field_without_content_type(self):
+        self.assertIn("field-no-content-type", rules(view('    VStack {\n      Text("Email")\n      TextField("you@example.org", text: $mail)\n    }', "  @State var mail = \"\"\n")))
+        ok = view('    VStack {\n      Text("Email")\n      TextField("you@example.org", text: $mail)\n        .textContentType(.emailAddress)\n    }', "  @State var mail = \"\"\n")
+        self.assertNotIn("field-no-content-type", rules(ok))
+
+    def test_note_field_needs_nothing(self):
+        self.assertNotIn("field-no-content-type", rules(view('    VStack {\n      Text("Tasting notes")\n      TextField("Crumb, crust, smell", text: $n)\n    }', "  @State var n = \"\"\n")))
+
+    def test_compose_password(self):
+        self.assertIn("field-no-content-type", rules('fun F() { OutlinedTextField(state = s, label = { Text("Password") }) }\n', "kt"))
+
+    def test_bare_letter_shortcut(self):
+        self.assertIn("character-key-shortcut", rules(view('    Button("Keep") { }.keyboardShortcut("k", modifiers: [])'), platform="macos"))
+        self.assertNotIn("character-key-shortcut", rules(view('    Button("Keep") { }.keyboardShortcut("k", modifiers: [.command])'), platform="macos"))
+
+    def test_focus_ring_removed(self):
+        self.assertIn("focus-ring-removed", rules(view('    Button("Keep") { }.focusEffectDisabled()'), platform="macos"))
+        self.assertIn("focus-ring-removed", rules('fun B() { Box(Modifier.clickable(interactionSource = s, indication = null, role = Role.Button) { }) }\n', "kt"))
+
+    def test_toast_without_announcement(self):
+        src = view('    Text("Saved")', '  @State var toast: String? = nil\n')
+        self.assertIn("status-not-announced", rules(src))
+        self.assertNotIn("status-not-announced", rules(src.replace('Text("Saved")', 'Text("Saved").onAppear { AccessibilityNotification.Announcement("Saved").post() }')))
+
+
 class Criteria(unittest.TestCase):
     def test_every_mapped_rule_exists(self):
         self.assertEqual(set(lint.CRITERIA) - set(lint.RULES), set())

@@ -82,6 +82,11 @@ RULES = {
     "gesture-no-alternative": ("WARN", "drag, swipe, pinch or rotate gesture with no accessibility action [2.5.1, 2.5.7]", "Add .accessibilityAction(named:) / .accessibilityAdjustableAction (Compose: customActions or a progressBarRangeInfo + setProgress) and a visible single-tap control"),
     "overlay-not-modal": ("WARN", "custom overlay (scrim + panel) that leaves the content behind it reachable to VoiceOver/TalkBack and the keyboard [2.4.3]", "Use .sheet / .alert / Dialog / ModalBottomSheet, or add .accessibilityAddTraits(.isModal) (Compose: hide the content behind with clearAndSetSemantics or use Dialog/Popup)"),
     "heading-missing": ("WARN", "titled sections with no heading marked, so screen-reader users can't jump between them [1.3.1, 2.4.6]", "SwiftUI: .accessibilityAddTraits(.isHeader); Compose: Modifier.semantics { heading() }"),
+    "orientation-locked": ("WARN", "orientation locked to portrait or landscape [1.3.4]", "Support both unless the orientation is essential (a piano, a cheque scan); say which in the report"),
+    "field-no-content-type": ("WARN", "personal-data field with no content type, so autofill and password managers can't fill it [1.3.5, 3.3.7, 3.3.8]", "SwiftUI: .textContentType(.emailAddress / .name / .telephoneNumber / .password …); Compose: Modifier.semantics { contentType = ContentType.EmailAddress } or KeyboardOptions(keyboardType = KeyboardType.Email)"),
+    "character-key-shortcut": ("WARN", "keyboard shortcut on a single character with no modifier [2.1.4]", "Add a modifier (⌘, ⌥, ⌃), or scope it to a focused view with .onKeyPress so it can't fire while typing"),
+    "focus-ring-removed": ("WARN", "focus indicator switched off [2.4.7]", "Keep the system focus ring, or draw your own from @FocusState / isFocused (Compose: keep an Indication, or draw focus from interactionSource.collectIsFocusedAsState())"),
+    "status-not-announced": ("WARN", "toast, banner or snackbar of your own that VoiceOver/TalkBack never hear [4.1.3]", "SwiftUI: AccessibilityNotification.Announcement(text).post(); Compose: Modifier.semantics { liveRegion = LiveRegionMode.Polite }, or SnackbarHost"),
     "no-reduce-transparency": ("WARN", "translucent material with no Reduce Transparency fallback [508 503.2, EN 301 549 11.7]", "@Environment(\\.accessibilityReduceTransparency): swap the material for an opaque surface token"),
 }
 
@@ -93,7 +98,8 @@ CRITERIA = {
     "image-no-label": ["1.1.1"], "a11y-hidden-control": ["4.1.2"], "label-in-name": ["2.5.3"],
     "colour-only-state": ["1.4.1"], "fixed-text-frame": ["1.4.4", "1.4.10"], "dynamic-type-capped": ["1.4.4"],
     "gesture-no-alternative": ["2.5.1", "2.5.7"], "overlay-not-modal": ["2.4.3"], "heading-missing": ["1.3.1", "2.4.6"],
-    "no-reduce-transparency": ["503.2"],
+    "no-reduce-transparency": ["503.2"], "orientation-locked": ["1.3.4"], "field-no-content-type": ["1.3.5"],
+    "character-key-shortcut": ["2.1.4"], "focus-ring-removed": ["2.4.7"], "status-not-announced": ["4.1.3"],
 }
 
 HEX_KT = re.compile(r"Color\(\s*0x([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6})\s*\)")
@@ -460,6 +466,33 @@ def a11y_findings(text: str, swift: bool, mac: bool, add, line_of) -> None:
             colour_calls.append((m.start(), text.find(")", m.end() - 1) + 1 if m.group(0).endswith(")") else m.end(), var))
             # an `if (x) A else B` colour expression runs to the end of its line
             colour_calls[-1] = (m.start(), text.find("\n", m.start()) if text.find("\n", m.start()) > 0 else len(text), var)
+
+    # Shared across both languages: orientation locks, autofill, single-key shortcuts, focus rings, status messages.
+    o = re.search(r"SCREEN_ORIENTATION_(PORTRAIT|LANDSCAPE|SENSOR_PORTRAIT|SENSOR_LANDSCAPE)\b|supportedInterfaceOrientations[^\n]*\.(portrait|landscape)\b|requestGeometryUpdate[^\n]*interfaceOrientations:\s*\.(portrait|landscape)", text)
+    if o:
+        add("orientation-locked", line_of(o.start()))
+    personal = r"(?i)e-?mail|phone|mobile number|full name|first name|last name|surname|your name|address|street|postcode|post code|zip|city|card number|cardholder|expiry|cvc|cvv|password|passcode|username|one-time code|verification code"
+    for m in re.finditer(r"\b(TextField|SecureField|OutlinedTextField|BasicTextField)\s*\(", text):
+        if swift:
+            s, e = swift_chain(text, m.start())
+            span = text[s:e]
+            ok = re.search(r"\.textContentType\(|\.keyboardType\(\.(emailAddress|phonePad|numberPad)", span)
+        else:
+            span = call_span(text, m.start())
+            ok = re.search(r"contentType\s*=|ContentType\.|KeyboardType\.(Email|Phone|Password|NumberPassword)|autofill", span)
+        above = text[max(0, text.rfind("\n", 0, max(0, text.rfind("\n", 0, m.start()) - 1))):m.start()]  # the label line above
+        words = " ".join(re.findall(r"\"([^\"\\]{2,60})\"", above + span[:400])).replace("@", " email ")
+        if not ok and re.search(personal, words):
+            add("field-no-content-type", line_of(m.start()), re.search(personal, words).group(0))
+    for m in re.finditer(r"\.keyboardShortcut\(\s*(?:KeyEquivalent\()?\"[A-Za-z0-9]\"\)?\s*,\s*modifiers:\s*\[\s*\]", text):
+        add("character-key-shortcut", line_of(m.start()))
+    for m in re.finditer(r"\.focusEffectDisabled\(\s*(true)?\s*\)|indication\s*=\s*null", text):
+        if not re.search(r"isFocused|@FocusState|collectIsFocusedAsState|onFocusChanged|focusRing", text):
+            add("focus-ring-removed", line_of(m.start()))
+            break
+    st = re.search(r"(?i)\b(var|val|let)\s+\w*(toast|snack|banner|flash(?:Message)?)\w*\b", text)
+    if st and not re.search(r"AccessibilityNotification|UIAccessibility\.post|accessibilityAnnouncement|NSAccessibility\.post|liveRegion|SnackbarHost|announceForAccessibility", text):
+        add("status-not-announced", line_of(st.start()))
 
     # Colour as the only signal: the Bool that picks a colour changes nothing else people can see.
     # Only status hues count (green for on time, red for late): a zebra band or an inverted selected fill
