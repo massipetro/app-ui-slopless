@@ -26,7 +26,7 @@ BAR_TOP = 744          # 844 - the 100 px bar
 STEP = 84              # 72 px card + 12 px gap
 
 
-def mock(name: str, card_top: int, fade: bool = False, bottom_pad: int = 120, scrolls: bool = True) -> Path:
+def mock(name: str, card_top: int, fade: bool = False, bottom_pad: int = 120, scrolls: bool = True, grow: bool = False) -> Path:
     """Some card starts at card_top px; the list's top padding puts it there."""
     pad_top = card_top % STEP
     cards = "".join(f'<div class="card"><div class="t">Habit number {i}</div><div class="s">Done at 0{i % 10}:15</div></div>'
@@ -34,7 +34,7 @@ def mock(name: str, card_top: int, fade: bool = False, bottom_pad: int = 120, sc
     page = f"""<!doctype html><html><head><meta charset="utf-8"><style>
   body {{ margin: 0; width: 390px; height: 844px; position: relative; overflow: hidden; background: #f4efe6; font-family: sans-serif; }}
   #scroll {{ position: absolute; inset: 0; overflow-y: {'auto' if scrolls else 'hidden'}; padding: {pad_top}px 16px {bottom_pad}px; box-sizing: border-box; }}
-  .card {{ box-sizing: border-box; height: 72px; margin-bottom: 12px; padding: 8px 12px; background: #fff; border: 2px solid #111; border-radius: 12px; }}
+  .card {{ box-sizing: border-box; {'min-height' if grow else 'height'}: 72px; margin-bottom: 12px; padding: 8px 12px; background: #fff; border: 2px solid #111; border-radius: 12px; }}
   .t {{ font-size: 16px; line-height: 20px; }}
   .s {{ font-size: 13px; line-height: 16px; margin-top: 10px; }}
   .fade {{ position: absolute; left: 0; right: 0; bottom: 100px; height: 20px; background: linear-gradient(to bottom, rgba(244,239,230,0), #f4efe6); }}
@@ -77,8 +77,8 @@ def sections_mock(name: str, heading_bottom: int, plain: bool = False) -> Path:
     return p
 
 
-def fold(path: Path) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(SCRIPTS / "fold.py"), str(path)], capture_output=True, text=True, timeout=180)
+def fold(path: Path, *extra: str) -> subprocess.CompletedProcess:
+    return subprocess.run([sys.executable, str(SCRIPTS / "fold.py"), str(path), *extra], capture_output=True, text=True, timeout=180)
 
 
 @unittest.skipUnless(find_chrome(), "no Chromium-based browser")
@@ -130,6 +130,24 @@ class Fold(unittest.TestCase):
     def test_a_plain_first_row_is_not_a_heading(self):
         r = fold(sections_mock("plain", BAR_TOP - 4, plain=True))  # styled like the rows: whole-or-hidden still holds
         self.assertNotIn("orphaned", r.stdout)
+
+    def test_large_text_moves_the_fold(self):
+        # Rows that grow with their text (min-height, as a native row does): in a gap at 100%, but at
+        # 200% each card is 102 px and the sixth one runs through the bar's top edge.
+        m = mock("grow", BAR_TOP - 72 - 6, grow=True)
+        self.assertEqual(fold(m).returncode, 0)
+        shot = TMP / "grow-2x.png"
+        r = fold(m, "--text-scale", "2", "--shot", str(shot))
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("measured at large text (2)", r.stdout)
+        self.assertTrue(shot.exists() and shot.stat().st_size > 1000)
+
+    def test_ax5_runs_and_an_unknown_scale_is_refused(self):
+        m = mock("ax5", BAR_TOP - 72 - 6, grow=True)
+        r = fold(m, "--text-scale", "ax5", "--json")
+        self.assertIn("measured at large text (ax5)", r.stdout)
+        self.assertEqual(fold(m, "--text-scale", "nonsense").returncode, 2)
+
 
 if __name__ == "__main__":
     try:
