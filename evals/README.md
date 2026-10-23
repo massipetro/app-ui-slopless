@@ -39,7 +39,41 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Twenty-two rounds, October 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22 on accessibility. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+Twenty-three rounds, October 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–23 on accessibility. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+
+### Round 23: round 22's follow-ups, eval 13, three judges (HEAD vs round 22's HEAD)
+
+HEAD is `a2668bb` (worktree `skill-head23`). Since round 22 it has:
+- the brief at rest held at AX5;
+- `render_swiftui.py --clock`;
+- Access as a sixth scored criterion in the critique and the in-build blind judge.
+
+The comparison is round 22's HEAD `eb4197d` (`skill-head`), so this round measures only those changes. The setup is round 22's, except the judges:
+- Eval 13, three runs per config, Opus 5.5 builds ($8 cap).
+- The harness rendered every build natively on the iOS Simulator at the default size and at AX5; all six rendered.
+- Three blind Opus 5.5 judges per pair, with `evals/judges.py`'s `access` prompt. It adds the question of whether the thing to act on now is still in the first screen.
+- The judges got the six-criterion `critique.md`.
+
+| Run | HEAD direction | Round 22 HEAD direction | HEAD vs round 22 HEAD | Access, HEAD vs round 22 HEAD | Votes |
+|---|---|---|---|---|---|
+| 1 | wp-departure-board | wp-departure-board | **5.67** vs 5.37 | **5.3** vs 4.0 | 3–0 |
+| 2 | wp-departure-board | wp-departure-board | **6.43** vs 6.33 | **8.0** vs 5.0 | 1–2 |
+| 3 | wp-exaggerated-number | wp-departure-board | **6.73** vs 5.73 | **8.0** vs 4.7 | 3–0 |
+
+- **2 of 3 pairs, 7 of 9 votes, mean 6.28 vs 5.81; Access 7.11 vs 4.56.** This is n = 3 on one brief. The overall gap of 0.47 is within the noise seen at that size. The Access gap is not: every one of the nine judges scored HEAD's Access higher.
+- **The AX5 rule took.** In all three pairs, the judges named the same difference.
+  - HEAD at AX5 kept the overdue dose and its Take and Skip buttons in the first screen.
+  - Round 22's HEAD let its header and summary push every action below the fold there, the same failure that lost round 22's run 1.
+  - Two HEAD reports say in words that the action stays in the first screen at AX5.
+- **Pair 2 went the other way on a cut row.** All three judges preferred HEAD's AX5 frame (Access 8 vs 5), but two of them picked round 22's HEAD overall.
+  - At the default size, HEAD's screen showed a row sliver above its pinned bar, which triggered the craft cap.
+  - `fold.py` passed the mock, because the cut was the native iOS 26 floating tab bar, which the HTML mock doesn't draw.
+  - A fold check on the native render would catch it; the skill has none.
+- **`--clock` wasn't used.** No build passed it, and the harness renders at the wall clock for both configs. The judges again saw a status-bar time that disagrees with the sample data. One called it "likely an artefact of how they were rendered" and scored it the same for both. So this round doesn't measure the clock fix.
+- **Lint:** the new rules found nothing on either side. `lint.py` found one `fixed-font-size` FAIL in HEAD run 1 and one in each of round 22's runs 1 and 3. HEAD run 1 also has no heading traits.
+- Grader: HEAD 28–30 of 29–30, round 22's HEAD 28–29 of 29–30. Both configs ask for the same process now, so the grader no longer separates them.
+- Cost: $27.76 for 6 builds (HEAD $13.92, round 22's HEAD $13.84). Builds took 19.3 minutes against 18.2. Judges: $2.44 for 9.
+- **Not measured:** Android, the Mac, any assistive technology, and the `--clock` fix. The Access score is a judgement on pixels.
 
 ### Round 22: accessibility, eval 13, native iOS renders at default and AX5, three judges (HEAD vs v1.7.0)
 
