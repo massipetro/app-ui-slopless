@@ -64,6 +64,7 @@ RULES = {
     "mac-ios-api": ("FAIL", "iOS-only API in a macOS target (doesn't compile)", "AppKit equivalent, or guard with #if os(iOS)"),
     "mac-haptics": ("WARN", "haptic feedback on a Mac", "Trackpad haptics only for alignment/snapping; use a hover or pressed state and, rarely, a short sound"),
     "no-reduce-motion": ("WARN", "animation with no Reduce Motion / Remove animations handling", "Read accessibilityReduceMotion / animator scale and swap travel for fades"),
+    "unshipped-font": ("WARN", "custom font with no font file in the project, so the system font shows in its place", "Ship the .ttf/.otf next to the code or in Fonts/ (listed in UIAppFonts / ATSApplicationFontsPath, or in res/font / composeResources/font), or use a system face"),
 }
 
 HEX_KT = re.compile(r"Color\(\s*0x([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6})\s*\)")
@@ -74,6 +75,14 @@ STRING = re.compile(r"\"((?:[^\"\\\n]|\\.)*)\"")
 TOKEN_FILE = re.compile(r"(Theme|Token|Palette|Colou?rs?|Brand|DesignSystem|Style)", re.I)
 TOKEN_DECL = re.compile(r"(object|enum|struct|extension)\s+\w*(Tokens?|Palette|Colou?rs?|Theme)\b|extension\s+Color\b|ColorScheme\(|lightColorScheme|darkColorScheme")
 ANIMATION = re.compile(r"withAnimation|\.animation\(|animate\w*AsState|spring\(|rememberInfiniteTransition|AnimatedVisibility|AnimatedContent|\.transition\(|phaseAnimator|keyframeAnimator|updateTransition")
+FONT_FILES = (".ttf", ".otf", ".ttc")
+# Faces that ship with iOS and macOS, so naming them needs no font file.
+SYSTEM_FACES = ("sfpro", "sfcompact", "sfmono", "newyork", "applesystemuifont", "helvetica", "avenir", "georgia", "courier",
+                "menlo", "timesnewroman", "palatino", "futura", "gillsans", "americantypewriter", "didot", "baskerville",
+                "hoefler", "optima", "rockwell", "chalkboard", "markerfelt", "noteworthy", "copperplate", "arial", "verdana",
+                "trebuchet", "charter", "iowan", "seravek", "kohinoor", "damascus", "snellroundhand", "zapfino", "papyrus",
+                "bodoni", "superclarendon", "monaco", "andalemono", "sanfrancisco", "geneva", "lucidagrande",
+                "pingfang", "hiragino", "applesdgothic", "applecoloremoji", "symbol", "skia", "silom")
 REDUCE_MOTION = re.compile(r"accessibilityReduceMotion|ReduceMotion|reduceMotion|ANIMATOR_DURATION_SCALE|MotionDurationScale|isReduceMotionEnabled|areAnimationsEnabled")
 
 
@@ -181,6 +190,24 @@ def is_mac(path: Path, text: str, forced: str | None) -> bool:
     if IOS_FILE.search(text):
         return False
     return bool(project_is_mac(path))
+
+
+def project_fonts(path: Path) -> list[str]:
+    """Normalised names of the font files the project ships: from the project root (Package.swift, an
+    .xcodeproj or Gradle settings, walking up) or, with no project, the file's own folder."""
+    root = path.parent
+    for d in [path.parent, *path.parent.parents][:6]:
+        if any((d / m).exists() for m in ("Package.swift", "settings.gradle", "settings.gradle.kts")) or any(d.glob("*.xcodeproj")):
+            root = d
+            break
+    skip = {"build", ".build", "DerivedData", "node_modules", ".git", "Pods", ".gradle"}
+    names = []
+    for f in root.rglob("*"):
+        if f.suffix.lower() in FONT_FILES and not skip & set(f.parts):
+            names.append(re.sub(r"[^a-z0-9]", "", f.stem.lower()))
+            if len(names) > 400:
+                break
+    return names
 
 
 def lint_file(path: Path, platform: str | None = None) -> list[tuple[str, int, str]]:
@@ -406,6 +433,27 @@ def lint_file(path: Path, platform: str | None = None) -> list[tuple[str, int, s
     values = [next(v for v in g if v) for g in radii]
     if len(values) >= 3 and len(set(values)) == 1:
         add("same-radius", line_of(text.find(values[0])), f"{len(values)} shapes, all radius {values[0]}")
+
+    # Custom fonts the project never ships: in a real build they quietly fall back to the system font
+    # (round 21: four of six Mac builds designed with faces they didn't include).
+    shipped = None
+    if swift:
+        uses = [(m.group(1), m.start()) for m in re.finditer(r'(?:\.custom|NSFont|UIFont)\(\s*(?:name:\s*)?"([^"]+)"', text)]
+        for m in re.finditer(r'(?:\.custom|NSFont|UIFont)\(\s*(?:name:\s*)?([A-Za-z_][\w.]*)\s*[,)]', text):
+            decl = re.search(rf'\b(?:let|var)\s+{re.escape(m.group(1).split(".")[-1])}\s*(?::\s*String)?\s*=\s*"([^"]+)"', text)
+            if decl:
+                uses.append((decl.group(1), m.start()))
+    else:
+        uses = [(m.group(1), m.start()) for m in re.finditer(r"\b(?:Res|R)\.font\.(\w+)", text)]
+    reported = set()
+    for name, at in sorted(uses, key=lambda u: u[1]):
+        key = re.sub(r"[^a-z0-9]", "", name.lower())
+        if not key or key in reported or key.startswith(SYSTEM_FACES) or name.startswith("."):
+            continue
+        shipped = project_fonts(path) if shipped is None else shipped
+        if not any(f.startswith(key) for f in shipped):
+            reported.add(key)
+            add("unshipped-font", line_of(at), f"'{name}'")
 
     if ANIMATION.search(text) and not REDUCE_MOTION.search(text):
         add("no-reduce-motion", line_of(ANIMATION.search(text).start()))  # type: ignore[union-attr]
