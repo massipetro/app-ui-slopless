@@ -43,7 +43,7 @@ PLATFORM = {
 PROMPT = """You are a blind design judge. The image file(s) {files} in this folder are renders of {what}. They answer this brief: '{brief}'
 Read critique.md in this folder, then look at every image (Read tool). You know nothing about how they were made; judge only what is visible.
 Score the screen with critique.md's passes, criteria and caps: Idea, Hierarchy, Craft, Substance, Platform, each 0-10, an overall, and every cap that applies.
-Look hard for what a strict judge would mark down: no single answer at a glance (and on a screen kept open all day, nothing readable from across a room); live numbers that disagree with each other or with the clock shown; anything cut, clipped or orphaned at an edge or under a bar; the category's stock layout in new colours; small uppercase labels; low contrast; a must-have from the brief that isn't visible at rest.
+Look hard for what a strict judge would mark down: no single answer at a glance (and on a screen kept open all day, nothing readable from across a room); live numbers that disagree with each other or with the clock shown; anything cut, clipped or orphaned at an edge or under a bar; the category's stock layout in new colours; small uppercase labels; low contrast; a state shown by colour alone; in a large-text frame (the same screen at the largest text size), text that clips, truncates or overlaps; a must-have from the brief that isn't visible at rest.
 Then give the three most important problems, most damaging first, each as: where on the screen, what is wrong, and the fix.
 End with exactly these lines:
 SCORES: Idea n · Hierarchy n · Craft n · Substance n · Platform n → overall n (caps: <which, or none>)
