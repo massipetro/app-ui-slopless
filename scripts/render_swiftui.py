@@ -4,6 +4,7 @@
   render_swiftui.py <file.swift or folder> [...] --out screen.png [--size 1280x800] [--scale 2]
                     [--appearance light|dark] [--preview <index or name>] [--locale en_US] [--macos 14.0]
                     [--platform macos|ios] [--dynamic-type large|ax1..ax5|xSmall..xxxLarge] [--device "iPhone 17 Pro"] [--ios 17.0]
+                    [--clock 10:40]
 
 macOS (the default): a real window, as below. iOS (--platform ios): the preview is built into a small
 app for the iOS Simulator, launched on an iPhone simulator (booted if none is, and left running) and
@@ -11,8 +12,10 @@ screenshotted, status bar and all. --dynamic-type sets the text size the screen 
 accessibility size, about 3x body text), so a layout that clips, truncates or overlaps at large text
 shows in the image. macOS has no Dynamic Type: Apple documents that the dynamicTypeSize environment
 value "does not affect the text size" there, and a render with it is identical (measured on macOS 26),
-so --dynamic-type is refused for a Mac render; render an in-app zoom by passing the zoom factor in your
-own preview instead.
+so --dynamic-type is refused for a Mac render; render an in-app zoom by passing the zoom factor in
+your own preview instead. On iOS, --clock sets the status bar's time for the screenshot (and clears
+the override after), so it shows the preview's own `now` instead of the wall clock, which would
+contradict the sample data.
 
 The HTML mock is a hand-written copy of the screen; this renders the code itself. It takes the
 body of a #Preview (the first, or --preview), compiles every file together with a small host
@@ -206,7 +209,11 @@ def main() -> int:
     ap.add_argument("--dynamic-type", default="large", help="iOS only: " + ", ".join(SIZES) + " (ax5 = the largest)")
     ap.add_argument("--device", default="", help="iOS only: simulator name or UDID (default: a booted iPhone, else the newest iPhone)")
     ap.add_argument("--ios", default="17.0", help="iOS deployment target")
+    ap.add_argument("--clock", help="iOS only: the status bar's time, HH:MM (the preview's now); default: the wall clock")
     args = ap.parse_args()
+    if args.clock and not re.fullmatch(r"\d{1,2}:\d{2}", args.clock):
+        print("render: --clock is HH:MM, the time the preview's sample data is set at")
+        return 2
     if args.dynamic_type not in SIZES:
         print(f"render: --dynamic-type is one of {', '.join(SIZES)}")
         return 2
@@ -409,9 +416,13 @@ def render_ios(files: list[Path], pick: tuple, found: list, args: argparse.Names
             if run.returncode != 0:
                 print("render: didn't launch\n  " + run.stderr.strip()[-300:])
                 return 1
+            if args.clock:   # the status bar shows the preview's moment, not the wall clock
+                subprocess.run(["xcrun", "simctl", "status_bar", udid, "override", "--time", args.clock], capture_output=True)
             time.sleep(2.5)   # onAppear, tasks and one-off animations settle
             shot = subprocess.run(["xcrun", "simctl", "io", udid, "screenshot", "--type=png", str(Path(args.out).resolve())],
                                   capture_output=True, text=True, timeout=60)
+            if args.clock:
+                subprocess.run(["xcrun", "simctl", "status_bar", udid, "clear"], capture_output=True)
             subprocess.run(["xcrun", "simctl", "terminate", udid, bundle], capture_output=True)
             subprocess.run(["xcrun", "simctl", "uninstall", udid, bundle], capture_output=True)
         if shot.returncode != 0 or not Path(args.out).exists():
@@ -419,7 +430,7 @@ def render_ios(files: list[Path], pick: tuple, found: list, args: argparse.Names
             return 1
         label = pick[3] if pick[1] == pick[2] == 0 else f"#Preview {pick[3] or found.index(pick)!r}"
         print(f"render: {Path(args.out).name} from {label} in {pick[0].name}, iOS Simulator ({name}), Dynamic Type "
-              f"{args.dynamic_type}, {args.appearance}, {args.locale}" + (f", {len(fonts)} font file(s) bundled" if fonts else "")
+              f"{args.dynamic_type}, {args.appearance}, {args.locale}, status bar {args.clock or 'at the wall clock'}" + (f", {len(fonts)} font file(s) bundled" if fonts else "")
               + "; the simulator is left booted")
         return 0
     finally:

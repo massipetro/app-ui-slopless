@@ -85,6 +85,9 @@ Judging changed for this brief:
 - Grader: HEAD 28–29 of 29–30, v1.7.0 24–27 of 30. The process items only HEAD is asked to pass (blind judge, Accessibility line, the not-tested statement, the large-text render) account for most of the gap.
 - Cost: $25.54 for 6 builds (HEAD $15.10, v1.7.0 $10.44, +45%). HEAD builds took 20.2 minutes against 14.3. Judges: $2.47 for 9. The native renders and the large-text render add the time.
 - **Not measured:** Android and the Mac. This round is iPhone only, and no build or judge used VoiceOver, TalkBack or Voice Control. The Access score is a judgement on pixels.
+- **After this round** (not yet measured):
+  - **The brief at rest now holds at the largest text size.** At AX5 the thing to act on now, and its control, stays in the first screen. Summaries and finished groups move below it at accessibility sizes. The rule is in SKILL.md, critique pass 15 (with a Substance ≤ 5 cap), `accessibility.md` §3.3 and the blind judge's prompt.
+  - **`render_swiftui.py --clock HH:MM`** sets the simulator's status bar to the preview's `now` for the screenshot, then clears the override. Builds are told to pass it, so a render no longer contradicts its own sample data.
 
 ### Round 21: the blind judge sees the real Mac window, eval 12, three judges (HEAD vs v1.7.0)
 

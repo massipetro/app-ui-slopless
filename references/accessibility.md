@@ -142,6 +142,7 @@ Each heading names its criteria. The lint rule that catches part of it is in bra
 - **Fixes:**
   - SwiftUI: text styles, or `.custom(_:size:relativeTo:)` [`fixed-font-size`]; `@ScaledMetric` for sizes that sit next to text; `minHeight`, not `height` [`fixed-text-frame`]; at `dynamicTypeSize.isAccessibilitySize` switch `HStack` to `VStack` (or use `ViewThatFits`).
   - Compose: `sp` for text, `heightIn(min =)` not `height()` around text [`fixed-text-frame`], `FlowRow`.
+- **The first screen at large text.** At AX5 a phone shows about a third as much. The thing to act on now and its control stay in the first screen; summaries, counts and finished sections move below it (`isAccessibilitySize`, or `fontScale >= 1.5f`). A screen that scales perfectly but opens on its header fails the user just as surely (round 22).
 - **Caps.** Don't cap scaling below the accessibility sizes [`dynamic-type-capped`]. The only defensible cap is a display number that already fills its region (a 96 pt countdown at `...accessibility2`). Say so on the line. Tab bars and other chrome that can't grow use the Large Content Viewer (`.accessibilityShowsLargeContentViewer()`).
 - **Images of text.** No type baked into images, SVG rigs or sprites (1.4.5). A mascot's speech bubble is real `Text`.
 
