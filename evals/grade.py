@@ -380,6 +380,30 @@ def accessibility_line(resp):
     return ok, f"{len(scs)} criteria, terms: {', '.join(sorted(set(t.lower() for t in terms))) or 'none'}"
 
 
+def native_fold(d):
+    """The bottom edge on the native iOS render (render_swiftui.py), at the default size and at AX5: no element runs
+    across the tab bar or a pinned bar. None when it can't render here or reads no elements (check skipped)."""
+    import subprocess, tempfile
+    files = [str(f) for f in sorted(d.rglob("*.swift"))]
+    if not files:
+        return None
+    rs = Path(__file__).resolve().parent.parent / "scripts" / "render_swiftui.py"
+    cuts, measured = [], 0
+    for size in ("large", "ax5"):
+        out = Path(tempfile.mkdtemp(prefix="grade-fold-")) / "r.png"
+        proc = subprocess.run([sys.executable, str(rs), *files, "--platform", "ios", "--dynamic-type", size, "--out", str(out)],
+                              capture_output=True, text=True, timeout=600)
+        if proc.returncode == 3:
+            return None
+        if proc.returncode != 0 or "not measured" in proc.stdout:
+            continue
+        measured += 1
+        cuts += [f"{size}: " + l.split("CUT", 1)[1].strip()[:70] for l in proc.stdout.splitlines() if " CUT " in l]
+    if not measured:
+        return None
+    return (not cuts), ("no element cut at default or AX5" if not cuts else "; ".join(cuts[:3]))
+
+
 def eval13(d):
     sw = read(d, "**/*.swift")
     resp = read(d, "response.md")
@@ -400,6 +424,8 @@ def eval13(d):
         ("Reduce Motion respected", *check(sw, r"accessibilityReduceMotion")),
         ("Largest text size rendered or checked (AX5 / accessibility5 / --dynamic-type / --text-scale)", *check(resp, r"\bAX5\b|accessibility5|accessibility-extra-extra-extra-large|--dynamic-type|--text-scale")),
         ("Report states conformance per WCAG criterion in VPAT terms (Accessibility line)", *accessibility_line(resp)),
+        *([("Bottom edge on the native iOS render: nothing cut by the tab bar or a pinned bar (default and AX5)", *nf)]
+          if (nf := native_fold(d)) is not None else []),
         ("Report says what wasn't tested with assistive technology", *check(resp, r"not (been )?tested (with|on|using) (assistive|VoiceOver|a device)|no (assistive[- ]technology|VoiceOver|AT) test|without (assistive technology|VoiceOver) testing|VoiceOver[^\n]{0,60}not (run|tested)")),
     ], d)
 

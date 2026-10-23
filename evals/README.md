@@ -32,7 +32,7 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 1. For each eval, run the prompt in a fresh session **with the skill** and in another **without it** (the baseline). Save each session's final reply as `response.md` and its files under:
    `<iteration>/eval-<id>-<name>/<with_skill|without_skill>/run-<n>/outputs/`
 2. Grade both configs: `python3 evals/grade.py <iteration>`. It writes `grading.json` per run and prints pass counts. The no-preset evals reuse `scripts/lint.py`, so "no FAIL" means the same thing it means in the skill.
-3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (six criteria from round 22 on, five before; caps; overall). A fresh agent with only the two images and `critique.md` works as the judge. The judge prompts live in `evals/judges.py` (`phone`, `mac`, and `access`, which shows each screen at the default and the largest text size and scores Access as a sixth criterion); a round's `make_pairs.py` imports it, so every round asks the same question.
+3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (six criteria from round 22 on, five before; caps; overall). A fresh agent with only the two images and `critique.md` works as the judge. For iOS briefs, `python3 evals/render_builds.py <iteration>` renders every run's own Swift on the iOS Simulator at the default size and at AX5, with each build's clock (its `--clock`, else the time in its `#Preview`'s name), and records the native bottom-edge result in each run's `render.txt`. The judge prompts live in `evals/judges.py` (`phone`, `mac`, and `access`, which shows each screen at the default and the largest text size and scores Access as a sixth criterion); a round's `make_pairs.py` imports it, so every round asks the same question.
 4. Record per eval: grader pass rate, lint FAIL count, and blind critique overall for both configs. The skill earns its place when it wins the blind critique, not just the regex checks.
 
 `grade.py` checks presence of craft and absence of tells. It can't see taste; step 3 is where taste is measured.
@@ -74,6 +74,13 @@ The comparison is round 22's HEAD `eb4197d` (`skill-head`), so this round measur
 - Grader: HEAD 28–30 of 29–30, round 22's HEAD 28–29 of 29–30. Both configs ask for the same process now, so the grader no longer separates them.
 - Cost: $27.76 for 6 builds (HEAD $13.92, round 22's HEAD $13.84). Builds took 19.3 minutes against 18.2. Judges: $2.44 for 9.
 - **Not measured:** Android, the Mac, any assistive technology, and the `--clock` fix. The Access score is a judgement on pixels.
+- **After this round** (not yet measured):
+  - **Every iOS render checks its own bottom edge.** `render_swiftui.py --platform ios` switches app accessibility on for the render (and back after), reads the screen's accessibility elements, and prints each one that runs across the top of whatever is pinned over the content: the system tab bar or a `.safeAreaInset` bar. Builds fix every `CUT`, as with `fold.py`, and the report's Bottom edge line carries the result.
+    - Rerun on this round's six builds at the default size, it flags a cut row in all three HEAD builds and in one of round 22's HEAD. That includes the 6-of-76 pt sliver that lost pair 2; `fold.py` had passed it on the mock.
+    - It sees text and controls, not bare card edges.
+  - **The render takes the build's clock.** Without `--clock` it uses a time in the `#Preview`'s name ("Today, 10:40"), which five of these six builds had. It also prints a note when it falls back to the wall clock.
+  - **The harness's render step is in the repo.** `evals/render_builds.py` renders each run with its own clock and records the clock's source.
+  - **The eval 13 grader adds the native bottom edge** at the default size and at AX5.
 
 ### Round 22: accessibility, eval 13, native iOS renders at default and AX5, three judges (HEAD vs v1.7.0)
 

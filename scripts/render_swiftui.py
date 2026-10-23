@@ -15,7 +15,11 @@ value "does not affect the text size" there, and a render with it is identical (
 so --dynamic-type is refused for a Mac render; render an in-app zoom by passing the zoom factor in
 your own preview instead. On iOS, --clock sets the status bar's time for the screenshot (and clears
 the override after), so it shows the preview's own `now` instead of the wall clock, which would
-contradict the sample data.
+contradict the sample data. Without --clock, a time in the #Preview's name is used ("Today, 09:20").
+Every iOS render also checks its bottom edge: the accessibility elements of the screen (read with app
+accessibility switched on for the render, then set back) are measured against the top of whatever is
+pinned over the scrolling content, the system tab bar or a .safeAreaInset bar, and each one that runs
+across it is printed as CUT, as fold.py does for a mock.
 
 The HTML mock is a hand-written copy of the screen; this renders the code itself. It takes the
 body of a #Preview (the first, or --preview), compiles every file together with a small host
@@ -45,6 +49,7 @@ Standard library only; works on Python 3.9.
 from __future__ import annotations
 
 import argparse
+import json
 import platform
 import re
 import shutil
@@ -104,7 +109,56 @@ struct RenderHost {
 
 
 HOST_IOS = """import SwiftUI
+import UIKit
 import CoreText
+
+// After the screen settles, write what VoiceOver would walk (each element's label and frame) and the
+// system tab bar's frame to tmp/render-probe.json, so the bottom edge can be measured on the real render.
+enum Probe {
+    static func dump() {
+        guard let window = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene })
+            .flatMap(\\.windows).first(where: \\.isKeyWindow) ?? UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene }).flatMap(\\.windows).first else { return }
+        var elements: [[String: Any]] = [], bars: [[Double]] = [], scrolls: [[Double]] = [], seen = Set<String>()
+        func rect(_ r: CGRect) -> [Double] { [Double(r.minX), Double(r.minY), Double(r.width), Double(r.height)] }
+        func walk(_ o: NSObject, _ depth: Int, inBar: Bool) {
+            guard depth < 60 else { return }
+            var bar = inBar
+            if let v = o as? UIView {
+                if v.isHidden || v.alpha < 0.01 { return }
+                if let s = v as? UIScrollView, s.bounds.width > window.bounds.width * 0.6 {
+                    let r = s.convert(s.bounds, to: nil)
+                    scrolls.append(rect(r) + [Double(s.adjustedContentInset.bottom)])
+                }
+                let cls = String(describing: type(of: v))
+                if cls.contains("TabBar") || cls.contains("FloatingBar"), !inBar {
+                    let r = v.convert(v.bounds, to: nil)
+                    // The container of iOS 26's floating bar covers the whole window; the bar is the short view at the bottom.
+                    if r.width > window.bounds.width * 0.4 && r.height > 20 && r.height < 200 && r.minY > window.bounds.height * 0.5 {
+                        bars.append(rect(r)); bar = true
+                    }
+                }
+            }
+            if o.isAccessibilityElement, !bar {
+                let f = o.accessibilityFrame, label = o.accessibilityLabel ?? ""
+                let k = "\\(label)|\\(Int(f.minX)),\\(Int(f.minY)),\\(Int(f.width)),\\(Int(f.height))"
+                if f.height > 1 && !seen.contains(k) { seen.insert(k); elements.append(["label": label, "frame": rect(f)]) }
+            }
+            if let kids = o.accessibilityElements {
+                for case let e as NSObject in kids { walk(e, depth + 1, inBar: bar) }
+            } else {
+                let n = o.accessibilityElementCount()
+                if n != NSNotFound && n > 0 && n < 2000 { for i in 0..<n { if let e = o.accessibilityElement(at: i) as? NSObject { walk(e, depth + 1, inBar: bar) } } }
+            }
+            if let v = o as? UIView { for s in v.subviews { walk(s, depth + 1, inBar: bar) } }
+        }
+        walk(window, 0, inBar: false)
+        let out: [String: Any] = ["screen": rect(window.bounds), "tabBars": bars, "elements": elements, "scrolls": scrolls, "safeBottom": Double(window.safeAreaInsets.bottom)]
+        if let data = try? JSONSerialization.data(withJSONObject: out) {
+            try? data.write(to: URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("render-probe.json"))
+        }
+    }
+}
 
 @main
 struct RenderHostApp: App {
@@ -112,6 +166,7 @@ struct RenderHostApp: App {
         for url in Bundle.main.urls(forResourcesWithExtension: nil, subdirectory: "Fonts") ?? [] {
             CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { Probe.dump() }
     }
     var body: some Scene {
         WindowGroup {
@@ -365,6 +420,35 @@ def simulator(want: str) -> tuple[str, str] | None:
     return (phones[0][1]["udid"], phones[0][1]["name"]) if phones else None
 
 
+def bottom_edge(probe: dict | None) -> list[str]:
+    """The fold check on the real render, as fold.py does it on a mock. The fold is the top of what is
+    pinned over the scrolling content: the system tab bar (iOS 26 floats it over the list), or the inset a
+    .safeAreaInset bar gives the main scroll view. Every accessibility element that runs across that line
+    is cut. Card edges with no text in them aren't elements, so a bare sliver of card still needs your eye."""
+    if not probe or not probe.get("elements"):
+        why = "no probe file" if not probe else "no elements; app accessibility may be off in this simulator"
+        return [f"render: bottom edge not measured ({why})"]
+    sw, sh = probe["screen"][2], probe["screen"][3]
+    folds = [(b[1], b[0], b[2], "the tab bar") for b in probe.get("tabBars") or []]
+    scrolls = sorted(probe.get("scrolls") or [], key=lambda s: s[2] * s[3], reverse=True)
+    if scrolls and scrolls[0][4] > probe.get("safeBottom", 34) + 8:
+        x, y, w, h, inset = scrolls[0]
+        folds.append((y + h - inset, x, w, "the pinned bottom bar"))
+    if not folds:
+        return ["render: bottom edge: nothing pinned over the scrolling content"]
+    top, bx, bw, what = min(folds)
+    if what != "the tab bar" and any(abs(f[0] - top) <= 20 for f in folds if f[3] == "the tab bar"):
+        what = "the tab bar"   # the scroll view's inset is the tab bar's, plus its spacing
+    cut = []
+    for el in probe["elements"]:
+        x, y, w, h = el["frame"]
+        if h < sh * 0.5 and y < top - 1 and y + h > top + 1 and x < bx + bw and x + w > bx:
+            cut.append(f"render: CUT  {el['label'][:60]!r}: {round(top - y)} of {round(h)} pt show above {what}; "
+                       "land the fold in a gap between rows, or shorten what's above")
+    head = f"render: bottom edge: {what} starts at {round(top)} pt of {round(sh)}; {len(probe['elements'])} elements read"
+    return [head] + (cut or ["render: bottom edge pass: no element runs across it (card edges with no text: check by eye)"])
+
+
 def render_ios(files: list[Path], pick: tuple, found: list, args: argparse.Namespace) -> int:
     import fcntl
     import os
@@ -375,6 +459,9 @@ def render_ios(files: list[Path], pick: tuple, found: list, args: argparse.Names
         print("render: not rendered natively, no iPhone simulator here (Xcode > Settings > Components adds one)")
         return 3
     udid, name = dev
+    # The status bar's time: --clock, else a time in the #Preview's name ("Today, 09:20"), else the wall clock.
+    named = re.search(r"\b([01]?\d|2[0-3]):([0-5]\d)\b", pick[3] or "")
+    clock = args.clock or (f"{named.group(1)}:{named.group(2)}" if named else None)
     work = Path(tempfile.mkdtemp(prefix="render-swiftui-ios-"))
     bundle = f"dev.slopless.render.p{os.getpid()}"
     try:
@@ -403,6 +490,11 @@ def render_ios(files: list[Path], pick: tuple, found: list, args: argparse.Names
             fcntl.flock(lock, fcntl.LOCK_EX)   # one render at a time owns the simulator's screen
             subprocess.run(["xcrun", "simctl", "boot", udid], capture_output=True, text=True)
             subprocess.run(["xcrun", "simctl", "bootstatus", udid, "-b"], capture_output=True, text=True, timeout=300)
+            # SwiftUI builds its accessibility tree only when an assistive client is on; switch app accessibility
+            # on for this render (what Accessibility Inspector does) and put the setting back afterwards.
+            ax = ["xcrun", "simctl", "spawn", udid, "defaults"]
+            ax_was = subprocess.run(ax + ["read", "com.apple.Accessibility", "ApplicationAccessibilityEnabled"], capture_output=True, text=True)
+            subprocess.run(ax + ["write", "com.apple.Accessibility", "ApplicationAccessibilityEnabled", "-bool", "YES"], capture_output=True)
             inst = subprocess.run(["xcrun", "simctl", "install", udid, str(app)], capture_output=True, text=True, timeout=120)
             if inst.returncode != 0:
                 print("render: didn't install on the simulator\n  " + inst.stderr.strip()[-300:])
@@ -416,21 +508,39 @@ def render_ios(files: list[Path], pick: tuple, found: list, args: argparse.Names
             if run.returncode != 0:
                 print("render: didn't launch\n  " + run.stderr.strip()[-300:])
                 return 1
-            if args.clock:   # the status bar shows the preview's moment, not the wall clock
-                subprocess.run(["xcrun", "simctl", "status_bar", udid, "override", "--time", args.clock], capture_output=True)
+            if clock:   # the status bar shows the preview's moment, not the wall clock
+                subprocess.run(["xcrun", "simctl", "status_bar", udid, "override", "--time", clock], capture_output=True)
             time.sleep(2.5)   # onAppear, tasks and one-off animations settle
             shot = subprocess.run(["xcrun", "simctl", "io", udid, "screenshot", "--type=png", str(Path(args.out).resolve())],
                                   capture_output=True, text=True, timeout=60)
-            if args.clock:
+            if clock:
                 subprocess.run(["xcrun", "simctl", "status_bar", udid, "clear"], capture_output=True)
+            probe = None
+            data = subprocess.run(["xcrun", "simctl", "get_app_container", udid, bundle, "data"], capture_output=True, text=True).stdout.strip()
+            if data and (Path(data) / "tmp" / "render-probe.json").exists():
+                try:
+                    probe = json.loads((Path(data) / "tmp" / "render-probe.json").read_text())
+                except ValueError:
+                    probe = None
             subprocess.run(["xcrun", "simctl", "terminate", udid, bundle], capture_output=True)
+            if ax_was.returncode == 0:
+                subprocess.run(ax + ["write", "com.apple.Accessibility", "ApplicationAccessibilityEnabled", "-bool",
+                                     "YES" if ax_was.stdout.strip() == "1" else "NO"], capture_output=True)
+            else:
+                subprocess.run(ax + ["delete", "com.apple.Accessibility", "ApplicationAccessibilityEnabled"], capture_output=True)
             subprocess.run(["xcrun", "simctl", "uninstall", udid, bundle], capture_output=True)
         if shot.returncode != 0 or not Path(args.out).exists():
             print("render: no screenshot\n  " + shot.stderr.strip()[-300:])
             return 1
         label = pick[3] if pick[1] == pick[2] == 0 else f"#Preview {pick[3] or found.index(pick)!r}"
+        for line in bottom_edge(probe):
+            print(line)
+        if not clock:
+            print("render: note: the status bar shows the wall clock; pass --clock HH:MM with the preview's now (or put "
+                  "the time in the #Preview's name, \"Today, 09:20\"), or the render contradicts its own sample data")
         print(f"render: {Path(args.out).name} from {label} in {pick[0].name}, iOS Simulator ({name}), Dynamic Type "
-              f"{args.dynamic_type}, {args.appearance}, {args.locale}, status bar {args.clock or 'at the wall clock'}" + (f", {len(fonts)} font file(s) bundled" if fonts else "")
+              f"{args.dynamic_type}, {args.appearance}, {args.locale}, status bar {clock or 'at the wall clock'}"
+              + (" (from the preview's name)" if clock and not args.clock else "") + (f", {len(fonts)} font file(s) bundled" if fonts else "")
               + "; the simulator is left booted")
         return 0
     finally:
