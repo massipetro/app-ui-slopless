@@ -139,14 +139,16 @@ Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how
 |---|---|---|
 | Compiles | `scripts/typecheck.py` (Swift, iOS simulator or macOS SDK, at the project's deployment target; iOS 17 / macOS 14 by default) · Gradle or `scripts/compile_kotlin.py` (Kotlin 2.2 + Compose MP 1.9) | code that only looks right |
 | Lint | `scripts/lint.py` | slop tells (violet accents, stock greys, 5%-black shadows, emoji), sub-44/48 targets, fixed font sizes, code-baseline mistakes; in macOS mode also missing hover states, menu commands and window sizes, and phone-sized frames; custom fonts named in code that no font file in the project provides |
-| Real render (Mac) | `scripts/render_swiftui.py` renders the window from its `#Preview` | mock/code drift: truncation, locale formats, a column pushed off-screen, that an HTML mock hides |
+| Real render | `scripts/render_swiftui.py` renders the Mac window from its `#Preview`, or the iOS screen on the Simulator (`--platform ios`) | mock/code drift: truncation, locale formats, a column pushed off-screen, that an HTML mock hides |
+| Large text | `render_swiftui.py --platform ios --dynamic-type ax5`; `fold.py --text-scale ax5\|android2` on the mock | text that clips, truncates or overlaps at the size many people use; rows that keep a fixed height |
+| Accessibility | `scripts/lint.py` rules mapped to WCAG 2.2 criteria (`--a11y`), critique pass 15, the report's Accessibility line, `scripts/acr.py` | tap gestures with no role, unlabelled pictures, states shown by colour alone, home-made modals, gestures with no alternative, unannounced status; a draft ACR (VPAT 2.5Rev) with every unchecked criterion left "To evaluate" |
 | Bottom edge | `scripts/fold.py` measures the mock at 390×844 | a row or a sliver of card cut by the tab bar at rest; a section heading orphaned above the bar; a last row that can't scroll clear |
 | One moment in time | every live value derived from one `now`; critique pass 9 reads the resting frame | a progress bar, a countdown and a "since" time that imply different times of day; a counter that disagrees with its rows |
 | Signature | the resting frame, against the category's stock layout | a good direction built as the default layout in new paint |
 | Motion | `scripts/filmstrip.py` freezes every animation at set times | a check-off that never lands, counters that change too early, anything clipped mid-animation |
 | Mascot | `scripts/mascot.py`: SVG rig to SwiftUI / Compose code and Lottie | freehand characters that differ per platform; a silhouette that doesn't read at 24 px |
 | Blind judge | `scripts/blind_critique.py`: a fresh `claude` judge sees only the screenshots, the brief and the rubric | what the build's own critique reads past because it knows the intent: a stock layout, numbers that disagree, an orphaned heading |
-| Taste | a scored critique of the screenshots (`references/critique.md`, 14 passes) | no focal point, sameness, a wireframe feel, an idea that only reaches the home screen |
+| Taste | a scored critique of the screenshots (`references/critique.md`, 15 passes) | no focal point, sameness, a wireframe feel, an idea that only reaches the home screen |
 
 Accessibility trade-offs are reported as warnings with the criterion, the value and a fix. Bold choices aren't silently blocked.
 
@@ -235,6 +237,7 @@ references/
   platform-macos.md         macOS patterns: windows, sidebar, toolbar, pointer, keyboard, density, vibrancy
   presets/*.md              one file per style
   critique.md               the scored taste pass on screenshots
+  accessibility.md          accessibility mode (audit any app to WCAG 2.2 AA, no restyle) and the checks behind the Accessibility line
   mascot.md                 designing a mascot or hero glyph the skill can draw, rig it, ship it, animate it
 library/directions.json     31 dealt directions (5 per phone preset, 8 Mac-only, 3 retro), with palettes checked for contrast
 scripts/deal.py             deals directions (--platform macos for their Mac window forms); --check validates the library (Python 3.9+, stdlib only)
@@ -246,9 +249,10 @@ scripts/fold.py             measures the mock's bottom edge: every row at the pi
 scripts/filmstrip.py        turns motion into one readable image: frames of an HTML mock paused at set times, with measured durations
 scripts/mascot.py           mascot kit: SVG rig to SwiftUI / Compose code, to Lottie JSON, a pausable preview, and the 24 px check sheet
 scripts/blind_critique.py   a blind judge for the built screens: only the images, the brief and critique.md go to a fresh claude session
-scripts/render_swiftui.py   renders a macOS SwiftUI window natively from its #Preview, captured from the window server, no Xcode project
+scripts/render_swiftui.py   renders a SwiftUI screen natively from its #Preview: the macOS window, or the iOS screen on the Simulator at any Dynamic Type size
+scripts/acr.py              drafts an Accessibility Conformance Report (VPAT 2.5Rev, WCAG 2.2 A/AA) from the report line and the a11y lint
 research/                   the source material behind the rules
-evals/                      briefs, input files, grade.py, shot.mjs, and model-free tests for deal.py, fold.py, lint.py's font check and the mascot kit
+evals/                      briefs, input files, grade.py, shot.mjs, and model-free tests for deal.py, fold.py, lint.py's font and accessibility rules, acr.py and the mascot kit
 docs/examples/              the screens shown above
 ```
 </details>
