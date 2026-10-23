@@ -21,8 +21,9 @@ Two kinds of eval live here:
 | 10 | `retro-pixel-plants-compose` | a named **retro** style (16-bit pixel art) on a phone: pixel grid, nearest-neighbour art, meters that show their value |
 | 11 | `retro-film-log-macos-swiftui` | **retro on a Mac**, the look left to the designer: real window chrome kept, no Apple or Microsoft marks |
 | 12 | `bake-day-macos-swiftui` | **a fresh macOS brief**, neither a collection nor a pro tool: a home baker's bake-day window kept open on the counter all day |
+| 13 | `medication-today-a11y-swiftui` | **accessibility**: a medication Today screen for older users on VoiceOver, Voice Control and the largest text sizes, for a buyer who needs an ACR (VPAT, WCAG 2.2 AA) |
 
-Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named.
+Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named. Eval 13 tests accessibility: its grader checks names, roles, states, large-text layout, announcements and the report's Accessibility line. Its pairs are judged on native iOS renders at the default size and at AX5, with a judge prompt that scores Access as well as the five criteria.
 
 ### How to run
 
