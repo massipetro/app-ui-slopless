@@ -178,10 +178,11 @@ Not verified: Compose render (the HTML mock stands in); iOS compile; large-text 
 
 ## Evals
 
-Twelve build briefs: phone, Mac and retro. Each was run with and without the skill (and on the Mac also with the previous release, v1.5.0) and judged blind from screenshots by separate models with `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15. `evals/grade.py` adds objective checks: compile, lint, bottom edge, report block. Method, per-run scores and limits: [`evals/README.md`](evals/README.md). Live results page with every screen: [build eval](https://claude.ai/artifact/4xRqy6RHwvGgAsJoKck6QY).
+Twelve build briefs: phone, Mac and retro. Each was run with and without the skill (on the Mac also with the previous release, v1.5.0; round 20 against v1.7.0 alone) and judged blind from screenshots by separate models with `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15. `evals/grade.py` adds objective checks: compile, lint, bottom edge, report block. Method, per-run scores and limits: [`evals/README.md`](evals/README.md). Live results page with every screen: [build eval](https://claude.ai/artifact/4xRqy6RHwvGgAsJoKck6QY).
 
 | Round | Setup | Briefs | Blind wins for the skill | Average margin |
 |---|---|---|---|---|
+| 20 | Opus 5.5, three judges, v1.7.0 as the only comparison (a blind judge inside the build) | ferry, Mac bake day × 3 | vs v1.7.0: 4 of 6 (phone 3 of 3, Mac 1 of 3) | vs v1.7.0: +0.1 (phone +0.65, Mac −0.5) |
 | 19 | Opus 5.5, three judges, v1.5.0 as a third config | Mac bake day (a fresh brief) × 3 | 3 of 3 (vs v1.5.0: 1 of 3) | +1.1 (vs v1.5.0: −0.1) |
 | 18 | the same, before the round-18 fixes | Mac bake day (a fresh brief) × 3 | 1 of 3 (vs v1.5.0: 2 of 3) | +0.1 (vs v1.5.0: 0.0) |
 | 17 | Opus 5.5, three judges | retro pixel art × 2 | 2 of 2 | +0.9 |
@@ -210,9 +211,10 @@ Twelve build briefs: phone, Mac and retro. Each was run with and without the ski
 - a stricter fold rule, after round 9's judges capped a 2 px sliver and a half-showing row that the first version passed;
 - the Mac deal and three Mac-only presets, then quiet native kept out of collection briefs after it lost the library redesign (rounds 10–12);
 - the retro preset's rules after round 14: no glow on type, the orphaned-heading fold check, meters that show their value, and the pixel screen as an RPG with names in a pixel face (rounds 14–17);
-- one moment in time, one readout for ambient screens, and two Mac-native options in a Mac deal, after the fresh Mac brief (round 18).
+- one moment in time, one readout for ambient screens, and two Mac-native options in a Mac deal, after the fresh Mac brief (round 18);
+- a blind judge inside the build, tested in round 20; then, after its Mac losses to layouts an HTML mock can't show (no toolbar, no sidebar), the real Mac window rendered for that judge.
 
-The skill runs cost about 1.5–2.5× the baseline. Two or three runs per config: a gap of 0.2–0.3 points is within run-to-run noise, and the judges are models looking at HTML mocks, not native renders.
+The skill runs cost about 1.5–2.5× the baseline. Two or three runs per config: a gap of 0.2–0.3 points is within run-to-run noise, and the eval judges are models looking at HTML mocks, not native renders. Since round 20 the skill renders a Mac build's real window and gives it to its own blind judge, but no eval round has been judged on native renders yet.
 
 ## Grounded in
 
