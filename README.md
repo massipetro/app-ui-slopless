@@ -180,10 +180,14 @@ Not verified: Compose render (the HTML mock stands in); iOS compile; large-text 
 
 ## Evals
 
-Twelve build briefs: phone, Mac and retro. Each was run with and without the skill (on the Mac also with the previous release, v1.5.0; round 20 against v1.7.0 alone) and judged blind from screenshots by separate models with `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15. `evals/grade.py` adds objective checks: compile, lint, bottom edge, report block. Method, per-run scores and limits: [`evals/README.md`](evals/README.md). Live results page with every screen: [build eval](https://claude.ai/artifact/4xRqy6RHwvGgAsJoKck6QY).
+Thirteen build briefs: phone, Mac, retro and accessibility. Each was run with and without the skill (on the Mac also with the previous release, v1.5.0; rounds 20–24 against v1.7.0 or the round before) and judged blind from screenshots by separate models with `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15. `evals/grade.py` adds objective checks: compile, lint, bottom edge, report block. Method, per-run scores and limits: [`evals/README.md`](evals/README.md). Live results page with every screen: [build eval](https://claude.ai/artifact/4xRqy6RHwvGgAsJoKck6QY).
 
 | Round | Setup | Briefs | Blind wins for the skill | Average margin |
 |---|---|---|---|---|
+| 24 | eval 13, three judges, native iOS renders, vs round 23's build | medication Today screen × 3 | vs round 23: 2 of 3 (7 of 9 votes) | vs round 23: +0.9 (Access +1.5) |
+| 23 | eval 13, three judges, vs round 22's build | medication Today screen × 3 | vs round 22: 2 of 3 (7 of 9 votes) | vs round 22: +0.5 (Access +2.6) |
+| 22 | eval 13, three judges, native iOS renders at default size and AX5, vs v1.7.0 | medication Today screen × 3 | vs v1.7.0: 2 of 3 (7 of 9 votes) | vs v1.7.0: +0.9 (Access +1.2) |
+| 21 | Opus 5.5, three judges, the blind judge sees the real Mac window, vs v1.7.0 | Mac bake day × 3 | vs v1.7.0: 2 of 3 (5 of 9 votes) | vs v1.7.0: +0.1 |
 | 20 | Opus 5.5, three judges, v1.7.0 as the only comparison (a blind judge inside the build) | ferry, Mac bake day × 3 | vs v1.7.0: 4 of 6 (phone 3 of 3, Mac 1 of 3) | vs v1.7.0: +0.1 (phone +0.65, Mac −0.5) |
 | 19 | Opus 5.5, three judges, v1.5.0 as a third config | Mac bake day (a fresh brief) × 3 | 3 of 3 (vs v1.5.0: 1 of 3) | +1.1 (vs v1.5.0: −0.1) |
 | 18 | the same, before the round-18 fixes | Mac bake day (a fresh brief) × 3 | 1 of 3 (vs v1.5.0: 2 of 3) | +0.1 (vs v1.5.0: 0.0) |
@@ -214,9 +218,11 @@ Twelve build briefs: phone, Mac and retro. Each was run with and without the ski
 - the Mac deal and three Mac-only presets, then quiet native kept out of collection briefs after it lost the library redesign (rounds 10–12);
 - the retro preset's rules after round 14: no glow on type, the orphaned-heading fold check, meters that show their value, and the pixel screen as an RPG with names in a pixel face (rounds 14–17);
 - one moment in time, one readout for ambient screens, and two Mac-native options in a Mac deal, after the fresh Mac brief (round 18);
-- a blind judge inside the build, tested in round 20; then, after its Mac losses to layouts an HTML mock can't show (no toolbar, no sidebar), the real Mac window rendered for that judge.
+- a blind judge inside the build, tested in round 20; then, after its Mac losses to layouts an HTML mock can't show (no toolbar, no sidebar), the real Mac window rendered for that judge (round 21);
+- the accessibility mode, the Access criterion and the AX5 iOS render (round 22), then the brief held at rest at AX5 after a screen that was all summary at large text (round 23);
+- the native bottom-edge check and the build's clock, after the iOS 26 tab bar cut rows the HTML mock never drew (round 24).
 
-The skill runs cost about 1.5–2.5× the baseline. Two or three runs per config: a gap of 0.2–0.3 points is within run-to-run noise, and the eval judges are models looking at HTML mocks, not native renders. Since round 20 the skill renders a Mac build's real window and gives it to its own blind judge, but no eval round has been judged on native renders yet.
+The skill runs cost about 1.5–2.5× the baseline. Two or three runs per config: a gap of 0.2–0.3 points is within run-to-run noise, and the eval judges are models. The phone and retro rounds were judged on HTML mocks; since round 21 the Mac window, and from round 22 the iOS screens of the accessibility brief, are judged on native renders. Rounds 20–24 compare against earlier builds, so they are not in the 68-of-81 count. Accessibility is measured on one brief, and nothing was tested with VoiceOver, TalkBack or Voice Control.
 
 ## Grounded in
 
