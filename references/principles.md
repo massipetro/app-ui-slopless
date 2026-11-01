@@ -116,17 +116,28 @@ The R-TOUCH rules are about thumbs. On a Mac the input is a pointer and a keyboa
 - **R-MAC-8 Undo, not confirm.** Reversible actions register with `UndoManager`; only irreversible ones prompt, and the prompt names the object and the verb. *Norman; HIG Managing windows; R-FORM-4.*
 - **R-MAC-9 Windows keep their promise.** Window frame and per-window state are restored; settings live in ⌘, with immediate effect; a menu-bar extra shows one glanceable live state. *HIG Settings, Menu bar extras.*
 
-## Accessibility (WCAG 2.2, mobile-relevant)
-- **R-A11Y-1 Contrast.** Text 4.5:1, large text 3:1 (1.4.3). UI components and icons 3:1 (1.4.11). Use APCA as the dark-mode sanity check (Lc 75 body, Lc 60 other text, Lc 45 large text).
-- **R-A11Y-2 Resize.** 200% text with no loss (1.4.4); reflow at large sizes (1.4.10); no fixed-height text boxes (1.4.12).
-- **R-A11Y-3 Targets.** Minimum 24×24 CSS px (2.5.8 AA); use the platform 44/48 instead (macOS: 22 pt controls with ≥24×24 pt hit areas for icon buttons, R-MAC-5).
-- **R-A11Y-4 Motion.** Auto-moving content can be paused (2.2.2); interaction motion can be disabled (2.3.3).
-- **R-A11Y-5 Gestures.** Path or multi-point gestures have single-pointer alternatives (2.5.1). Drag has an alternative (2.5.7).
+## Accessibility (WCAG 2.2 AA through WCAG2ICT; Section 508; EN 301 549)
+Criteria are WCAG 2.2 success criteria read for software (WCAG2ICT, W3C 2025): a "page" is a screen or window, a CSS px is a pt or dp. Sources and the gap audit: `../research/accessibility-references.md`. The checks and the Accessibility line: `accessibility.md`.
+- **R-A11Y-1 Contrast.** Text 4.5:1, large text (18 pt, or 14 pt bold) 3:1 (1.4.3). UI component edges, states and meaningful graphics 3:1 against their neighbours (1.4.11). Measure the pairs on screen in light and dark, not only the palette. APCA is the dark-mode sanity check (Lc 75 body, Lc 60 other text, Lc 45 large text). *WCAG 1.4.3/1.4.11; Apple HIG Accessibility; ATF ContrastUtils.*
+- **R-A11Y-2 Resize.** Text scales to the platform's largest size with no loss (1.4.4, "up to the text sizing capabilities of the platform", WCAG2ICT): iOS AX5 (body 17 → 53 pt), Android font scale 2.0 (nonlinear). It reflows rather than clipping or scrolling sideways (1.4.10). Render it. macOS has no Dynamic Type; offer in-app zoom. *HIG Typography; Android 14 font scaling; Apple Larger Text criteria (≥200%).*
+- **R-A11Y-3 Targets.** Minimum 24×24 pt/dp (2.5.8 AA); use the platform 44/48 instead (macOS: 22 pt controls with ≥24×24 pt hit areas for icon buttons, R-MAC-5).
+- **R-A11Y-4 Motion and flashing.** Auto-moving content over 5 s can be paused (2.2.2); interaction motion follows Reduce Motion (2.3.3); nothing flashes more than three times a second (2.3.1).
+- **R-A11Y-5 Gestures.** Path and multi-point gestures have single-pointer alternatives (2.5.1); dragging has a non-drag alternative (2.5.7); every gesture-only action is also an accessibility action (`accessibilityAction(named:)`, `customActions`). Actions fire on release (2.5.2). *WCAG; Android accessibility principles.*
 - **R-A11Y-6 Orientation.** Don't lock orientation unless it's essential (1.3.4).
 - **R-A11Y-7 Focus not obscured.** Sticky bars mustn't hide the focused item (2.4.11).
+- **R-A11Y-8 Name, role, value.** Use the real control and style it; a custom one exposes its name, role and state to the accessibility API (4.1.2; 508 502; EN 11.5). A tap gesture on a shape has no role, no state and no keyboard path. *WCAG2ICT 4.1.2; Apple `onTapGesture` docs; Compose tap-and-press docs.*
+- **R-A11Y-9 Text alternatives.** Every picture that carries meaning has a text alternative that says what it means; decoration is marked decorative (1.1.1). Drawn gauges and charts carry a value. *Apple VoiceOver evaluation criteria.*
+- **R-A11Y-10 Label in name.** The accessible name starts with the visible words, so Voice Control and Voice Access can say it (2.5.3). *WCAG Understanding 2.5.3; Apple Voice Control criteria.*
+- **R-A11Y-11 Order and modality.** Reading and focus order follow the meaning (1.3.2, 2.4.3). Custom overlays are modal to assistive tech and close with Escape (2.1.2). Headings are marked (1.3.1, 2.4.6).
+- **R-A11Y-12 Colour alone.** See R-COG-8 (1.4.1). Honour Differentiate Without Colour. Test in grayscale. *Apple Differentiate Without Color Alone criteria.*
+- **R-A11Y-13 Keyboard.** Everything works with Full Keyboard Access, Switch Control and a hardware keyboard (2.1.1); single-key shortcuts can be turned off or work only on focus (2.1.4); focus is visible (2.4.7).
+- **R-A11Y-14 Status and titles.** Status messages are announced without moving focus (4.1.3). Each screen and window has a title (2.4.2; EN 301 549 V4.1.1 11.2.4.2).
+- **R-A11Y-15 Input purpose.** Personal-data fields declare their content type, so autofill and password managers work (1.3.5, 3.3.7, 3.3.8).
+- **R-A11Y-16 User preferences.** Follow the platform's settings: text size, Bold Text, Increase Contrast, Reduce Transparency, Reduce Motion, dark appearance (508 503.2; EN 301 549 11.7).
+- **R-A11Y-17 Claims.** Conformance uses VPAT 2.5Rev's terms: Supports, Partially Supports, Does Not Support, Not Applicable; "Not Evaluated" only at AAA. Each needs a reason. An Apple Accessibility Nutrition Label needs every common task to work. Evidence from code, lint and renders is a draft, not an assistive-technology test: say which it is. *ITI VPAT 2.5Rev; Apple App Store Connect.*
 
 ## Resolving conflicts
 - **Bold vs Nielsen #8 (minimalist).** #8 is about removing *irrelevant information*, not visual character. Keep the content lean and the visual identity strong.
 - **Hoober (centre) vs Clark (bottom).** Put content in the centre and primary actions low. Never put the only primary CTA top-right.
 - **Delight vs speed.** Delight goes on low-frequency moments. If a delightful animation sits on a path used 20 times a day, cut it to ≤200 ms or remove it.
-- **Style vs contrast (user chose "warn, don't block").** Keep the style, report the exact ratio and the compliant alternative.
+- **Style vs contrast (user chose "warn, don't block").** Keep the style, report the exact ratio and the compliant alternative, and mark the criterion "Partially supports" on the Accessibility line. The warning covers contrast, type size and motion intensity only: names, roles, order, scaling, actions and announcements cost nothing visually and are never traded (R-A11Y-8–16).

@@ -2,6 +2,7 @@
 """Measure the bottom edge of an HTML mock: is any row cut by the pinned bar?
 
   fold.py mock.html [--size 390x844] [--bar <css selector>] [--scroll <css selector>]
+                    [--text-scale ax5|android2|<factor>] [--shot large.png]
 
 Looking at a screenshot, a sliver of card border above a tab bar is easy to miss; a run
 missed it in three rounds of evals. This script measures it instead. It loads the mock at
@@ -21,6 +22,20 @@ reports every row near the bar's top edge in two frames:
 A "row" is the outermost painted box (background, border, shadow, image) inside the
 scrolling content, so a card counts once, not once per icon. A line of plain text that
 crosses the edge counts too.
+
+Large text (--text-scale): before measuring, every element's font size (and a px line height with
+it) is mapped to the size the platform would show at its largest text setting, then the same checks
+run. A mock's px stand for pt or dp (WCAG2ICT).
+  ax5       iOS Dynamic Type at AX5, from the HIG table: 11 -> 40, 13 -> 44, 15 -> 49, 17 -> 53,
+            20 -> 55, 22 -> 56, 28 -> 58, 34 -> 60, interpolated; above 34, x 60/34 (a display size
+            set relativeTo .largeTitle). The map is by size, so a 17 pt caption that the code ties to
+            .caption scales a little more than it would on the phone.
+  android2  Android font scale 2.0, the AOSP FontScaleConverterFactory table (nonlinear): 8 -> 16,
+            12 -> 24, 14 -> 26, 18 -> 30, 20 -> 34, 24 -> 36, 30 -> 38, 100 -> 100, interpolated.
+  <factor>  every size times the factor (macOS in-app zoom, or a plain 2.0).
+Mark system chrome (status bar, home indicator, an iOS tab bar) with data-system in the mock: it keeps its
+size, as it does on the phone. Fixed heights stay fixed, as they would in the app, so text that a fixed box can't hold overflows or
+clips in the render. --shot writes the scaled resting frame as a PNG for the critique and the blind judge.
 
 Exit 0: no cut row and the end frame clears. Exit 1: a cut row or too little clearance
 (fix it: move the fold into a gap between rows, or add a short fade above an opaque bar,
@@ -257,6 +272,32 @@ PROBE = r"""<script>/* fold.py probe */(function () {
   });
 })();</script>"""
 
+SCALE = r"""<script>/* fold.py text scale */addEventListener('load', function () {
+  var mode = %s, T = {
+    ax5: [[11, 40], [12, 43], [13, 44], [15, 49], [16, 51], [17, 53], [20, 55], [22, 56], [28, 58], [34, 60]],
+    android2: [[8, 16], [10, 20], [12, 24], [14, 26], [18, 30], [20, 34], [24, 36], [30, 38], [100, 100]] };
+  function map(s) {
+    if (typeof mode === 'number') return s * mode;
+    var t = T[mode];
+    if (s <= t[0][0]) return s * t[0][1] / t[0][0];
+    for (var i = 1; i < t.length; i++) if (s <= t[i][0]) {
+      var a = t[i - 1], b = t[i]; return a[1] + (s - a[0]) * (b[1] - a[1]) / (b[0] - a[0]); }
+    var z = t[t.length - 1]; return mode === 'android2' ? s : s * z[1] / z[0];
+  }
+  // System chrome doesn't scale with the app's text: the status bar, the home indicator, an iOS tab bar
+  // (it uses the Large Content Viewer). Mark it data-system in the mock; common class names count too.
+  var SYS = '[data-system], [data-system] *, [class*="status-bar"], [class*="status-bar"] *, [class*="statusbar"], [class*="statusbar"] *, [class*="home-indicator"]';
+  var els = Array.prototype.slice.call(document.querySelectorAll('body, body *')).filter(function (el) { return !el.matches(SYS); }), plan = els.map(function (el) {
+    var cs = getComputedStyle(el), fs = parseFloat(cs.fontSize), lh = parseFloat(cs.lineHeight);
+    return [el, fs, isNaN(lh) ? null : lh];
+  });
+  plan.forEach(function (p) {
+    var to = map(p[1]);
+    p[0].style.setProperty('font-size', to.toFixed(2) + 'px', 'important');
+    if (p[2]) p[0].style.setProperty('line-height', (p[2] * to / p[1]).toFixed(2) + 'px', 'important');
+  });
+});</script>"""
+
 WRAP = """<!doctype html><meta charset="utf-8"><body style="margin:0"><pre id="out">no result</pre>
 <iframe src="{src}" style="width:{w}px;height:{h}px;border:0;display:block"></iframe>
 <script>addEventListener('message', function (e) {{ if (e.data && e.data.fold) document.getElementById('out').textContent = JSON.stringify(e.data.fold); }});</script>"""
@@ -269,7 +310,19 @@ def main() -> int:
     ap.add_argument("--bar", help="CSS selector of the pinned bottom bar (default: detected)")
     ap.add_argument("--scroll", help="CSS selector of the scrolling container (default: detected)")
     ap.add_argument("--json", action="store_true", help="print the raw measurement too")
+    ap.add_argument("--text-scale", help="measure at large text: ax5 (iOS), android2 (font scale 2.0) or a factor")
+    ap.add_argument("--shot", help="with --text-scale: also write the scaled resting frame to this PNG")
     args = ap.parse_args()
+    scale = ""
+    if args.text_scale:
+        if args.text_scale in ("ax5", "android2"):
+            scale = SCALE % json.dumps(args.text_scale)
+        else:
+            try:
+                scale = SCALE % float(args.text_scale)
+            except ValueError:
+                print("fold: --text-scale is ax5, android2 or a number")
+                return 2
 
     mock = Path(args.mock)
     if not mock.exists():
@@ -282,7 +335,19 @@ def main() -> int:
     vw, vh = (int(v) for v in args.size.lower().split("x"))
     src = mock.read_text(errors="ignore")
     probe = mock.with_name(mock.stem + ".fold-probe.html")
-    probe.write_text(src.replace("</body>", PROBE + "</body>") if "</body>" in src else src + PROBE)
+    probe.write_text(src.replace("</body>", scale + PROBE + "</body>") if "</body>" in src else src + scale + PROBE)
+    if args.shot and scale:
+        shot = mock.with_name(mock.stem + ".fold-shot.html")
+        shot.write_text(src.replace("</body>", scale + "</body>") if "</body>" in src else src + scale)
+        try:
+            subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-first-run", "--hide-scrollbars",
+                            "--allow-file-access-from-files", "--blink-settings=preferredColorScheme=1",
+                            "--force-prefers-reduced-motion", "--force-device-scale-factor=2", "--virtual-time-budget=6000",
+                            f"--window-size={vw},{vh}", f"--screenshot={Path(args.shot).resolve()}", shot.resolve().as_uri()],
+                           capture_output=True, text=True, timeout=120)
+        finally:
+            shot.unlink(missing_ok=True)
+        print(f"fold: large-text frame ({args.text_scale}) written to {args.shot}" if Path(args.shot).exists() else "fold: no large-text frame written")
     cfg = json.dumps({k: v for k, v in (("bar", args.bar), ("scroll", args.scroll)) if v})
     wrap = mock.with_name(mock.stem + ".fold.html")
     from urllib.parse import quote
@@ -307,6 +372,8 @@ def main() -> int:
         print(f"fold: {res['error']}")
         return 0
     bar = res["bar"]
+    if args.text_scale:
+        print(f"fold: measured at large text ({args.text_scale})")
     print(f"fold: bar '{bar['label']}' top at {bar['top']} px ({bar['position']}, {'opaque' if bar['opaque'] else 'TRANSPARENT'}); "
           f"fade above it: {str(res['fade']) + ' px' if res['fade'] else 'none'}; scrolls: {res['scroll']}")
     bad = 0

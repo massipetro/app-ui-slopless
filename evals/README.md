@@ -21,8 +21,9 @@ Two kinds of eval live here:
 | 10 | `retro-pixel-plants-compose` | a named **retro** style (16-bit pixel art) on a phone: pixel grid, nearest-neighbour art, meters that show their value |
 | 11 | `retro-film-log-macos-swiftui` | **retro on a Mac**, the look left to the designer: real window chrome kept, no Apple or Microsoft marks |
 | 12 | `bake-day-macos-swiftui` | **a fresh macOS brief**, neither a collection nor a pro tool: a home baker's bake-day window kept open on the counter all day |
+| 13 | `medication-today-a11y-swiftui` | **accessibility**: a medication Today screen for older users on VoiceOver, Voice Control and the largest text sizes, for a buyer who needs an ACR (VPAT, WCAG 2.2 AA) |
 
-Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named.
+Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named. Eval 13 tests accessibility: its grader checks names, roles, states, large-text layout, announcements and the report's Accessibility line. Its pairs are judged on native iOS renders at the default size and at AX5, with a judge prompt that scores Access as well as the five criteria.
 
 ### How to run
 
@@ -31,14 +32,151 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 1. For each eval, run the prompt in a fresh session **with the skill** and in another **without it** (the baseline). Save each session's final reply as `response.md` and its files under:
    `<iteration>/eval-<id>-<name>/<with_skill|without_skill>/run-<n>/outputs/`
 2. Grade both configs: `python3 evals/grade.py <iteration>`. It writes `grading.json` per run and prints pass counts. The no-preset evals reuse `scripts/lint.py`, so "no FAIL" means the same thing it means in the skill.
-3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (five criteria, caps, overall). A fresh agent with only the two images and `critique.md` works as the judge.
+3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (six criteria from round 22 on, five before; caps; overall). A fresh agent with only the two images and `critique.md` works as the judge. For iOS briefs, `python3 evals/render_builds.py <iteration>` renders every run's own Swift on the iOS Simulator at the default size and at AX5, with each build's clock (its `--clock`, else the time in its `#Preview`'s name), and records the native bottom-edge result in each run's `render.txt`. The judge prompts live in `evals/judges.py` (`phone`, `mac`, and `access`, which shows each screen at the default and the largest text size and scores Access as a sixth criterion); a round's `make_pairs.py` imports it, so every round asks the same question.
 4. Record per eval: grader pass rate, lint FAIL count, and blind critique overall for both configs. The skill earns its place when it wins the blind critique, not just the regex checks.
 
 `grade.py` checks presence of craft and absence of tells. It can't see taste; step 3 is where taste is measured.
 
 ## Results
 
-Eighteen rounds, October 2026, newest first: rounds 1–9 on the phone, 10–13 and 18 on the Mac, 14–17 on the retro preset. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+Twenty-four rounds, October 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–24 on accessibility. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+
+### Round 24: native bottom edge and the build's clock, eval 13, three judges (HEAD vs round 23's HEAD)
+
+HEAD is `247aa27` (worktree `skill-head24`). Since round 23:
+- every iOS render checks its own bottom edge, by reading the accessibility elements that cross the tab bar or a pinned bar;
+- the render takes the clock from the `#Preview`'s name when `--clock` isn't passed;
+- the eval 13 grader adds the native bottom edge.
+
+The comparison is round 23's HEAD `a2668bb` (`skill-head23`). The setup is round 23's, except that the harness rendered with `evals/render_builds.py`, so each build appears with its own clock. Five of the six builds named their preview with a time and got it; round 23's HEAD run 1 didn't and shows the wall clock. No build passed `--clock`.
+
+| Run | HEAD direction | Round 23 HEAD direction | HEAD vs round 23 HEAD | Access | Votes |
+|---|---|---|---|---|---|
+| 1 | wp-departure-board | wp-departure-board | **7.27** vs 5.57 | **8.0** vs 4.3 | 3–0 |
+| 2 | wp-departure-board | ed-newspaper-frame | **7.23** vs 6.00 | 7.7 vs **8.0** | 3–0 |
+| 3 | ed-newspaper-frame | wp-departure-board | 7.04 vs **7.18** | **8.0** vs 7.0 | 1–2 |
+
+- **2 of 3 pairs, 7 of 9 votes, mean 7.18 vs 6.25; Access 7.89 vs 6.44.** This is HEAD's highest mean on eval 13 so far. It is still n = 3 on one brief.
+- **Nothing cut at the bottom edge on the HEAD side.**
+  - The native check found nothing pinned over the list in any HEAD build, so no row could be cut.
+  - It flagged rows cut by the floating tab bar in two of round 23's HEAD builds, at both sizes: a 3 pt sliver in run 1 and 17 pt in run 2.
+  - Every judge in pairs 1 and 2 named those cut rows. They were the craft cap that decided both pairs.
+  - The grader's new native check failed exactly those two builds.
+  - HEAD run 3's mock failed `fold.py` (text crossing the mock's bar) while its native render had no pinned bar; the judges saw the native render.
+- **The clock shows up in a judgement for the first time.** In pair 1, all three judges said HEAD's times agree with the status bar, while the other screen's lateness contradicted its 15:37 wall clock.
+- **Pair 3 went to round 23's HEAD on hierarchy.** All three judges gave HEAD the better AX5 behaviour (Access 8 vs 7): both buttons in the first screen, the action reordered first. Two of them preferred the other screen's single strong focus over HEAD's headings, which carried as much weight as the overdue dose, and its small "Show" link.
+- **Lint:** no FAIL on either side.
+- Grader: HEAD 29–30 of 30–31, round 23's HEAD 29–30 of 30–31.
+- Cost: $29.91 for 6 builds (HEAD $14.57, round 23's HEAD $15.34). Builds took 19.0 minutes against 21.0. Judges: $2.39 for 9.
+- **Not measured:** Android, the Mac, and any assistive technology. The Access score is a judgement on pixels.
+
+### Round 23: round 22's follow-ups, eval 13, three judges (HEAD vs round 22's HEAD)
+
+HEAD is `a2668bb` (worktree `skill-head23`). Since round 22 it has:
+- the brief at rest held at AX5;
+- `render_swiftui.py --clock`;
+- Access as a sixth scored criterion in the critique and the in-build blind judge.
+
+The comparison is round 22's HEAD `eb4197d` (`skill-head`), so this round measures only those changes. The setup is round 22's, except the judges:
+- Eval 13, three runs per config, Opus 5.5 builds ($8 cap).
+- The harness rendered every build natively on the iOS Simulator at the default size and at AX5; all six rendered.
+- Three blind Opus 5.5 judges per pair, with `evals/judges.py`'s `access` prompt. It adds the question of whether the thing to act on now is still in the first screen.
+- The judges got the six-criterion `critique.md`.
+
+| Run | HEAD direction | Round 22 HEAD direction | HEAD vs round 22 HEAD | Access, HEAD vs round 22 HEAD | Votes |
+|---|---|---|---|---|---|
+| 1 | wp-departure-board | wp-departure-board | **5.67** vs 5.37 | **5.3** vs 4.0 | 3–0 |
+| 2 | wp-departure-board | wp-departure-board | **6.43** vs 6.33 | **8.0** vs 5.0 | 1–2 |
+| 3 | wp-exaggerated-number | wp-departure-board | **6.73** vs 5.73 | **8.0** vs 4.7 | 3–0 |
+
+- **2 of 3 pairs, 7 of 9 votes, mean 6.28 vs 5.81; Access 7.11 vs 4.56.** This is n = 3 on one brief. The overall gap of 0.47 is within the noise seen at that size. The Access gap is not: every one of the nine judges scored HEAD's Access higher.
+- **The AX5 rule took.** In all three pairs, the judges named the same difference.
+  - HEAD at AX5 kept the overdue dose and its Take and Skip buttons in the first screen.
+  - Round 22's HEAD let its header and summary push every action below the fold there, the same failure that lost round 22's run 1.
+  - Two HEAD reports say in words that the action stays in the first screen at AX5.
+- **Pair 2 went the other way on a cut row.** All three judges preferred HEAD's AX5 frame (Access 8 vs 5), but two of them picked round 22's HEAD overall.
+  - At the default size, HEAD's screen showed a row sliver above its pinned bar, which triggered the craft cap.
+  - `fold.py` passed the mock, because the cut was the native iOS 26 floating tab bar, which the HTML mock doesn't draw.
+  - A fold check on the native render would catch it; the skill has none.
+- **`--clock` wasn't used.** No build passed it, and the harness renders at the wall clock for both configs. The judges again saw a status-bar time that disagrees with the sample data. One called it "likely an artefact of how they were rendered" and scored it the same for both. So this round doesn't measure the clock fix.
+- **Lint:** the new rules found nothing on either side. `lint.py` found one `fixed-font-size` FAIL in HEAD run 1 and one in each of round 22's runs 1 and 3. HEAD run 1 also has no heading traits.
+- Grader: HEAD 28–30 of 29–30, round 22's HEAD 28–29 of 29–30. Both configs ask for the same process now, so the grader no longer separates them.
+- Cost: $27.76 for 6 builds (HEAD $13.92, round 22's HEAD $13.84). Builds took 19.3 minutes against 18.2. Judges: $2.44 for 9.
+- **Not measured:** Android, the Mac, any assistive technology, and the `--clock` fix. The Access score is a judgement on pixels.
+- **After this round** (not yet measured):
+  - **Every iOS render checks its own bottom edge.** `render_swiftui.py --platform ios` switches app accessibility on for the render (and back after), reads the screen's accessibility elements, and prints each one that runs across the top of whatever is pinned over the content: the system tab bar or a `.safeAreaInset` bar. Builds fix every `CUT`, as with `fold.py`, and the report's Bottom edge line carries the result.
+    - Rerun on this round's six builds at the default size, it flags a cut row in all three HEAD builds and in one of round 22's HEAD. That includes the 6-of-76 pt sliver that lost pair 2; `fold.py` had passed it on the mock.
+    - It sees text and controls, not bare card edges.
+  - **The render takes the build's clock.** Without `--clock` it uses a time in the `#Preview`'s name ("Today, 10:40"), which five of these six builds had. It also prints a note when it falls back to the wall clock.
+  - **The harness's render step is in the repo.** `evals/render_builds.py` renders each run with its own clock and records the clock's source.
+  - **The eval 13 grader adds the native bottom edge** at the default size and at AX5.
+
+### Round 22: accessibility, eval 13, native iOS renders at default and AX5, three judges (HEAD vs v1.7.0)
+
+HEAD is `eb4197d` on the `accessibility` branch, pinned in a worktree (`skill-head`). It adds:
+- 18 accessibility lint rules, each mapped to a WCAG 2.2 criterion;
+- the Accessibility mode;
+- critique pass 15 (Access);
+- the iOS Simulator render at AX5 (`render_swiftui.py --platform ios --dynamic-type ax5`) and `fold.py --text-scale`;
+- the report's Accessibility line, in VPAT terms;
+- `acr.py`.
+
+Eval 13 is new and untuned: a medication Today screen for older users on VoiceOver, Voice Control and the largest text sizes, for a buyer who needs an ACR. Three runs per config, Opus 5.5 builds ($8 cap) against v1.7.0 (the `skill-v1.7.0` worktree at the tag).
+
+Judging changed for this brief:
+- Both configs were asked for a `#Preview`, so the harness could render each build's own Swift on the iOS Simulator (iPhone 17 Pro, iOS 26.2) at the default size and at AX5. All six rendered natively.
+- Each blind Opus 5.5 judge saw four images: A, A at AX5, B, B at AX5.
+- The judges scored a sixth criterion, Access (critique pass 15, from the pixels), and the overall is the mean of the six.
+- Three judges per pair.
+
+| Run | HEAD direction | v1.7.0 direction | HEAD vs v1.7.0 | Access, HEAD vs v1.7.0 | Votes |
+|---|---|---|---|---|---|
+| 1 | ed-newspaper-frame | wp-departure-board | 5.57 vs **5.67** | 5.7 vs **6.7** | 1–2 |
+| 2 | wp-departure-board | wp-departure-board | **7.27** vs 5.83 | **8.0** vs 6.3 | 3–0 |
+| 3 | ed-newspaper-frame | wp-exaggerated-number | **6.67** vs 5.23 | **7.7** vs 4.7 | 3–0 |
+
+- **2 of 3 pairs, 7 of 9 votes, mean 6.50 vs 5.58; Access 7.11 vs 5.89.** This is one brief at n = 3. The run-2 and run-3 margins are large, but run 1 went the other way, so treat it as a first measure, not a settled lead.
+- **The judges decided on the AX5 frame.** In the two HEAD wins, the screen at AX5 still led with the late dose and its two big buttons, reflowed with nothing clipped, and showed every state in words or shape. The v1.7.0 screens pushed the overdue dose and its actions below the fold at AX5, or ran text under the floating tab bar.
+- **Run 1 lost on the same thing, reversed.** HEAD's ed-newspaper-frame screen at AX5 was "all summary": headers and counts, with the late dose, its actions and the refill below the fold. All three judges gave v1.7.0 the better Access score, while two of them gave HEAD the stronger idea.
+  - **Next fix:** apply the brief-at-rest rule to the large-text frame too. The must-have action, here the dose due now, stays in the first screen at AX5.
+- **Both configs built accessibly in code.** The brief asks for accessibility in so many words, and Opus without the skill responded.
+  - `lint.py --a11y` found nothing in any HEAD build and two `image-no-label` WARNs in one v1.7.0 build.
+  - The grader's product checks were 45 of 46 for HEAD against 45 of 48 for v1.7.0. HEAD's miss was a `fold.py` end-frame failure in run 3. v1.7.0's misses: no taken or skipped state exposed in two runs, and no status announcement in one.
+  - **The lead shows in the renders and the report, not in the code checks.**
+- **The reports state conformance.**
+  - Every HEAD build wrote the Accessibility line and ran `acr.py`, which drafted 55 criteria with none left "To evaluate".
+  - Every HEAD build said it wasn't tested with assistive technology.
+  - None of the v1.7.0 builds made a per-criterion claim.
+  - **The drafts lean optimistic.** Run 3 claimed 2.4.11 Focus Not Obscured "Supports, from code", while the judges saw rows under the floating tab bar and `fold.py` failed its end frame. Run 1 marked the same criterion "Partially Supports" for that reason. A "Supports" should need a render behind it, and `acr.py` could take the `fold.py` result as evidence for 2.4.11.
+- **Harness artifacts hit both configs.**
+  - The simulator's status bar shows the wall clock, so every judge saw a time that contradicted the app's sample `now` (Substance ≤ 5 for "times that disagree with the clock").
+  - iOS 26's floating glass tab bar covers the bottom rows in both configs' native renders. The HTML mocks never showed this.
+  - A `--clock` option that sets the simulator's status bar (`simctl status_bar override --time`) would remove the first artifact.
+- Grader: HEAD 28–29 of 29–30, v1.7.0 24–27 of 30. The process items only HEAD is asked to pass (blind judge, Accessibility line, the not-tested statement, the large-text render) account for most of the gap.
+- Cost: $25.54 for 6 builds (HEAD $15.10, v1.7.0 $10.44, +45%). HEAD builds took 20.2 minutes against 14.3. Judges: $2.47 for 9. The native renders and the large-text render add the time.
+- **Not measured:** Android and the Mac. This round is iPhone only, and no build or judge used VoiceOver, TalkBack or Voice Control. The Access score is a judgement on pixels.
+- **After this round** (not yet measured):
+  - **The brief at rest now holds at the largest text size.** At AX5 the thing to act on now, and its control, stays in the first screen. Summaries and finished groups move below it at accessibility sizes. The rule is in SKILL.md, critique pass 15 (with a Substance ≤ 5 cap), `accessibility.md` §3.3 and the blind judge's prompt.
+  - **`render_swiftui.py --clock HH:MM`** sets the simulator's status bar to the preview's `now` for the screenshot, then clears the override. Builds are told to pass it, so a render no longer contradicts its own sample data.
+  - **Access is its own criterion.** `critique.md` now scores six criteria: Platform keeps passes 8 and 11, and Access scores pass 15. The pass 15 caps moved from Platform to Access. `blind_critique.py` scores Access from the pixels, says it couldn't check names and order, and saves the scores in `blind-critique.json`. The report's Critique line carries Access too. Overalls from here on are means of six, so they don't compare directly with earlier rounds' five.
+  - **The eval judge prompts are in the repo:** `evals/judges.py`, with round 22's access prompt (made platform-neutral, plus the first-screen clause) next to the phone and Mac prompts used until round 21.
+
+### Round 21: the blind judge sees the real Mac window, eval 12, three judges (HEAD vs v1.7.0)
+
+HEAD is `4662de6`. Mac builds now render the real SwiftUI window from its `#Preview` with `scripts/render_swiftui.py`, and hand that render, not the HTML mock, to the blind judge. Eval 12 (sourdough bake day), three runs per config, Opus 5.5 builds ($8 cap), three blind Opus 5.5 judges per pair. The eval judges still compare the HTML mocks, since v1.7.0 only makes mocks.
+
+| Run | HEAD direction | v1.7.0 direction | Blind judge's first score | HEAD vs v1.7.0 | Votes |
+|---|---|---|---|---|---|
+| 1 | nc-owned-chrome | nc-owned-chrome | 6 | 6.6 vs **7.0** | 0–3 |
+| 2 | nc-owned-chrome | nc-owned-chrome | 5 | **7.3** vs 6.7 | 3–0 |
+| 3 | wp-exaggerated-number | nc-owned-chrome | 6 | **7.3** vs 7.2 | 2–1 |
+
+- **2 of 3 pairs, 5 of 9 votes, mean 7.07 vs 6.98.** Round 20 on this brief was 3 of 9 and 6.64 vs 7.13. Over both rounds, HEAD has 8 of 18 votes against v1.7.0 on the Mac. The swing is in the right direction but within the noise measured at n = 3.
+- **All three HEAD builds rendered the real window**, at several sizes and in light and dark. The reports don't say which image each build gave the blind judge.
+- **Run 1 lost as "the polished category default".** v1.7.0 had more sourdough in it: a rise jar, a named starter with a peak window, and a two-day schedule. Run 2 won 3–0 with the whole bake as 12 timed steps and a levain build. Run 3 won 2–1 with a jar-rise gauge that says bulk is done at +50%, not when the clock says so.
+- **Renderer gap:** custom fonts aren't registered in the native render, so it shows the system font. Two builds noted it, and one worked around it with a scratch copy.
+- Grader: HEAD 19–20 of 20, v1.7.0 17–19. Product checks: HEAD 24 of 24, v1.7.0 23 of 24.
+- Cost: $20.63 for 6 builds (HEAD $11.86, v1.7.0 $8.77, +35%). HEAD builds took 14.6 minutes against 10.7. Judges: $1.73 for 9.
 
 ### Round 20: a blind judge inside the build, evals 4 and 12, three judges (HEAD vs v1.7.0)
 

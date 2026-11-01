@@ -361,12 +361,82 @@ def eval12(d):
     ], d, "macos")
 
 
+def lint_clean(d, rules, platform=None):
+    """No finding of these lint rules (FAIL or WARN) in the produced code."""
+    hits = [f"{r}:{n}" for f in sorted(d.rglob("*")) if f.suffix in (".swift", ".kt")
+            for r, n, _ in lint.lint_file(f, platform) if r in rules]
+    return (not hits), ("none" if not hits else ", ".join(hits[:6]))
+
+
+def accessibility_line(resp):
+    """The report's Accessibility line states conformance per WCAG criterion in VPAT terms."""
+    m = re.findall(r"^\s*Accessibility\s*:([^\n]*)", resp, re.M)
+    if not m:
+        return False, "no Accessibility: line"
+    line = m[-1]
+    scs = set(re.findall(r"\b[1-4]\.\d{1,2}\.\d{1,2}\b", line))
+    terms = re.findall(r"(?i)partially supports|does not support|not applicable|supports", line)
+    ok = len(scs) >= 10 and bool(terms)
+    return ok, f"{len(scs)} criteria, terms: {', '.join(sorted(set(t.lower() for t in terms))) or 'none'}"
+
+
+def native_fold(d):
+    """The bottom edge on the native iOS render (render_swiftui.py), at the default size and at AX5: no element runs
+    across the tab bar or a pinned bar. None when it can't render here or reads no elements (check skipped)."""
+    import subprocess, tempfile
+    files = [str(f) for f in sorted(d.rglob("*.swift"))]
+    if not files:
+        return None
+    rs = Path(__file__).resolve().parent.parent / "scripts" / "render_swiftui.py"
+    cuts, measured = [], 0
+    for size in ("large", "ax5"):
+        out = Path(tempfile.mkdtemp(prefix="grade-fold-")) / "r.png"
+        proc = subprocess.run([sys.executable, str(rs), *files, "--platform", "ios", "--dynamic-type", size, "--out", str(out)],
+                              capture_output=True, text=True, timeout=600)
+        if proc.returncode == 3:
+            return None
+        if proc.returncode != 0 or "not measured" in proc.stdout:
+            continue
+        measured += 1
+        cuts += [f"{size}: " + l.split("CUT", 1)[1].strip()[:70] for l in proc.stdout.splitlines() if " CUT " in l]
+    if not measured:
+        return None
+    return (not cuts), ("no element cut at default or AX5" if not cuts else "; ".join(cuts[:3]))
+
+
+def eval13(d):
+    sw = read(d, "**/*.swift")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
+        ("Real medicines and strengths, no placeholder data", *check(sw, r"Metformin|Lisinopril|Atorvastatin|Levothyroxine|Amlodipine|Warfarin|Omeprazole|Apixaban|Ramipril|Simvastatin|Furosemide|Sertraline")),
+        ("Dose controls are real controls or expose a role (no tap-no-role)", *lint_clean(d, {"tap-no-role", "a11y-hidden-control"})),
+        ("Taken / skipped state exposed to VoiceOver (value, isSelected, isToggle or a Toggle)", *check(sw, r"accessibilityValue|\.isSelected|\.isToggle|\bToggle\(", re.S | re.M)),
+        ("VoiceOver labels on custom elements", *check(sw, r"accessibility(Label|Element)")),
+        ("Overdue said in words or a glyph, not colour alone", *check(sw, r"\"[^\"\n]*\b(Overdue|overdue|Late|late|Missed|missed)\b")),
+        ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)")),
+        ("Layout adapts at accessibility sizes (isAccessibilitySize, ViewThatFits or AnyLayout)", *check(sw, r"isAccessibilitySize|ViewThatFits|AnyLayout|dynamicTypeSize\s*>=?\s*\.accessibility")),
+        ("No fixed-height text rows or capped Dynamic Type (fixed-text-frame, dynamic-type-capped)", *lint_clean(d, {"fixed-text-frame", "dynamic-type-capped"}, "ios")),
+        ("Headings marked for VoiceOver (.isHeader / accessibilityHeading)", *check(sw, r"\.isHeader|accessibilityHeading")),
+        ("Gestures have accessible alternatives (no gesture-no-alternative)", *lint_clean(d, {"gesture-no-alternative"})),
+        ("Status changes announced (AccessibilityNotification / UIAccessibility.post)", *check(sw, r"AccessibilityNotification|UIAccessibility\.post|accessibilityAnnouncement")),
+        ("44pt minimum targets", *check(sw, r"minHeight:\s*(4[4-9]|[5-9]\d)|height:\s*(4[4-9]|[5-9]\d)|frame\(minWidth:\s*(4[4-9]|[5-9]\d)|(?i:height|target)\w*\s*(:\s*CGFloat)?\s*=\s*(4[4-9]|[5-9]\d)")),
+        ("Reduce Motion respected", *check(sw, r"accessibilityReduceMotion")),
+        ("Largest text size rendered or checked (AX5 / accessibility5 / --dynamic-type / --text-scale)", *check(resp, r"\bAX5\b|accessibility5|accessibility-extra-extra-extra-large|--dynamic-type|--text-scale")),
+        ("Report states conformance per WCAG criterion in VPAT terms (Accessibility line)", *accessibility_line(resp)),
+        *([("Bottom edge on the native iOS render: nothing cut by the tab bar or a pinned bar (default and AX5)", *nf)]
+          if (nf := native_fold(d)) is not None else []),
+        ("Report says what wasn't tested with assistive technology", *check(resp, r"not (been )?tested (with|on|using) (assistive|VoiceOver|a device)|no (assistive[- ]technology|VoiceOver|AT) test|without (assistive technology|VoiceOver) testing|VoiceOver[^\n]{0,60}not (run|tested)")),
+    ], d)
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
            "guesthouse-photos-no-preset-swiftui": eval6,
            "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8,
            "retro-terminal-trail-swiftui": eval9, "retro-pixel-plants-compose": eval10,
-           "retro-film-log-macos-swiftui": eval11, "bake-day-macos-swiftui": eval12}
+           "retro-film-log-macos-swiftui": eval11, "bake-day-macos-swiftui": eval12,
+           "medication-today-a11y-swiftui": eval13}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

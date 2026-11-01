@@ -190,8 +190,11 @@ CustomToggle(isOn: $on)
     .accessibilityAction { on.toggle() }
 ```
 
-- Decorative images and mascots: `.accessibilityHidden(true)`.
+- Prefer the real control: a `Button` with a custom `ButtonStyle`, or a `Toggle` with a `ToggleStyle`, keeps its role, state and keyboard activation. The snippet above is for the case where neither fits. A bare `.onTapGesture` gives VoiceOver no button and Full Keyboard Access nothing to press (lint `tap-no-role`).
+- Decorative images and mascots: `Image(decorative:)` or `.accessibilityHidden(true)`. A drawn gauge or mascot that shows state: `.accessibilityLabel("Bulk ferment")` plus `.accessibilityValue("62%, 1 h 20 min left")`.
 - Combine stat tiles into one element: `.accessibilityElement(children: .combine)`.
+- Section titles: `.accessibilityAddTraits(.isHeader)`. Gesture-only actions: `.accessibilityAction(named: "Mark taken") { … }`. A custom overlay: `.accessibilityAddTraits(.isModal)` on the panel. Status changes: `AccessibilityNotification.Announcement("Saved").post()`.
+- Large text: render at AX5 (`scripts/render_swiftui.py --platform ios --dynamic-type ax5`). Switch rows to stacks with `@Environment(\.dynamicTypeSize)` and `.isAccessibilitySize`, size icons beside text with `@ScaledMetric`, and never give a text row a fixed `height:`. The full checklist is in `accessibility.md`.
 
 ## 8b. Code baseline (what users feel)
 
