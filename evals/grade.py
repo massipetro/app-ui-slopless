@@ -430,13 +430,37 @@ def eval13(d):
     ], d)
 
 
+def eval14(d):
+    kt = read(d, "**/*.kt")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Kotlin", *lint_fails(d)),
+        ("Real medicines and strengths, no placeholder data", *check(kt, r"Metformin|Lisinopril|Atorvastatin|Levothyroxine|Amlodipine|Warfarin|Omeprazole|Apixaban|Ramipril|Simvastatin|Furosemide|Sertraline")),
+        ("Dose controls are real controls or expose a role (no tap-no-role)", *lint_clean(d, {"tap-no-role", "a11y-hidden-control"})),
+        ("Taken / skipped state exposed to TalkBack (stateDescription, toggleable, selectable or a Checkbox)", *check(kt, r"stateDescription|\btoggleable\(|\bselectable\(|\bCheckbox\(|\bSwitch\(")),
+        ("TalkBack names on custom elements (contentDescription or semantics)", *check(kt, r"contentDescription\s*=\s*[^n\s]|semantics\s*(\(|\{)")),
+        ("Overdue said in words or a glyph, not colour alone", *check(kt, r"\"[^\"\n]*\b(Overdue|overdue|Late|late|Missed|missed)\b")),
+        ("Text in sp or from the type scale, no fixed dp text", *lint_clean(d, {"fixed-font-size"})),
+        ("Layout adapts at large font scales (fontScale, FlowRow or a stacked fallback)", *check(kt, r"\.fontScale|LocalDensity\.current\.fontScale|\bFlowRow\b|\bBoxWithConstraints\b")),
+        ("No fixed-height text rows (fixed-text-frame)", *lint_clean(d, {"fixed-text-frame"})),
+        ("Headings marked for TalkBack (heading())", *check(kt, r"\bheading\(\)")),
+        ("Gestures have accessible alternatives (no gesture-no-alternative)", *lint_clean(d, {"gesture-no-alternative"})),
+        ("Status changes announced (liveRegion, a snackbar or announceForAccessibility)", *check(kt, r"liveRegion|announceForAccessibility|AccessibilityEvent|SnackbarHost|showSnackbar")),
+        ("48dp minimum targets", *check(kt, r"\b(min)?[Hh]eight(In)?\([^)]*\b(4[89]|[5-9]\d)\.dp|\b(min|size|defaultMinSize)\w*\([^)]*\b(4[89]|[5-9]\d)\.dp|(?i:height|target)\w*\s*(:\s*Dp)?\s*=\s*(4[89]|[5-9]\d)\.dp|minimumInteractiveComponentSize")),
+        ("Reduce Motion respected (ANIMATOR_DURATION_SCALE or animations off)", *check(kt, r"ANIMATOR_DURATION_SCALE|areAnimatorsEnabled|TRANSITION_ANIMATION_SCALE|reduce[d]?\s*motion", re.I)),
+        ("Largest text size rendered or checked (font scale 2.0 / fontScale = 2f / --text-scale)", *check(resp + kt, r"font[ _-]?scale\s*(=|of|at)?\s*2(\.0|f)?\b|fontScale\s*=\s*2|font_scale\s*2|--text-scale")),
+        ("Report states conformance per WCAG criterion in VPAT terms (Accessibility line)", *accessibility_line(resp)),
+        ("Report says what wasn't tested with assistive technology", *check(resp, r"not (been )?tested (with|on|using) (assistive|TalkBack|a device)|no (assistive[- ]technology|TalkBack|AT) test|without (assistive technology|TalkBack) testing|TalkBack[^\n]{0,80}not (tested|run|been)|not (run|used)[^\n]{0,40}TalkBack|untested")),
+    ], d)
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
            "guesthouse-photos-no-preset-swiftui": eval6,
            "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8,
            "retro-terminal-trail-swiftui": eval9, "retro-pixel-plants-compose": eval10,
            "retro-film-log-macos-swiftui": eval11, "bake-day-macos-swiftui": eval12,
-           "medication-today-a11y-swiftui": eval13}
+           "medication-today-a11y-swiftui": eval13, "medication-today-a11y-compose": eval14}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

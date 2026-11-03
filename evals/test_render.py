@@ -14,6 +14,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 import render_swiftui as r  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import render_compose as rc  # noqa: E402
 
 SCREEN = [0, 0, 402, 874]
 
@@ -47,6 +49,18 @@ class BottomEdge(unittest.TestCase):
     def test_no_elements_is_not_a_pass(self):
         self.assertIn("not measured", r.bottom_edge({"screen": SCREEN, "elements": []})[0])
         self.assertIn("not measured", r.bottom_edge(None)[0])
+
+
+class ComposePreview(unittest.TestCase):
+    def test_first_preview_and_its_clock(self):
+        src = '@Preview(name = "Today, 09:20", widthDp = 390)\n@Composable\nprivate fun A() {}\n@Preview(fontScale = 2f)\n@Composable\nfun B() {}'
+        self.assertEqual(rc.find_preview(src), ("A", "09:20"))
+
+    def test_no_time_in_the_name(self):
+        self.assertEqual(rc.find_preview('@Preview\n@Composable\nfun A() {}'), ("A", None))
+
+    def test_a_preview_with_parameters_cant_be_opened(self):
+        self.assertIsNone(rc.find_preview('@Preview\n@Composable\nfun A(x: Int) {}'))
 
 
 if __name__ == "__main__":
