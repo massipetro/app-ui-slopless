@@ -11,6 +11,8 @@
   inside its preset and wide deals that would otherwise include it, and --sector hobby drops the
   directions marked not_for hobby (nc-quiet-native for collection and hobby briefs, after round 11);
 - named-only presets (retro) are dealt only with --preset, never in the open deal;
+- sector presets (clear money) are dealt only for their sector or by name, and a deal for that sector
+  always includes one option from them when one can show the content, on the phone and the Mac;
 - the Deal line deal.py prints replays the same options in the same order.
 """
 from __future__ import annotations
@@ -114,6 +116,32 @@ def main() -> int:
             dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
             if not dealt or dealt - named:
                 failures.append(f"seed {seed} --preset retro {platform}: dealt {sorted(dealt)}")
+
+    # Sector presets (clear money) join only their sector's deal, where one option always comes from them
+    # when one of their directions can show the content; on a Mac they take a slot the Mac rule leaves free.
+    for p, sectors in deal.SECTOR_PRESETS.items():
+        own = {d["id"] for d in directions if d["preset"] == p}
+        if not own:
+            failures.append(f"no directions in sector preset {p}")
+        shows = lambda content: any(content.split(",")[0] in d["content"] for d in directions if d["id"] in own)
+        for seed in range(40):
+            for content in ("number,collection", "list,number", "detail", "story", "canvas,list"):
+                code, out = run("--options", "3", "--content", content, "--seed", str(seed))
+                dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+                if dealt & own:
+                    failures.append(f"seed {seed} content {content}: open deal dealt sector preset {dealt & own}")
+                for sector in sectors:
+                    for platform in ([], ["--platform", "macos"]):
+                        code, out = run("--options", "3", "--content", content, "--sector", sector, *platform, "--seed", str(seed))
+                        dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+                        if len(dealt & own) != (1 if shows(content) else 0):
+                            failures.append(f"seed {seed} {content} --sector {sector} {platform}: {sorted(dealt & own)} from {p}")
+                        if platform and len({preset[i] for i in dealt & mac_only}) < min(2, len(native_presets(content))):
+                            failures.append(f"seed {seed} {content} --sector {sector} --platform macos: the sector slot took a Mac-native one")
+            code, out = run("--options", "3", "--preset", p, "--seed", str(seed))
+            dealt = {line.split()[1] for line in out.splitlines() if line.startswith("- ")}
+            if not dealt or dealt - own:
+                failures.append(f"seed {seed} --preset {p}: dealt {sorted(dealt)}")
 
     # The Deal line replays the deal: same options, same order.
     for args in (["--options", "3", "--content", "collection,list", "--platform", "macos"],

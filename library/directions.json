@@ -3099,6 +3099,487 @@
           "D": 7
         }
       }
+    },
+    {
+      "id": "cm-pot-shelf",
+      "preset": "clear-money",
+      "name": "Pots on a shelf",
+      "anchors": [
+        "Up (Saver Pools: each saver a container whose contents move with the phone; Pull-to-Save)",
+        "Monzo (Pots, named by the user, each with its own picture)",
+        "Wise (Jars beside the currency balances on Home)"
+      ],
+      "composition": "The spendable figure leads at the top: one exaggerated number with its plain-words meaning under it (\"left until Friday\"), never a bare \"Total balance\". Under it the pots stand on one shelf as containers, not cards: each container's fill height is its real progress, its label is printed on it in the user's words, and its colour and emoji or photo are the user's. One pot leads, about twice the size of the others (one goal saves more than many); the rest sit in a row that scrolls sideways when there are more than four. The latest few transactions follow as plain rows, and the one move-money action sits in the thumb zone.",
+      "content": [
+        "number",
+        "collection",
+        "progression",
+        "action"
+      ],
+      "device": "a container on the shelf whose fill is its progress",
+      "dials": {
+        "B": 6,
+        "M": 6,
+        "D": 4,
+        "C": 6,
+        "F": 7
+      },
+      "type": [
+        {
+          "display": "Gabarito 800",
+          "text": "Onest 400-500",
+          "data": "Gabarito tabular figures (tnum on)"
+        },
+        {
+          "display": "Funnel Display 700",
+          "text": "Funnel Sans 400-500",
+          "data": "Funnel Sans (digits tabular by default)"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Chalk shelf, cobalt action",
+          "proportions": "Cool chalk ground and white shelf ~80%, ink ~12%. The six pot colours fill only the containers; cobalt is only the move-money action and selection, never a pot.",
+          "support": [
+            "#E5533D tomato",
+            "#B7791F ochre",
+            "#2B8A3E green",
+            "#0B7285 teal",
+            "#1C7ED6 blue",
+            "#D6336C pink"
+          ],
+          "light": {
+            "ground": "#F3F4F1",
+            "surface": "#FFFFFF",
+            "ink": "#14161A",
+            "ink2": "#50555E",
+            "accent": "#2F5BFF",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#101216",
+            "surface": "#1A1D23",
+            "ink": "#F2F3F5",
+            "ink2": "#A9AFB9",
+            "accent": "#8DA2FF",
+            "on_accent": "#101216"
+          }
+        },
+        {
+          "name": "Night shelf, lime action",
+          "proportions": "Dark-first: near-black ground, the containers glow in their pot colours, lime only on the one action and the changing digit.",
+          "support": [
+            "#E5533D tomato",
+            "#B7791F ochre",
+            "#2B8A3E green",
+            "#0B7285 teal",
+            "#1C7ED6 blue",
+            "#D6336C pink"
+          ],
+          "light": {
+            "ground": "#F6F7F2",
+            "surface": "#FFFFFF",
+            "ink": "#101410",
+            "ink2": "#4B544B",
+            "accent": "#3F6B00",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#0D0F0C",
+            "surface": "#181B16",
+            "ink": "#F1F5EC",
+            "ink2": "#A6AF9F",
+            "accent": "#C6F432",
+            "on_accent": "#0D0F0C"
+          }
+        }
+      ],
+      "shape": "Containers are tall rounded rectangles (radius 28 at the lead pot, 20 for the rest) with a 2 pt rim in the pot colour and the fill inside clipped to the shape; the shelf is a 1 pt rule they stand on. Rows and the spendable figure sit on the ground, not in cards. No shadows except one soft contact shadow under the containers.",
+      "moves": [
+        "Each pot's fill height is its progress to goal; the fill's surface tilts with the phone (CoreMotion / SensorManager) and lies flat under Reduce Motion",
+        "One pot leads at about twice the size of the others; the user picks which",
+        "Near the goal the label switches from a percentage to the amount left (\"£40 to go\")",
+        "Drag the spendable figure onto a pot to move money, with a selection tick per £5; a Move button and the VoiceOver action do the same",
+        "The label, colour (from six accessible hues) and emoji or photo are the user's, and the label is always printed on the pot"
+      ],
+      "motion": "The fill rises with a low-bounce spring (damping 0.8) when money lands, and its surface settles; numbers roll ~250 ms; a success haptic only when a pot reaches its goal. No celebration on spending, ever.",
+      "needs": [],
+      "not_for": [
+        "enterprise",
+        "government"
+      ],
+      "pitfall": "Every pot the same size in a 2x2 grid (that's the card dashboard again); fill levels that are decorative instead of true; pot colours that collide with the action colour; jelly physics that never settles.",
+      "mac": {
+        "composition": "The sidebar lists the accounts and pots, each with its colour swatch and amount. The content column opens on the shelf: the spendable figure at 64 pt top left, the containers standing on one rule across the window (the lead pot larger), and a dense transaction Table under the shelf. Selecting a pot opens its history and goal in the inspector.",
+        "moves": [
+          "Each pot's fill height is its progress to goal, rising with a spring when money lands",
+          "Drag the spendable figure (or a transaction row) onto a pot to move money; Cmd-Shift-M opens the same move as a form",
+          "Near the goal the label switches from a percentage to the amount left"
+        ],
+        "shape": "Containers at Mac scale (radius 16, 1.5 pt rim), standing on a hairline shelf rule; sidebar and Table stay system. No shadows except one contact shadow under the shelf.",
+        "motion": "Fill rises with a low-bounce spring when money lands; numbers roll ~250 ms; no motion at rest.",
+        "chrome": "Translucent sidebar kept, with pot swatches as its icons; the palette ground is the content column. System accent for standard controls, the palette accent only for the move-money action.",
+        "dials": {
+          "D": 6
+        }
+      }
+    },
+    {
+      "id": "cm-one-bar",
+      "preset": "clear-money",
+      "name": "All your money in one bar",
+      "anchors": [
+        "Apple Card (each spending category owns a colour; summaries colour-coded by category)",
+        "Revolut 10 (2023: all your money in one place across accounts, currencies and pockets)",
+        "Copilot Money (Apple Design Award finalist 2024: native, calm, charts in Swift Charts)"
+      ],
+      "composition": "The total of everything leads as one exaggerated number, and directly under it one full-width bar holds all the money: a segment per account (current, each savings pot, each currency), widths proportional to balances, each in its account colour, separated by thin gaps of ground. Under the bar a legend-list names every segment with its amount, one row per account, in the same order as the bar. A thinner second bar shows this month's spending by category and starts empty on payday. The transaction list follows; selecting a segment filters it.",
+      "content": [
+        "number",
+        "list",
+        "canvas"
+      ],
+      "device": "a segment of the one bar that holds all the money",
+      "dials": {
+        "B": 5,
+        "M": 4,
+        "D": 6,
+        "C": 6,
+        "F": 5
+      },
+      "type": [
+        {
+          "display": "Schibsted Grotesk 800",
+          "text": "Schibsted Grotesk 400-500",
+          "data": "Schibsted Grotesk tabular figures, slashed zero"
+        },
+        {
+          "display": "Mona Sans 800 (wdth 112)",
+          "text": "Mona Sans 400-500",
+          "data": "Mona Sans tabular figures (tnum on)"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "White ledger, deep green action",
+          "proportions": "White ground, near-black ink, the bar and the legend dots carry the six account colours; deep green only for the primary action and selection.",
+          "support": [
+            "#E5533D tomato",
+            "#B7791F ochre",
+            "#2B8A3E green",
+            "#0B7285 teal",
+            "#1C7ED6 blue",
+            "#D6336C pink"
+          ],
+          "light": {
+            "ground": "#FFFFFF",
+            "surface": "#F3F4F6",
+            "ink": "#0F1720",
+            "ink2": "#4A5462",
+            "accent": "#0B6E4F",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#0B0F14",
+            "surface": "#151B23",
+            "ink": "#EEF2F6",
+            "ink2": "#A3ADBA",
+            "accent": "#3DDC97",
+            "on_accent": "#0B0F14"
+          }
+        },
+        {
+          "name": "Graphite, signal orange",
+          "proportions": "Warm-grey graphite ground in dark, paper grey in light; signal orange only on the one action; the bar's colours are the accounts'.",
+          "support": [
+            "#E5533D tomato",
+            "#B7791F ochre",
+            "#2B8A3E green",
+            "#0B7285 teal",
+            "#1C7ED6 blue",
+            "#D6336C pink"
+          ],
+          "light": {
+            "ground": "#F5F5F3",
+            "surface": "#FFFFFF",
+            "ink": "#1A1A1A",
+            "ink2": "#555555",
+            "accent": "#B83F00",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#141414",
+            "surface": "#1F1F1F",
+            "ink": "#F2F2F0",
+            "ink2": "#ABABA6",
+            "accent": "#FF7A33",
+            "on_accent": "#141414"
+          }
+        }
+      ],
+      "shape": "The bar is 20-28 pt tall with radius equal to half its height at the two ends only; segments meet with 2 pt gaps. Everything else is flat on the ground with hairline row separators. Buttons full pill. No cards, no shadows.",
+      "moves": [
+        "One full-width bar, segmented by account with widths proportional to balances; tiny balances keep a 6 pt minimum so they stay visible and tappable",
+        "Selecting a segment filters the list to that account and fades the other segments to 30%",
+        "Each row carries its account colour as a dot beside the account name (colour and name together, never colour alone)",
+        "A thinner spending bar by category that starts empty on payday and fills through the month"
+      ],
+      "motion": "Segments resize with a calm ease-out (~300 ms) when money moves between accounts, so the move is visible as one segment growing into another's space; numbers roll. Reduce Motion: cross-fade.",
+      "needs": [],
+      "not_for": [
+        "kids"
+      ],
+      "pitfall": "A donut chart with a pastel legend instead of the bar; segments coloured but unlabelled; the bar as decoration above a stock card list; the spending bar in red and green.",
+      "mac": {
+        "composition": "The window opens on the total at 64-96 pt with the full-width bar under it across the content column, then the accounts as a legend Table (colour, name, amount, change this month) and the transactions Table beneath. The sidebar holds saved views (all money, this month, each currency). Selecting a segment or a legend row filters the transactions.",
+        "moves": [
+          "One full-width bar, segmented by account; hovering a segment shows its exact amount and share",
+          "Click a segment or a legend row to filter the transactions; Escape clears the filter",
+          "A thinner spending bar by category under it, starting empty on payday"
+        ],
+        "shape": "Bar 24 pt tall, end-capped; hairline row separators in the Tables; controls system size; no cards, no shadows.",
+        "chrome": "Translucent sidebar kept; the palette ground is the content column. System accent for standard controls; the palette accent only for the primary action.",
+        "dials": {
+          "D": 7
+        }
+      }
+    },
+    {
+      "id": "cm-wallet-stack",
+      "preset": "clear-money",
+      "name": "Wallet stack",
+      "anchors": [
+        "Apple Wallet (cards stacked by their top strips; pull one out)",
+        "bunq (up to 25 accounts, each with its own picture)",
+        "Revolut (flip the phone to blur balances, on by default)"
+      ],
+      "composition": "The accounts are a stack of physical cards, each showing only its top strip (name, balance, its colour or picture), so the stack reads as a list at rest. The account in use sits pulled forward and open, with its latest rows on it. The total sits above the stack as one figure. Selecting a strip pulls that card forward and the rest settle back; a new account is a dashed empty slot at the bottom of the stack.",
+      "content": [
+        "list",
+        "detail",
+        "number",
+        "collection"
+      ],
+      "device": "a card in the stack whose top strip shows its balance",
+      "dials": {
+        "B": 6,
+        "M": 6,
+        "D": 5,
+        "C": 5,
+        "F": 6
+      },
+      "type": [
+        {
+          "display": "Bricolage Grotesque 700 (opsz 96)",
+          "text": "Reddit Sans 400-500",
+          "data": "Reddit Sans tabular figures (tnum on)"
+        },
+        {
+          "display": "Hubot Sans 800 (wdth 125)",
+          "text": "Mona Sans 400-500",
+          "data": "Mona Sans tabular figures (tnum on)"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Black wallet, card colours",
+          "proportions": "Dark-first: a near-black wallet ground, cards in the six account colours or the user's picture, ink-on-ink buttons; colour lives only on the cards.",
+          "support": [
+            "#E5533D tomato",
+            "#B7791F ochre",
+            "#2B8A3E green",
+            "#0B7285 teal",
+            "#1C7ED6 blue",
+            "#D6336C pink"
+          ],
+          "light": {
+            "ground": "#EDEEF0",
+            "surface": "#FFFFFF",
+            "ink": "#0E0F11",
+            "ink2": "#4C5058",
+            "accent": "#0E0F11",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#050506",
+            "surface": "#141518",
+            "ink": "#F4F4F6",
+            "ink2": "#A2A5AD",
+            "accent": "#F4F4F6",
+            "on_accent": "#050506"
+          }
+        },
+        {
+          "name": "Mint wallet",
+          "proportions": "Pale mint ground, white open card, the stack in account colours; one deep teal action.",
+          "support": [
+            "#E5533D tomato",
+            "#B7791F ochre",
+            "#2B8A3E green",
+            "#0B7285 teal",
+            "#1C7ED6 blue",
+            "#D6336C pink"
+          ],
+          "light": {
+            "ground": "#E6F0EB",
+            "surface": "#FFFFFF",
+            "ink": "#0D1B16",
+            "ink2": "#46564F",
+            "accent": "#0B5C4A",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#0A1411",
+            "surface": "#13201B",
+            "ink": "#EAF3EE",
+            "ink2": "#9FB2A9",
+            "accent": "#5FD3B0",
+            "on_accent": "#0A1411"
+          }
+        }
+      ],
+      "shape": "Cards at the payment-card ratio (1.586:1) and radius 18, top strips 56-64 pt; each card flat colour plus one material detail the user picks (a pattern, a photo, a grain). Text on a card sits on a tone step checked to 4.5:1, never straight on a photo. One soft shadow between stacked cards only.",
+      "moves": [
+        "The stack is the list: each card's top strip is a row with name and balance, and the stack scrolls like a list",
+        "Selecting a strip pulls the card forward with matched geometry and the others settle back",
+        "Each card is flat colour plus one material detail the user chooses; no fake chip or card number unless it is the payment card",
+        "Flip the phone face down, or long-press the total, to blur every balance; VoiceOver reads \"balance hidden\""
+      ],
+      "motion": "Cards move with low-bounce springs (damping 0.85); the pulled card lifts 8 pt before it slides; numbers roll; a selection haptic on pull. Reduce Motion: cards cross-fade into place.",
+      "needs": [],
+      "not_for": [],
+      "pitfall": "The glassy purple gradient credit card with a fake chip as the hero; every card a gradient; strips so short the balance clips; a stack that hides how many accounts there are.",
+      "mac": {
+        "composition": "The sidebar is the stack: each account's strip (colour or picture, name, balance) as a tall sidebar row. The selected account's card sits at the top of the content column at its real ratio, with its transactions Table under it and its details in the inspector.",
+        "moves": [
+          "The sidebar rows are the cards' top strips, in the account colours",
+          "The selected card animates up into the content column with matched geometry",
+          "Cmd-Shift-H blurs every balance, and the menu bar shows the state"
+        ],
+        "shape": "Card radius 12 at its real ratio in the content column; sidebar strips 40 pt with radius 8; Tables and controls system.",
+        "motion": "The selected card moves with a low-bounce spring; numbers roll; nothing moves at rest.",
+        "chrome": "Sidebar keeps its translucency, with the strips' colour fields inset; the palette ground is the content column. System accent for standard controls.",
+        "dials": {
+          "D": 6
+        }
+      }
+    },
+    {
+      "id": "cm-passbook",
+      "preset": "clear-money",
+      "name": "Passbook",
+      "anchors": [
+        "Savings passbooks (the Ghana labelled-account trial printed each customer's goal in it)",
+        "Robinhood (2024, Porto Rocha: a serif headline over a sober UI)",
+        "Up (round-ups and Pull-to-Save: the spare cents have a place to go)"
+      ],
+      "composition": "Each account is a passbook. The home shows the passbooks side by side as covers (cloth colour, the goal printed on the cover, the balance in the cover's window); the open one fills the screen as a ruled page: dated rows with money in and out in two columns and a running balance column, all in tabular figures. Deposits into savings land as a stamp with the date. The month starts on a fresh page with the balance carried forward.",
+      "content": [
+        "list",
+        "detail",
+        "number"
+      ],
+      "device": "a passbook page where each deposit is stamped",
+      "dials": {
+        "B": 5,
+        "M": 3,
+        "D": 6,
+        "C": 3,
+        "F": 6
+      },
+      "type": [
+        {
+          "display": "Young Serif 400",
+          "text": "Atkinson Hyperlegible Next 400-600",
+          "data": "Reddit Mono 400-500 (slashed zero)"
+        },
+        {
+          "display": "Newsreader 600 (opsz 72)",
+          "text": "Reddit Sans 400-500",
+          "data": "Newsreader tabular lining figures"
+        }
+      ],
+      "palettes": [
+        {
+          "name": "Ledger paper, bottle-green cloth",
+          "proportions": "Pale green-grey ledger paper ground with a faint rule, ink-black type, bottle-green cloth on covers and the one action; stamp red and stamp blue only for stamps, each with its word.",
+          "support": [
+            "#C8372D stamp red",
+            "#2B4FA8 stamp blue",
+            "#2B8A3E cloth green",
+            "#B7791F cloth ochre"
+          ],
+          "light": {
+            "ground": "#EEF2EA",
+            "surface": "#FFFFFF",
+            "ink": "#14201A",
+            "ink2": "#4A5A50",
+            "accent": "#1E5B3A",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#0F1512",
+            "surface": "#18201B",
+            "ink": "#E9EFE9",
+            "ink2": "#A4B0A7",
+            "accent": "#6FCF97",
+            "on_accent": "#0F1512"
+          }
+        },
+        {
+          "name": "Navy cloth, white page",
+          "proportions": "White page, navy cloth covers and action, one stamp red; the ruled grid in a light navy tint.",
+          "support": [
+            "#C8372D stamp red",
+            "#1C7ED6 cloth blue",
+            "#D6336C cloth pink",
+            "#0B7285 cloth teal"
+          ],
+          "light": {
+            "ground": "#FFFFFF",
+            "surface": "#F1F3F8",
+            "ink": "#101830",
+            "ink2": "#4A5270",
+            "accent": "#1B2A6B",
+            "on_accent": "#FFFFFF"
+          },
+          "dark": {
+            "ground": "#0B1022",
+            "surface": "#151B33",
+            "ink": "#EEF0F8",
+            "ink2": "#A9AFC8",
+            "accent": "#8FA2FF",
+            "on_accent": "#0B1022"
+          }
+        }
+      ],
+      "shape": "Covers at a passbook ratio (about 0.7:1), radius 6, cloth texture drawn in code or flat; the page is square-cornered with a 1 pt ruled grid at 15% ink and a 2 pt double rule under the carried-forward line. Stamps are rounded rectangles with a 2 pt border, rotated a few degrees. No shadows except under an open cover.",
+      "moves": [
+        "The open account is a ruled page: date, in, out and a running balance column in tabular figures",
+        "Deposits into savings land as a stamp with the date, rotated a few degrees, in stamp ink with its word",
+        "Payday or the first of the month turns the page: a fresh page with the balance carried forward on a double rule",
+        "The goal is printed on each passbook's cover, in the user's words"
+      ],
+      "motion": "Slow and paper-like: the page turn ~450 ms ease-in-out (cross-fade under Reduce Motion); the stamp presses down 120 ms with a light haptic; nothing else moves.",
+      "needs": [],
+      "not_for": [
+        "games"
+      ],
+      "pitfall": "Sepia skeuomorphism with paper textures everywhere; a typewriter or handwriting face for numbers; stamps on spending; cream and terracotta as the default paper.",
+      "mac": {
+        "composition": "The sidebar lists the passbooks with their cloth swatch and balance. The content column is the open page at a readable width: the ruled ledger Table (date, description, in, out, balance), stamps in a narrow margin column, and the carried-forward line at the top of each month. The inspector shows the cover with the goal.",
+        "moves": [
+          "The ledger Table keeps a running balance column, sortable by date only so the balance stays true",
+          "Deposits into savings show as a stamp in the margin column",
+          "Each month starts with a carried-forward line on a double rule; Cmd-[ and Cmd-] turn the months"
+        ],
+        "shape": "Square-cornered page at Mac scale, a 1 pt ruled grid at 15% ink, stamps radius 4 with a 1.5 pt border; sidebar and controls system.",
+        "motion": "Months cross-fade ~250 ms; the stamp presses in 120 ms; nothing moves at rest.",
+        "chrome": "Translucent sidebar with cloth swatches; the page colour is the content column. System accent for standard controls; the palette accent only for the primary action.",
+        "dials": {
+          "D": 7
+        }
+      }
     }
   ],
   "content_shapes": {

@@ -14,6 +14,9 @@ chooses among them against the product inventory.
 the phone composition, moves and shape, adds how it treats system chrome, and
 overrides the dials; directions whose `mac` block says `skip` are not dealt.
 
+--sector finance brings in the sector preset (clear money): dealt only for its sector or by name,
+and one option of that deal always comes from it.
+
 Standard library only; works on Python 3.9.
 """
 from __future__ import annotations
@@ -27,12 +30,15 @@ from pathlib import Path
 
 LIBRARY = Path(__file__).resolve().parent.parent / "library" / "directions.json"
 PRESETS = ("warm-premium", "neo-brutalist", "playful", "editorial",
-           "native-craft", "pro-instrument", "document-first", "retro")
+           "native-craft", "pro-instrument", "document-first", "retro", "clear-money")
 # Mac-only presets: dealt only with --platform macos, where one option always comes from them.
 MAC_PRESETS = ("native-craft", "pro-instrument", "document-first")
 # Named-only presets: dealt only with --preset, when the user asked for the style. A nostalgia look
 # offered unasked is a costume for most products, so it never joins the open deal.
 NAMED_ONLY = ("retro",)
+# Sector presets: dealt only for their sector (or by name). A deal for that sector always includes one,
+# because asked to choose, a model gives every money app the same warm premium (research/money-references.md).
+SECTOR_PRESETS = {"clear-money": ("finance",)}
 ROLES = ("ground", "surface", "ink", "ink2", "accent", "on_accent")
 SHAPES = ("list", "number", "detail", "collection", "canvas", "story", "progression", "action",
           "table", "document")  # the last two only occur on a Mac
@@ -105,7 +111,8 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
                  sector: str | None, have: set[str] | None, content: list[str] | None = None,
                  platform: str | None = None) -> list[dict]:
     pool = [d for d in directions
-            if (d["preset"] == preset if preset else d["preset"] not in NAMED_ONLY)
+            if (d["preset"] == preset if preset else d["preset"] not in NAMED_ONLY
+                and sector in SECTOR_PRESETS.get(d["preset"], (sector,)))
             and (sector is None or sector not in d["not_for"])
             and (have is None or set(d["needs"]) <= have)
             # The first content shape is what the user came for: a direction must be able to show it.
@@ -123,15 +130,23 @@ def deal_options(directions: list[dict], n: int, seed: int, preset: str | None,
         # Within each preset, prefer directions that also hold the secondary content shapes.
         fit = lambda d: len(set(content[1:]) & set(d["content"])) if content else 0
         picked = []
+        head = presets[:n]
+        mac_slots = 0
         if platform == "macos":
             # Mac users reward Mac-native craft (research/macos-references.md), so two options come
             # from Mac presets when two can show the content, one when only one can. Round 18: a
             # phone-first direction's Mac form lost both pairs while a Mac-only one swept.
             native = [p for p in presets if p in MAC_PRESETS]
-            head = presets[:n]
-            while sum(p in MAC_PRESETS for p in head) < min(2, len(native), n):
+            mac_slots = min(2, len(native), n)
+            while sum(p in MAC_PRESETS for p in head) < mac_slots:
                 head[max(i for i, p in enumerate(head) if p not in MAC_PRESETS)] = next(p for p in native if p not in head)
-            presets = head + [p for p in presets if p not in head]
+        # The sector preset takes one of the slots the Mac rule leaves free: the last non-Mac option,
+        # or the last option when more Mac presets came up than the rule requires.
+        sectoral = [p for p in presets if p in SECTOR_PRESETS]
+        if sectoral and n > mac_slots and not set(sectoral) & set(head):
+            free = [i for i, p in enumerate(head) if p not in MAC_PRESETS] or [len(head) - 1]
+            head[free[-1]] = sectoral[0]
+        presets = head + [p for p in presets if p not in head]
         for p in presets[:n]:
             best = max(fit(d) for d in by_preset[p])
             picked.append(rng.choice([d for d in by_preset[p] if fit(d) == best]))

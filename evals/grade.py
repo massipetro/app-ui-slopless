@@ -430,13 +430,34 @@ def eval13(d):
     ], d)
 
 
+def eval14(d):
+    sw = read(d, "**/*.swift")
+    resp = read(d, "response.md")
+    return with_compile(process_checks(resp) + [
+        ("lint.py: no FAIL in the produced Swift", *lint_fails(d)),
+        ("Dealt for the finance sector (deal.py ... --sector finance)", *check(resp, r"deal\.py --options \d+[^\n`]*--sector finance")),
+        ("Pots carry user-style names, no placeholder data", *check(sw, r"\"[^\"\n]*(Holiday|Bike|Emergency|Lisbon|Japan|Wedding|Rainy day|Car|Laptop)[^\"\n]*\"")),
+        ("Spendable-until-payday figure modelled", *check(sw, r"payday|untilPay|nextPay|safeToSpend|leftToSpend|spendable")),
+        ("Pot progress from real values (saved / goal)", *check(sw, r"(saved|balance|amount)\w*\s*/\s*\w*(goal|target)|progress\s*[:=]")),
+        ("Amounts formatted with the locale currency formatter", *check(sw, r"\.currency\(code:|FormatStyle\.Currency|NumberFormatter[\s\S]{0,200}\.currency|\.formatted\(\.currency")),
+        ("Tabular figures on amounts (.monospacedDigit, monospaced digits or tnum)", *check(sw, r"\.monospacedDigit\(\)|\.monospaced\(|tabular|kNumberSpacing|\.numericText")),
+        ("Balances can be hidden (privacySensitive, redacted or a hide toggle)", *check(sw, r"privacySensitive|\.redacted\(|hideBalance|isBalanceHidden|balanceHidden|discreet")),
+        ("Move money works without a gesture (a Button or accessibility action)", *check(sw, r"Button\([^\n]{0,80}(Move|Add|Transfer|Save)|accessibilityAction\([^\n]{0,80}(Move|Add|Transfer|Save)")),
+        ("Gestures have accessible alternatives (no gesture-no-alternative)", *lint_clean(d, {"gesture-no-alternative"})),
+        ("No confetti or celebration on spending", *absent(sw, r"confetti|Confetti")),
+        ("VoiceOver labels on custom elements", *check(sw, r"accessibility(Label|Value|Element)")),
+        ("Fonts scale with Dynamic Type", *check(sw, r"relativeTo:|\.font\(\.(largeTitle|title|title2|title3|headline|body|callout|subheadline|footnote|caption)")),
+        ("Reduce Motion respected", *check(sw, r"accessibilityReduceMotion")),
+    ], d)
+
+
 GRADERS = {"playful-habit-home-cmp": eval1, "neobrutalist-profile-swiftui": eval2, "checkout-audit-warm-premium": eval3,
            "ferry-home-no-preset-swiftui": eval4, "flat-budget-no-preset-cmp": eval5,
            "guesthouse-photos-no-preset-swiftui": eval6,
            "library-sidebar-macos-swiftui": eval7, "subtitle-window-macos-swiftui": eval8,
            "retro-terminal-trail-swiftui": eval9, "retro-pixel-plants-compose": eval10,
            "retro-film-log-macos-swiftui": eval11, "bake-day-macos-swiftui": eval12,
-           "medication-today-a11y-swiftui": eval13}
+           "medication-today-a11y-swiftui": eval13, "money-home-no-preset-swiftui": eval14}
 
 if __name__ == "__main__":
     it = Path(sys.argv[1])

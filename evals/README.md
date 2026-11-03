@@ -22,8 +22,9 @@ Two kinds of eval live here:
 | 11 | `retro-film-log-macos-swiftui` | **retro on a Mac**, the look left to the designer: real window chrome kept, no Apple or Microsoft marks |
 | 12 | `bake-day-macos-swiftui` | **a fresh macOS brief**, neither a collection nor a pro tool: a home baker's bake-day window kept open on the counter all day |
 | 13 | `medication-today-a11y-swiftui` | **accessibility**: a medication Today screen for older users on VoiceOver, Voice Control and the largest text sizes, for a buyer who needs an ACR (VPAT, WCAG 2.2 AA) |
+| 14 | `money-home-no-preset-swiftui` | **money**: a neobank home with a main account, named savings pots and a euro balance, "clear but fun"; tests the finance deal (one clear-money option), tabular currency amounts, hidden balances and no celebration on spending |
 
-Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named. Eval 13 tests accessibility: its grader checks names, roles, states, large-text layout, announcements and the report's Accessibility line. Its pairs are judged on native iOS renders at the default size and at AX5, with a judge prompt that scores Access as well as the five criteria.
+Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named. Eval 14 tests the finance deal (`--sector finance`) and the clear money preset's money rules. Eval 13 tests accessibility: its grader checks names, roles, states, large-text layout, announcements and the report's Accessibility line. Its pairs are judged on native iOS renders at the default size and at AX5, with a judge prompt that scores Access as well as the five criteria.
 
 ### How to run
 

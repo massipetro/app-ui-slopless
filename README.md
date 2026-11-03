@@ -93,7 +93,7 @@ The same prompt ("a habit tracker home in Compose Multiplatform, Duolingo-level 
 ## How it works
 
 1. **Intake and inventory.** For a redesign, read the app's current look first (fonts, colours, mascot, illustrations) and keep its identity assets by default. Then list 8–12 things only this product has: its objects, rituals, places and numbers.
-2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (31 directions, each anchored in shipped apps: 20 for the phone, 19 of them with a Mac window form; 8 Mac-only, dealt with `--platform macos`, where two of the three options are Mac-native; and 3 retro, dealt only when the user names the style). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
+2. **Deal, don't default.** `scripts/deal.py` deals three researched directions that can show the screen's content (35 directions, each anchored in shipped apps: 20 for the phone, 19 of them with a Mac window form; 8 Mac-only, dealt with `--platform macos`, where two of the three options are Mac-native; 3 retro, dealt only when the user names the style; and 4 clear money, dealt for `--sector finance`, where one option always comes from them). Each one goes through a fit test (including a product-category fit table), and misfits are dropped. The skill recommends one and asks up to four questions (direction, what to keep, how far to go, what to focus on), with its recommendation first. Asked to choose a look, a model picks the category default every time, so the deal takes that choice away from it.
 3. **Owned idea.** One sentence: *"In this app, ⟨inventory item⟩ becomes ⟨device⟩."* It has to fail for the nearest competitor. One live interaction reacts to real state.
 4. **Build.** Tokens, then components, then the screen, with real content at real density, following a code baseline: stable identity, state that survives, transforms not layout.
 5. **Check, fix, report.** The gates below. Then a scored critique of the screenshots, at most two fix rounds, and a fixed report block.
@@ -118,7 +118,7 @@ $ python3 scripts/deal.py --options 2 --content list,number --preset playful
 `--direction <id> --seed <n>` then prints the full sheet: two type systems, two palettes with measured contrast in light and dark, shape, signature moves, motion and how the direction goes wrong.
 </details>
 
-### Styles: four presets (plus three for the Mac and a retro one on request), five dials
+### Styles: four presets (plus three for the Mac, one for money apps and a retro one on request), five dials
 
 | Preset | Feel | Real-world anchors |
 |---|---|---|
@@ -129,6 +129,7 @@ $ python3 scripts/deal.py --options 2 --content list,number --preset playful
 | Native craft (Mac) | Mac behaviour everywhere, identity in one control or owned chrome | Panic Nova, NetNewsWire, Things 3, Ivory |
 | Pro instrument (Mac) | dense, keyboard-first, exact readouts, a menu bar instrument | Raycast, Linear app, Logic Pro, iStat Menus |
 | Document first (Mac) | the document's typography is the design | iA Writer, Ulysses, Bear |
+| Clear money (finance) | sober, exact numbers; the fun lives in the pots, cards and passbooks people name | Up, Monzo Pots, Revolut 10, Wise, Apple Card |
 | Retro (on request) | phosphor terminal, pixel sprites or a 1-bit desktop, legible and accessible | Fallout's Pip-Boy, Balatro, Shovel Knight, Playdate |
 
 Dials from 1 to 10: `BOLDNESS`, `MOTION`, `DENSITY`, `COLOR` and `FIDELITY` (how bespoke the components look; platform mechanics stay native). Name a preset or let the deal pick one.
@@ -226,7 +227,7 @@ The skill runs cost about 1.5–2.5× the baseline. Two or three runs per config
 
 ## Grounded in
 
-Norman, Nielsen, Shneiderman, Fitts, Hick–Hyman, Cowan, Hoober, Clark, Budiu/NN/g, Cooper, Wroblewski, Bringhurst, Lupton, Albers, Tufte, Chang & Ungar, Willenskomer, Saffer, Walter, Kurosu & Kashimura, Tractinsky, Lindgaard, Tuch, Hassenzahl, Apple HIG, Material 3, and WCAG 2.2. See [`research/literature.md`](research/literature.md); every claim is tagged by how well it's verified. The visual references are real shipped apps (Apple Design Award winners, design-team case studies), not AI concept shots: [`research/real-ui-references.md`](research/real-ui-references.md). The Mac presets rest on Mac practice and its critics (Simmons, Gruber, Panic, MacStories, the macOS 26–27 Liquid Glass reviews, Tonsky on menu icons) and on hotkey and novice-to-expert research: [`research/macos-references.md`](research/macos-references.md). The retro preset rests on shipped retro UIs (Fallout's Pip-Boy, Balatro, Shovel Knight, Playdate, Obra Dinn) and on legibility research for bitmap type and light-on-dark text: [`research/retro-references.md`](research/retro-references.md).
+Norman, Nielsen, Shneiderman, Fitts, Hick–Hyman, Cowan, Hoober, Clark, Budiu/NN/g, Cooper, Wroblewski, Bringhurst, Lupton, Albers, Tufte, Chang & Ungar, Willenskomer, Saffer, Walter, Kurosu & Kashimura, Tractinsky, Lindgaard, Tuch, Hassenzahl, Apple HIG, Material 3, and WCAG 2.2. See [`research/literature.md`](research/literature.md); every claim is tagged by how well it's verified. The visual references are real shipped apps (Apple Design Award winners, design-team case studies), not AI concept shots: [`research/real-ui-references.md`](research/real-ui-references.md). The Mac presets rest on Mac practice and its critics (Simmons, Gruber, Panic, MacStories, the macOS 26–27 Liquid Glass reviews, Tonsky on menu icons) and on hotkey and novice-to-expert research: [`research/macos-references.md`](research/macos-references.md). The retro preset rests on shipped retro UIs (Fallout's Pip-Boy, Balatro, Shovel Knight, Playdate, Obra Dinn) and on legibility research for bitmap type and light-on-dark text: [`research/retro-references.md`](research/retro-references.md). The clear money preset rests on neobank practice (Up, Monzo, Revolut, Wise, Apple Card) and on behavioural finance: mental accounting (Thaler), partitioning and labelled accounts (Cheema & Soman, J-PAL), single goals (Soman & Zhao), the goal gradient, the fresh start effect, the ostrich effect, and the FCA's research on gamified trading: [`research/money-references.md`](research/money-references.md).
 
 **Companion skills** for deeper code correctness (optional): [twostraws/swiftui-agent-skill](https://github.com/twostraws/swiftui-agent-skill) for SwiftUI, and [aldefy/compose-skill](https://github.com/aldefy/compose-skill) for Compose/CMP. See [`research/code-baseline.md`](research/code-baseline.md).
 
@@ -247,7 +248,7 @@ references/
   critique.md               the scored taste pass on screenshots
   accessibility.md          accessibility mode (audit any app to WCAG 2.2 AA, no restyle) and the checks behind the Accessibility line
   mascot.md                 designing a mascot or hero glyph the skill can draw, rig it, ship it, animate it
-library/directions.json     31 dealt directions (5 per phone preset, 8 Mac-only, 3 retro), with palettes checked for contrast
+library/directions.json     35 dealt directions (5 per phone preset, 8 Mac-only, 3 retro, 4 clear money), with palettes checked for contrast
 scripts/deal.py             deals directions (--platform macos for their Mac window forms); --check validates the library (Python 3.9+, stdlib only)
 scripts/lint.py             FAIL/WARN gate for slop tells, craft defects and code-baseline patterns in .swift / .kt
 scripts/typecheck.py        typechecks SwiftUI files against the iOS simulator or macOS SDK, no Xcode project needed

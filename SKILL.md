@@ -73,7 +73,7 @@ Every deal ends with a `Deal:` line: the command with its flags and seed that de
 
 - `--content`: only directions whose composition can show the primary shape are dealt, and within each preset the ones that also hold the secondary shapes come first. A poster of colour blocks can't show a timetable, so it isn't dealt for one.
 - `--preset`: only when the user named one; the deal then stays inside it. Without it, the three options come from different presets. **Retro** is dealt only this way: when the user asks for a pixel, 8-bit, terminal, CRT or old-desktop look, pass `--preset retro`; the open deal never offers it.
-- `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example). `hobby` covers collectors' and enthusiasts' apps. Some directions also drop out when a content shape anywhere in `--content` is one they don't suit (quiet native for `collection`).
+- `--sector`: drops directions marked wrong for it (neo-brutalist for finance, for example). `hobby` covers collectors' and enthusiasts' apps. **`finance`** (banking, savings, pots, budgeting, money transfer, pensions) also brings in the **Clear money** preset, and one of the options always comes from it, because asked to choose, a model gives every money app the same warm premium. Pass it when the content is the user's own accounts (banks, neobanks, savings, budgeting across accounts, money transfer, pensions); a shared kitty or expense splitter is not banking, and "don't make it look like a bank" means leave it out. Some directions also drop out when a content shape anywhere in `--content` is one they don't suit (quiet native for `collection`).
 - `--platform macos`: for a Mac app. Each direction is dealt in its Mac form: a window composition (sidebar, content, inspector, toolbar, menu bar extra) instead of the phone screen, pointer-and-keyboard signature moves, Mac-scale shape, Mac dial defaults (usually denser), and a **window chrome** line that says what stays system (translucent sidebar, the user's accent colour, the title bar) and what carries the palette. Directions with no Mac form (`ed-story-cards`) are not dealt. Three **Mac-only presets** (native craft, pro instrument, document first) join the deal, and two of the three options come from them whenever two can show the content (one when only one can), because Mac users reward Mac-native craft (`research/macos-references.md`). In the fit test, prefer a Mac-native option; pick a phone-first direction only when its owned idea is clearly stronger and its Mac form keeps Mac density, and say why. In round 18, `pl-persona`'s Mac form became a stock grid of rounded cards and lost both pairs, while `nc-owned-chrome` swept both. Without the flag they are never dealt. Pass the same flag when printing the sheet. When the working directory's project or code says macOS (`Package.swift`, the `.xcodeproj`, AppKit APIs), `deal.py` deals for the Mac on its own and says so; a brief that only *says* "Mac app" still needs the flag. The fit test reads the Mac composition: "content at rest" means in a 1280×800 window, not a phone.
 - `--have photography`: only when the product really has photographs: its own photos in the project, or photos it shows at runtime (listings, products, places, people's uploads). Without it, directions that depend on photographs are not dealt, so a screen never ends up built around grey placeholder boxes. Drawn art never needs `--have`: it is made in code.
 
@@ -87,7 +87,8 @@ Every deal ends with a `Deal:` line: the command with its flags and seed that de
 |---|---|---|
 | Navigation, transit, mobility, maps, travel | Warm premium; Playful if the app already has a mascot or illustrations | Editorial (utility screens have little content to set), Neo-brutalist (reads unreliable when people depend on it) |
 | Utilities (weather, scanners, calculators, settings-heavy tools) | Warm premium at low `BOLDNESS`; Neo-brutalist for indie or dev tools | Editorial |
-| Finance, banking, insurance | Warm premium; Playful only for beginner/teen finance | Neo-brutalist (reads untrustworthy) |
+| Finance, banking, savings, budgeting | Clear money; Warm premium; Playful only for beginner/teen finance | Neo-brutalist (reads untrustworthy); on trading screens, any direction that celebrates (FCA: celebration raises trading risk) |
+| Insurance | Warm premium, calm dials | Neo-brutalist |
 | Health, medical | Warm premium, calm dials | Neo-brutalist, loud Playful |
 | Wellbeing, habits, fitness, learning, kids, games | Playful | Editorial, Neo-brutalist (except indie games) |
 | Social, messaging, dating | Playful; Neo-brutalist for Gen-Z or creator-led | Editorial for chat-heavy screens |
@@ -117,7 +118,7 @@ python3 <skill>/scripts/deal.py --direction <id> --seed <seed from the deal> [--
 
 The sheet gives the composition, the idea slot, a dealt type system and palette (light and dark, with measured contrast), shape, signature moves, motion and the way the direction goes wrong. If the brand already fixes colours or typefaces, pass `--keep palette,type` and map the brand onto the roles. Redeal only for a reason you can state (it contradicts the brand, or needs an asset that doesn't exist), and say so in the report. If the script can't run, read `library/directions.json` and pick by the same rules.
 
-The presets behind the directions (native craft, pro instrument and document first are Mac-only; retro is dealt only when the user names it):
+The presets behind the directions (native craft, pro instrument and document first are Mac-only; retro is dealt only when the user names it; clear money only for `--sector finance` or by name):
 
 | Preset | One-liner | Real-world anchors | File |
 |---|---|---|---|
@@ -128,6 +129,7 @@ The presets behind the directions (native craft, pro instrument and document fir
 | **Native craft** (Mac) | Mac-assed: Mac behaviour everywhere, identity concentrated in one control or owned chrome | Panic Nova/Transmit, NetNewsWire, Things 3, Ivory | `references/presets/native-craft.md` |
 | **Pro instrument** (Mac) | Dense, keyboard-first, content centre and controls at the edges, exact readouts | Raycast, Linear app, Logic Pro, iStat Menus | `references/presets/pro-instrument.md` |
 | **Document first** (Mac) | The document's typography is the design; chrome disappears while you work | iA Writer, Ulysses, Bear | `references/presets/document-first.md` |
+| **Clear money** (finance) | Sober, exact numbers; the fun lives in the containers people name: pots that fill, one bar for all the money, a wallet stack, a passbook | Up, Monzo Pots, Revolut 10, Wise, Apple Card, bunq | `references/presets/clear-money.md` |
 | **Retro** (named only) | A past machine made usable: phosphor terminal, pixel sprites, 1-bit desktop; one grid, integer type sizes, effects off under Reduce Motion | Fallout's Pip-Boy, Balatro, Shovel Knight, Playdate, Obra Dinn | `references/presets/retro.md` |
 
 Then read **only** the chosen direction's preset file. It holds the wider rules for that style: palette strategy, type, shape, depth, motion, more signature moves, real examples, and how cheap imitations go wrong. Where the sheet and the preset file differ, the sheet wins for this build.
@@ -397,7 +399,7 @@ These hold in every preset. Each one exists because ignoring it measurably hurts
 **Delight**
 - Function → reliable → usable → pleasurable (Walter). Personality sits on top and is required, not optional.
 - Put personality where it's cheap and safe: empty states, success moments, microinteractions (toggles, favourites, pull-to-refresh), and copy voice (Saffer).
-- Tone it down on serious surfaces such as money, health, safety and bad news.
+- Tone it down on serious surfaces such as money, health, safety and bad news. On money screens, delight attaches only to saving, paying off and reaching a goal, never to spending, trading or borrowing (FCA 2022 and 2024; `research/money-references.md` §C).
 
 ## Motion budget (by `MOTION` dial)
 
@@ -460,6 +462,12 @@ Models produce slop because they sample the statistical average of their trainin
 - Second-order defaults when Inter is banned: Space Grotesk, Geist, Instrument Serif. Fine with a reason; slop as a reflex.
 - A tiny letter-spaced uppercase "eyebrow" above every heading. An italic serif "accent word" in a headline.
 - Monospace for "techy vibes" outside data or code.
+
+**Money screens** (2026-11; `references/presets/clear-money.md`)
+- A glassy purple or blue gradient credit card with a fake chip and "•••• 4291" as the hero, when the card isn't the point.
+- "Total balance" + eye icon + four round quick actions (Send, Request, Top up, More) + "Recent transactions": the vendor-template bank.
+- A gradient-filled line chart with no axis, a "+12.4%" badge, a pastel spending donut. Green "+" and red "−" as the only signal.
+- Confetti on a transfer, or on anything that isn't saving, paying off or a goal reached.
 
 **Layout and components**
 - "Good morning, Alex 👋" + a 2×2 grid of pastel stat cards + a card list: every app as the same dashboard.
