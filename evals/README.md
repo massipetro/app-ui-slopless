@@ -40,7 +40,47 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 
 ## Results
 
-Twenty-four rounds, October 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–24 on accessibility. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+Twenty-five rounds, October and November 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–24 on accessibility, 25 on the clear money preset. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+
+### Round 25: the clear money preset, eval 14, three judges (HEAD vs main)
+
+HEAD is `355ca72` on the `clear-money` branch (worktree `skill-head25`). It adds:
+- the clear money preset: four `cm-` directions, dealt for `--sector finance`, with one option of a finance deal always from it;
+- the fix that keeps non-tabular faces out of the data slots.
+
+The comparison is `origin/main` at `b7d0de0` (`skill-main25`): the same skill without either change.
+
+Eval 14 is new and untuned: a neobank home with a main account, named savings pots and a euro balance, "clear but fun, like Revolut, not a boring bank". The setup is round 24's:
+- three runs per config, Opus 5.5 builds ($8 cap);
+- every build rendered natively with `evals/render_builds.py` at the default size and at AX5, all twelve with the build's own clock;
+- three blind Opus 5.5 judges per pair, with `evals/judges.py`'s `access` prompt.
+
+| Run | HEAD direction | Main direction | HEAD vs main | Access | Votes |
+|---|---|---|---|---|---|
+| 1 | cm-wallet-stack | wp-departure-board | **6.77** vs 5.83 | 4.7 vs **6.7** | 3–0 |
+| 2 | cm-wallet-stack | wp-exaggerated-number | 6.33 vs **7.00** | 4.7 vs **6.3** | 1–2 |
+| 3 | cm-pot-shelf | wp-departure-board | **7.03** vs 5.80 | **7.0** vs 5.3 | 3–0 |
+
+- **2 of 3 pairs, 7 of 9 votes, mean 6.71 vs 6.21. Access went the other way: 5.44 vs 6.11.** This is n = 3 on one new brief.
+- **The deal did what it was built for.** Every HEAD build dealt with `--sector finance` and picked a clear money direction. Every main build picked a warm premium one, the category default the preset exists to replace.
+- **The pot shelf was the best screen in the round** (7.03, 3–0, Access 7.0). The judges named pots "that fill like jars", one decisive number, and every must-have at rest with nothing cut. At AX5 it kept the amount, a pot and its Move button in the first screen.
+- **The wallet stack won on the idea but broke at AX5.**
+  - The judges called the stacked pot cards "a real, ownable idea" in run 1. Run 1 won 3–0 against main's stock 2×2 grid of pot cards with a row cut by the tab bar.
+  - At AX5, run 1 dropped its Move button and slid a card under the tab bar.
+  - Run 2 sliced a pot card under its pinned add bar at AX5 ("Lisb"). That capped it, and it lost 1–2. Two judges also said its bright stack competes with the spendable figure.
+  - The native bottom-edge check reported run 2's AX5 frame as a pass, so it missed that cut.
+- **Product checks: HEAD 26–27 of 26–27, main 25–26 of 26–27.**
+  - No main build lets the user hide balances.
+  - Every HEAD build did hide balances, and kept "move money" as a button, not only a gesture.
+  - Two grader regexes were too strict and are fixed in this round: the owned idea now also matches "become", and the move-money check now accepts trailing-closure `Button { }`.
+- **Lint:** no FAIL on either side.
+- **Harness:** main run 2's final reply was a one-line note about a background screenshot job. Its full report came from the session transcript (kept as `response.md`; the note is `response.last.md`).
+- Cost: $28.15 for 6 builds (HEAD $12.36, main $15.79). Builds took 20.6 minutes against 22.5. Judges: $2.50 for 9.
+- **Not measured:** the one-bar and passbook directions, Android, the Mac, and any assistive technology.
+- **Next:**
+  - The wallet stack needs an AX5 form: the stack collapses to plain rows, and the pinned move bar becomes inline.
+  - The stack's colours should sit below the spendable figure in weight.
+  - The native bottom-edge check should catch a card whose title is cut by a pinned bar.
 
 ### Round 24: native bottom edge and the build's clock, eval 13, three judges (HEAD vs round 23's HEAD)
 
