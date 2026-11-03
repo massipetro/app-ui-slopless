@@ -22,6 +22,7 @@ Two kinds of eval live here:
 | 11 | `retro-film-log-macos-swiftui` | **retro on a Mac**, the look left to the designer: real window chrome kept, no Apple or Microsoft marks |
 | 12 | `bake-day-macos-swiftui` | **a fresh macOS brief**, neither a collection nor a pro tool: a home baker's bake-day window kept open on the counter all day |
 | 13 | `medication-today-a11y-swiftui` | **accessibility**: a medication Today screen for older users on VoiceOver, Voice Control and the largest text sizes, for a buyer who needs an ACR (VPAT, WCAG 2.2 AA) |
+| 14 | `medication-today-a11y-compose` | **accessibility on Android**: eval 13's brief in Jetpack Compose, for TalkBack, Voice Access and font scale 2.0 |
 
 Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a preset, so they test craft inside a style. Evals 7, 8 and 12 test the Mac deal (`--platform macos`); 9–11 the retro preset, which is dealt only when named. Eval 13 tests accessibility: its grader checks names, roles, states, large-text layout, announcements and the report's Accessibility line. Its pairs are judged on native iOS renders at the default size and at AX5, with a judge prompt that scores Access as well as the five criteria.
 
@@ -32,14 +33,42 @@ Evals 4, 5 and 6 are the ones that test the workflow itself. Evals 1–3 name a 
 1. For each eval, run the prompt in a fresh session **with the skill** and in another **without it** (the baseline). Save each session's final reply as `response.md` and its files under:
    `<iteration>/eval-<id>-<name>/<with_skill|without_skill>/run-<n>/outputs/`
 2. Grade both configs: `python3 evals/grade.py <iteration>`. It writes `grading.json` per run and prints pass counts. The no-preset evals reuse `scripts/lint.py`, so "no FAIL" means the same thing it means in the skill.
-3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (six criteria from round 22 on, five before; caps; overall). A fresh agent with only the two images and `critique.md` works as the judge. For iOS briefs, `python3 evals/render_builds.py <iteration>` renders every run's own Swift on the iOS Simulator at the default size and at AX5, with each build's clock (its `--clock`, else the time in its `#Preview`'s name), and records the native bottom-edge result in each run's `render.txt`. The judge prompts live in `evals/judges.py` (`phone`, `mac`, and `access`, which shows each screen at the default and the largest text size and scores Access as a sixth criterion); a round's `make_pairs.py` imports it, so every round asks the same question.
+3. **Judge the screenshots blind.** Render each run's screen at phone size (simulator, `@Preview` screenshot test, or the HTML mock the skill falls back to). Shuffle the with/without pair into A and B, and have a judge who doesn't know which is which score both with `references/critique.md` (six criteria from round 22 on, five before; caps; overall). A fresh agent with only the two images and `critique.md` works as the judge. For iOS briefs, `python3 evals/render_builds.py <iteration>` renders every run's own Swift on the iOS Simulator at the default size and at AX5, with each build's clock (its `--clock`, else the time in its `#Preview`'s name), and records the native bottom-edge result in each run's `render.txt`. For Android builds it uses `evals/render_compose.py` instead, at font scale 1.0 and 2.0, on the script's own read-only emulator; `--fonts` supplies font files a build names but doesn't ship, and a font that's still missing stops the render rather than falling back. The judge prompts live in `evals/judges.py` (`phone`, `mac`, and `access`, which shows each screen at the default and the largest text size and scores Access as a sixth criterion); a round's `make_pairs.py` imports it, so every round asks the same question.
 4. Record per eval: grader pass rate, lint FAIL count, and blind critique overall for both configs. The skill earns its place when it wins the blind critique, not just the regex checks.
 
 `grade.py` checks presence of craft and absence of tells. It can't see taste; step 3 is where taste is measured.
 
 ## Results
 
-Twenty-four rounds, October 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–24 on accessibility. Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+Twenty-five rounds, October and November 2026, newest first: rounds 1–9 and 20 on the phone, 10–13 and 18–21 on the Mac, 14–17 on the retro preset, 22–25 on accessibility (25 on Android). Each build was a separate `claude -p` session with the skill, without it, and from round 11 with the previous release (v1.5.0) as well, given the same prompt plus one line asking for an HTML mock (390×844 on the phone, 1280×800 on the Mac) and the same tools. Blind judges saw only the two rendered mocks, shuffled as A and B, the brief and `references/critique.md`: one judge per pair up to round 11, two from round 12, three from round 15, so every pair has a majority winner. Screens are HTML mocks rendered in headless Chromium, not SwiftUI or Compose renders. The harnesses live outside the repo, in `app-ui-slopless-workspace/iteration-<n>`.
+
+### Round 25: accessibility on Android, eval 14, native emulator renders, three judges (HEAD vs v1.7.0)
+
+HEAD is `b7d0de0` (`origin/main`, worktree `skill-head25`), with the same skill as round 24's `247aa27`. The comparison is v1.7.0 (`skill-v1.7.0`), the release before the accessibility work. Eval 14 is new and untuned: eval 13's brief in Jetpack Compose, for TalkBack, Voice Access and font scale 2.0. Three runs per config, Opus 5.5 builds ($8 cap).
+
+Setup:
+- Each build also wrote a `@Preview` and a mock. `evals/render_compose.py` opened the build's first `@Preview` on an Android emulator (Medium Phone, API 36.1) at font scale 1.0 and 2.0, with the preview's clock. All six rendered natively.
+- All six builds name fonts through `R.font`. Two HEAD builds shipped the files. One HEAD build and all three v1.7.0 builds didn't, so the harness supplied the same 15 static OFL files from Google Fonts. Without them, those builds wouldn't compile in a real project until the fonts were added, which their replies say.
+- The builds had no device: `adb` off `PATH`, `ANDROID_SERIAL` naming nothing. They checked large text on the mock.
+- One frame was re-rendered before judging (v1.7.0 run 1 at 2.0), because its status bar clock came out white.
+- Nine blind Opus 5.5 judges used `judges.prompt("access", brief, "android")`.
+
+| Run | HEAD vs v1.7.0 | Access, HEAD vs v1.7.0 | Votes for HEAD | Action in the first screen at 2.0, HEAD / v1.7.0 |
+|---|---|---|---|---|
+| 1 | **6.00** vs 5.81 | **7.0** vs 5.0 | 3–0 | yes / no |
+| 2 | 5.83 vs **5.94** | 4.0 vs 4.0 | 2–1 | yes / yes, on a pinned bar |
+| 3 | **7.12** vs 5.61 | **8.0** vs 4.0 | 3–0 | yes / no |
+
+- **8 of 9 votes, all three pairs by majority, mean 6.32 vs 5.79; Access 6.33 vs 4.33.** This is n = 3 on one brief. Pair 2 is close to a tie: HEAD won the vote but lost the mean, and Access tied.
+- **The AX5 rule carries to Android.** All three HEAD builds kept the late dose and both buttons in the first screen at font scale 2.0. Two v1.7.0 builds pushed them under the navigation bar, and every judge named that in pairs 1 and 3. v1.7.0 run 2 kept them with a pinned bar, and two of pair 2's judges preferred HEAD's card anyway.
+- **HEAD's misses are at the bottom edge.**
+  - Pairs 1 and 2 hit the craft and overall caps on both sides, for a row cut by the navigation bar at the default size.
+  - Pair 2's Access is 4 on both sides, for refill text sliced at 2.0 (HEAD's "Metformin is running low" row).
+  - `fold.py` passed all of these on the mock. This is round 23's finding again: the mock doesn't see the native bar, and Android has no native bottom-edge check like iOS. `render_compose.py` reads text bounds against the window, not the bar.
+- **Grader:** HEAD 29 of 30, 29 of 30 and 29 of 29, v1.7.0 26–28 of 30. The grader's announcement check first failed three builds that use a snackbar, which does announce; it counts snackbars now. Lint: no FAIL on either side.
+- **Honest reports:** all three HEAD replies say the Compose UI was never rendered, and that nothing was tested with assistive technology.
+- Cost: $26.94 for 6 builds (HEAD $18.42, v1.7.0 $8.52, +116%). HEAD builds took 21.4 minutes against 10.9. Judges: $2.41 for 9.
+- **Not measured:** the Mac, any assistive technology, and a device. The Access score is a judgement on pixels. The emulator's status bar shows stray system icons and clips its clock at 2.0, in both configs; one judge said so and didn't count it.
 
 ### Round 24: native bottom edge and the build's clock, eval 13, three judges (HEAD vs round 23's HEAD)
 
