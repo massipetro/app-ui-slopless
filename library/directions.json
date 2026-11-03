@@ -31,8 +31,8 @@
         },
         {
           "display": "Fraunces 600 (soft serif)",
-          "text": "DM Sans 400-500",
-          "data": "DM Sans tabular figures"
+          "text": "Red Hat Text 400-500",
+          "data": "Red Hat Text tabular figures (tnum on)"
         }
       ],
       "palettes": [
@@ -340,9 +340,9 @@
           "data": "Schibsted Grotesk tabular figures"
         },
         {
-          "display": "Albert Sans 700",
-          "text": "Albert Sans 400",
-          "data": "Albert Sans tabular figures"
+          "display": "Hanken Grotesk 700",
+          "text": "Hanken Grotesk 400",
+          "data": "Hanken Grotesk (digits tabular by default)"
         }
       ],
       "palettes": [
@@ -446,8 +446,8 @@
         },
         {
           "display": "Outfit 600",
-          "text": "DM Sans 400",
-          "data": "DM Sans tabular figures"
+          "text": "Red Hat Text 400",
+          "data": "Red Hat Text tabular figures (tnum on)"
         }
       ],
       "palettes": [
@@ -1532,8 +1532,8 @@
         },
         {
           "display": "Baloo 2 700",
-          "text": "DM Sans 400-500",
-          "data": "DM Sans tabular figures"
+          "text": "Red Hat Text 400-500",
+          "data": "Red Hat Text tabular figures (tnum on)"
         }
       ],
       "palettes": [
@@ -1643,8 +1643,8 @@
         },
         {
           "display": "Anton",
-          "text": "Libre Franklin 400",
-          "data": "Libre Franklin tabular figures"
+          "text": "Public Sans 400",
+          "data": "Public Sans tabular figures (tnum on)"
         }
       ],
       "palettes": [
@@ -1738,8 +1738,8 @@
       "type": [
         {
           "display": "Bricolage Grotesque (animate wdth and wght)",
-          "text": "Libre Franklin 400",
-          "data": "Libre Franklin tabular figures"
+          "text": "Public Sans 400",
+          "data": "Public Sans tabular figures (tnum on)"
         },
         {
           "display": "Anybody (animate wdth)",
@@ -1836,13 +1836,13 @@
       "type": [
         {
           "display": "DM Serif Display",
-          "text": "Libre Franklin 400-600",
-          "data": "Libre Franklin tabular figures"
+          "text": "Public Sans 400-600",
+          "data": "Public Sans tabular figures (tnum on)"
         },
         {
           "display": "Gloock",
-          "text": "Source Serif 4 for reading, Libre Franklin for UI",
-          "data": "Libre Franklin tabular figures"
+          "text": "Source Serif 4 for reading, Public Sans for UI",
+          "data": "Public Sans tabular figures (tnum on)"
         }
       ],
       "palettes": [
@@ -1947,8 +1947,8 @@
       "type": [
         {
           "display": "Newsreader 600",
-          "text": "Source Serif 4 for reading, Libre Franklin for UI",
-          "data": "Libre Franklin tabular figures"
+          "text": "Source Serif 4 for reading, Public Sans for UI",
+          "data": "Public Sans tabular figures (tnum on)"
         },
         {
           "display": "Fraunces 600",

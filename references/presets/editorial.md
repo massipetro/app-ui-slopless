@@ -18,7 +18,7 @@
 
 ## Type
 - **Contrast is the whole game:** one huge size, one small size, very little in between. Usually 3–4 sizes per screen.
-- OFL options: display **Bricolage Grotesque** (width + optical-size axes), **Big Shoulders Display** (condensed), **Anton** / **Bebas Neue** (condensed caps), or a serif display (**DM Serif Display**, **Gloock**, **Young Serif**). Text: **Libre Franklin**, or **Source Serif 4** for reading. Data: **Chivo Mono** / **Martian Mono**.
+- OFL options: display **Bricolage Grotesque** (width + optical-size axes), **Big Shoulders Display** (condensed), **Anton** / **Bebas Neue** (condensed caps), or a serif display (**DM Serif Display**, **Gloock**, **Young Serif**). Text: **Public Sans** (from Libre Franklin, with tabular figures; Libre Franklin itself has none), or **Source Serif 4** for reading. Data: **Chivo Mono** / **Martian Mono**.
 - Hero headlines at **48–96 pt**, line height **0.9–1.0**, tracking −2% to −4% on heavy grotesques. Break lines deliberately (2–4 lines), and let them crop at the edge when it's the hero.
 - **Use a real condensed cut or the width axis to fit. Never `scaleX`.**
 - Serif for *structure* (headlines, pull numbers), not as one decorative italic word.

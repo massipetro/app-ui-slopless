@@ -39,6 +39,10 @@ NAMED_ONLY = ("retro",)
 # Sector presets: dealt only for their sector (or by name). A deal for that sector always includes one,
 # because asked to choose, a model gives every money app the same warm premium (research/money-references.md).
 SECTOR_PRESETS = {"clear-money": ("finance",)}
+# Faces whose Google Fonts build has neither a tnum feature nor equal-width digits (measured with fontTools,
+# research/money-references.md section D), so they can't set a data column or a rolling number.
+NON_TABULAR = ("DM Sans", "Albert Sans", "Libre Franklin", "Fraunces", "Fredoka", "Wix Madefor", "Urbanist",
+               "Be Vietnam Pro", "Lexend", "Inclusive Sans", "Bagel Fat One")
 ROLES = ("ground", "surface", "ink", "ink2", "accent", "on_accent")
 SHAPES = ("list", "number", "detail", "collection", "canvas", "story", "progression", "action",
           "table", "document")  # the last two only occur on a Mac
@@ -286,6 +290,10 @@ def check(directions: list[dict]) -> int:
             problems.append(f"{d['id']}: not_for_content {avoid} must be shapes in {SHAPES} that it doesn't hold")
         if d["preset"] not in PRESETS:
             problems.append(f"{d['id']}: unknown preset {d['preset']}")
+        for t in d["type"]:
+            bad_face = next((f for f in NON_TABULAR if f in t["data"]), None)
+            if bad_face:
+                problems.append(f"{d['id']}: data face {t['data']!r}: {bad_face} has no tabular figures")
         for p in d["palettes"]:
             for mode in ("light", "dark"):
                 scheme = p[mode]

@@ -18,7 +18,7 @@
 
 ## Type
 - **One family with personality for display** (tall x-height, open apertures) at 2–3 weights, plus a quiet text cut. Don't mix three families.
-- OFL options: display **Plus Jakarta Sans 700–800** or **Fraunces** (soft serif, for an editorial-luxury tilt); text **Figtree** / **DM Sans** 400–500; an editorial accent in **Newsreader**. Or keep SF Pro / Roboto Flex for text and add only the display face.
+- OFL options: display **Plus Jakarta Sans 700–800** or **Fraunces** (soft serif, for an editorial-luxury tilt); text **Figtree** / **Red Hat Text** 400–500 (DM Sans looks close but has no tabular figures, so prices jitter); an editorial accent in **Newsreader**. Or keep SF Pro / Roboto Flex for text and add only the display face.
 - **The exaggerated number:** price, time, amount or distance at 40–64 pt, display weight, tabular figures. Its label is small and sits beside or below it.
 - Body text stays **full ink**. Thin grey "elegant" body text is the classic fake-premium move.
 
